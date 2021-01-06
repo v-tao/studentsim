@@ -16,32 +16,68 @@ var PlayerState = function (_React$Component) {
 
 		var _this = _possibleConstructorReturn(this, (PlayerState.__proto__ || Object.getPrototypeOf(PlayerState)).call(this, props));
 
-		_this.day = 1;
-		_this.health = 0;
-		_this.academics = 0;
-		_this.fun = 0;
+		_this.state = {
+			day: 1,
+			health: 0,
+			academics: 0,
+			fun: 0,
+			healthInc: 0,
+			academicsInc: 0,
+			funInc: 0
+		};
+		_this.handleStatsSubmit = _this.handleStatsSubmit.bind(_this);
+		_this.handleHealthChange = _this.handleHealthChange.bind(_this);
+		_this.handleAcademicsChange = _this.handleAcademicsChange.bind(_this);
+		_this.handleFunChange = _this.handleFunChange.bind(_this);
+
 		return _this;
 	}
 
 	_createClass(PlayerState, [{
-		key: "updateHealth",
-		value: function updateHealth(x) {
-			this.health += x;
+		key: "handleHealthChange",
+		value: function handleHealthChange(e) {
+			this.setState({ healthInc: parseInt(e.target.value) });
 		}
 	}, {
-		key: "updateAcademics",
-		value: function updateAcademics(x) {
-			this.academics += x;
+		key: "handleAcademicsChange",
+		value: function handleAcademicsChange(e) {
+			this.setState({ academicsInc: parseInt(e.target.value) });
 		}
 	}, {
-		key: "updateFun",
-		value: function updateFun(x) {
-			this.fun += x;
+		key: "handleFunChange",
+		value: function handleFunChange(e) {
+			this.setState({ funInc: parseInt(e.target.value) });
 		}
 	}, {
 		key: "nextDay",
 		value: function nextDay() {
-			this.day += 1;
+			this.setState(function (state) {
+				return {
+					day: state.day + 1
+				};
+			});
+		}
+	}, {
+		key: "handleStatsSubmit",
+		value: function handleStatsSubmit(e) {
+			e.preventDefault();
+			this.setState(function (state) {
+				return {
+					day: state.day + 1,
+					health: state.health + state.healthInc,
+					academics: state.academics + state.academicsInc,
+					fun: state.fun + state.funInc
+				};
+			});
+		}
+	}, {
+		key: "reset",
+		value: function reset() {
+			this.setState({
+				healthInc: 0,
+				academicsInc: 0,
+				funInc: 0
+			});
 		}
 	}, {
 		key: "render",
@@ -50,33 +86,68 @@ var PlayerState = function (_React$Component) {
 				"div",
 				null,
 				React.createElement(
-					"h1",
+					"div",
 					null,
-					"GAME STATE"
+					React.createElement(
+						"form",
+						{ onSubmit: this.handleStatsSubmit },
+						React.createElement(
+							"label",
+							{ htmlFor: "health" },
+							"Add Health Pts"
+						),
+						React.createElement("input", { step: "1", min: "0", max: "10", onChange: this.handleHealthChange, name: "health", id: "healthPts", type: "number" }),
+						React.createElement(
+							"label",
+							{ htmlFor: "academics" },
+							"Add Academic Pts"
+						),
+						React.createElement("input", { step: "1", min: "0", max: "10", onChange: this.handleAcademicsChange, name: "academics", id: "academicPts", type: "number" }),
+						React.createElement(
+							"label",
+							{ htmlFor: "fun" },
+							"Add Fun Pts"
+						),
+						React.createElement("input", { step: "1", min: "0", max: "10", onChange: this.handleFunChange, name: "fun", id: "funPts", type: "number" }),
+						React.createElement(
+							"button",
+							null,
+							"Next Day"
+						)
+					)
 				),
 				React.createElement(
-					"h2",
+					"div",
 					null,
-					"DAY ",
-					this.day
-				),
-				React.createElement(
-					"h3",
-					null,
-					"Health: ",
-					this.health
-				),
-				React.createElement(
-					"h3",
-					null,
-					"Academics: ",
-					this.academics
-				),
-				React.createElement(
-					"h3",
-					null,
-					"Fun: ",
-					this.fun
+					React.createElement(
+						"h1",
+						null,
+						"GAME STATE"
+					),
+					React.createElement(
+						"h2",
+						null,
+						"DAY ",
+						this.state.day
+					),
+					React.createElement(
+						"h3",
+						null,
+						"Health: ",
+						this.state.health
+					),
+					React.createElement(
+						"h3",
+						null,
+						"Academics: ",
+						this.state.academics
+					),
+					React.createElement(
+						"h3",
+						null,
+						"Fun: ",
+						this.state.fun
+					)
 				)
 			);
 		}
