@@ -10,24 +10,37 @@ class PlayerState extends React.Component {
 			healthInc: 0,
 			academicsInc: 0,
 			funInc: 0,
+			dailyHours: 10,
 		}
 		this.handleStatsSubmit = this.handleStatsSubmit.bind(this);
 		this.handleHealthChange = this.handleHealthChange.bind(this);
 		this.handleAcademicsChange = this.handleAcademicsChange.bind(this);
 		this.handleFunChange = this.handleFunChange.bind(this);
-
 	}
 
 	handleHealthChange(e) {
-		this.setState({healthInc: parseInt(e.target.value)});
+		if (e.target.value) {
+
+			this.setState({healthInc: parseInt(e.target.value)});
+		} else {
+			this.setState({healthInc:0});
+		}
 	}
 
 	handleAcademicsChange(e) {
-		this.setState({academicsInc: parseInt(e.target.value)});
+		if (e.target.value) {
+			this.setState({academicsInc: parseInt(e.target.value)});
+		} else {
+			this.setState({academicsInc:0});
+		}
 	}
 
 	handleFunChange(e) {
-		this.setState({funInc: parseInt(e.target.value)});
+		if (e.target.value) {
+			this.setState({funInc: parseInt(e.target.value)});
+		} else {
+			this.setState({funInc:0});
+		}
 	}
 
 
@@ -59,13 +72,16 @@ class PlayerState extends React.Component {
 		return (
 			<div>
 				<div>
+					<h3>You have {this.state.dailyHours-this.state.healthInc-this.state.academicsInc-this.state.funInc} hour(s) left to allocate</h3>
+				</div>
+				<div>
 					<form onSubmit={this.handleStatsSubmit}>
-			    		<label htmlFor="health">Add Health Pts</label>
-			    		<input step="1" min="0" max="10" onChange={this.handleHealthChange} name="health" id="healthPts" type="number"/>
-			    		<label htmlFor="academics">Add Academic Pts</label>
-			    		<input step="1" min="0" max="10" onChange={this.handleAcademicsChange} name="academics" id="academicPts" type="number"/>
-			    		<label htmlFor="fun">Add Fun Pts</label>
-			    		<input step="1" min="0" max="10" onChange={this.handleFunChange} name="fun" id="funPts" type="number"/>
+			    		<label htmlFor="health">Add Health Hours</label>
+			    		<input step="1" min="0" max={this.state.dailyHours-this.state.academicsInc-this.state.funInc} onChange={this.handleHealthChange} name="health" type="number"/>
+			    		<label htmlFor="academics">Add Academic Hours</label>
+			    		<input step="1" min="0" max={this.state.dailyHours-this.state.healthInc-this.state.funInc} onChange={this.handleAcademicsChange} name="academics" type="number"/>
+			    		<label htmlFor="fun">Add Fun Hours</label>
+			    		<input step="1" min="0" max={this.state.dailyHours-this.state.healthInc-this.state.academicsInc} onChange={this.handleFunChange} name="fun" type="number"/>
 			    		<button>Next Day</button>
 		    		</form>
 				</div>

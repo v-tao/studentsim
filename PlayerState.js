@@ -23,30 +23,43 @@ var PlayerState = function (_React$Component) {
 			fun: 0,
 			healthInc: 0,
 			academicsInc: 0,
-			funInc: 0
+			funInc: 0,
+			dailyHours: 10
 		};
 		_this.handleStatsSubmit = _this.handleStatsSubmit.bind(_this);
 		_this.handleHealthChange = _this.handleHealthChange.bind(_this);
 		_this.handleAcademicsChange = _this.handleAcademicsChange.bind(_this);
 		_this.handleFunChange = _this.handleFunChange.bind(_this);
-
 		return _this;
 	}
 
 	_createClass(PlayerState, [{
 		key: "handleHealthChange",
 		value: function handleHealthChange(e) {
-			this.setState({ healthInc: parseInt(e.target.value) });
+			if (e.target.value) {
+
+				this.setState({ healthInc: parseInt(e.target.value) });
+			} else {
+				this.setState({ healthInc: 0 });
+			}
 		}
 	}, {
 		key: "handleAcademicsChange",
 		value: function handleAcademicsChange(e) {
-			this.setState({ academicsInc: parseInt(e.target.value) });
+			if (e.target.value) {
+				this.setState({ academicsInc: parseInt(e.target.value) });
+			} else {
+				this.setState({ academicsInc: 0 });
+			}
 		}
 	}, {
 		key: "handleFunChange",
 		value: function handleFunChange(e) {
-			this.setState({ funInc: parseInt(e.target.value) });
+			if (e.target.value) {
+				this.setState({ funInc: parseInt(e.target.value) });
+			} else {
+				this.setState({ funInc: 0 });
+			}
 		}
 	}, {
 		key: "nextDay",
@@ -89,26 +102,37 @@ var PlayerState = function (_React$Component) {
 					"div",
 					null,
 					React.createElement(
+						"h3",
+						null,
+						"You have ",
+						this.state.dailyHours - this.state.healthInc - this.state.academicsInc - this.state.funInc,
+						" hour(s) left to allocate"
+					)
+				),
+				React.createElement(
+					"div",
+					null,
+					React.createElement(
 						"form",
 						{ onSubmit: this.handleStatsSubmit },
 						React.createElement(
 							"label",
 							{ htmlFor: "health" },
-							"Add Health Pts"
+							"Add Health Hours"
 						),
-						React.createElement("input", { step: "1", min: "0", max: "10", onChange: this.handleHealthChange, name: "health", id: "healthPts", type: "number" }),
+						React.createElement("input", { step: "1", min: "0", max: this.state.dailyHours - this.state.academicsInc - this.state.funInc, onChange: this.handleHealthChange, name: "health", type: "number" }),
 						React.createElement(
 							"label",
 							{ htmlFor: "academics" },
-							"Add Academic Pts"
+							"Add Academic Hours"
 						),
-						React.createElement("input", { step: "1", min: "0", max: "10", onChange: this.handleAcademicsChange, name: "academics", id: "academicPts", type: "number" }),
+						React.createElement("input", { step: "1", min: "0", max: this.state.dailyHours - this.state.healthInc - this.state.funInc, onChange: this.handleAcademicsChange, name: "academics", type: "number" }),
 						React.createElement(
 							"label",
 							{ htmlFor: "fun" },
-							"Add Fun Pts"
+							"Add Fun Hours"
 						),
-						React.createElement("input", { step: "1", min: "0", max: "10", onChange: this.handleFunChange, name: "fun", id: "funPts", type: "number" }),
+						React.createElement("input", { step: "1", min: "0", max: this.state.dailyHours - this.state.healthInc - this.state.academicsInc, onChange: this.handleFunChange, name: "fun", type: "number" }),
 						React.createElement(
 							"button",
 							null,
