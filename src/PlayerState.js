@@ -71,24 +71,60 @@ class PlayerState extends React.Component {
 	render() {
 		return (
 			<div>
-				<div>
-					<h3>You have {this.state.dailyHours-this.state.healthInc-this.state.academicsInc-this.state.funInc} hour(s) left to allocate</h3>
-				</div>
-				<div>
-					<form onSubmit={this.handleStatsSubmit}>
-			    		<label htmlFor="health">Add Health Hours</label>
-			    		<input step="1" min="0" max={this.state.dailyHours-this.state.academicsInc-this.state.funInc} onChange={this.handleHealthChange} name="health" type="number"/>
-			    		<label htmlFor="academics">Add Academic Hours</label>
-			    		<input step="1" min="0" max={this.state.dailyHours-this.state.healthInc-this.state.funInc} onChange={this.handleAcademicsChange} name="academics" type="number"/>
-			    		<label htmlFor="fun">Add Fun Hours</label>
-			    		<input step="1" min="0" max={this.state.dailyHours-this.state.healthInc-this.state.academicsInc} onChange={this.handleFunChange} name="fun" type="number"/>
-			    		<button>Next Day</button>
-		    		</form>
-				</div>
+				<InputForm dailyHours={this.state.dailyHours} healthInc={this.state.healthInc} academicsInc={this.state.academicsInc} funInc={this.state.funInc} 
+				onStatsSubmit={this.handleStatsSubmit} onHealthChange={this.handleHealthChange} onAcademicsChange={this.handleAcademicsChange} onFunChange={this.handleFunChange}/>
 				<Display day={this.state.day} health={this.state.health} academics={this.state.academics} fun={this.state.fun}/>
 			</div>
 
 		);
+	}
+}
+
+class InputForm extends React.Component {
+	constructor(props) {
+		super(props);
+		this.handleStatsSubmit = this.handleStatsSubmit.bind(this);
+		this.handleHealthChange = this.handleHealthChange.bind(this);
+		this.handleAcademicsChange = this.handleAcademicsChange.bind(this);
+		this.handleFunChange = this.handleFunChange.bind(this);
+
+	}
+
+	handleStatsSubmit(e){
+		this.props.onStatsSubmit(e);
+	}
+
+	handleHealthChange(e){
+		this.props.onHealthChange(e);
+	}
+
+	handleAcademicsChange(e){
+		this.props.onAcademicsChange(e);
+	}
+
+	handleFunChange(e){
+		this.props.onFunChange(e);
+	}
+
+	render() {
+		let dailyHours = this.props.dailyHours;
+		let healthInc = this.props.healthInc;
+		let academicsInc = this.props.academicsInc;
+		let funInc = this.props.funInc;
+		return (
+			<div>
+				<h3>You have {dailyHours-healthInc-academicsInc-funInc} hours(s) left to allocate</h3>
+				<form onSubmit={this.handleStatsSubmit}>
+		    		<label htmlFor="health">Add Health Hours</label>
+		    		<input step="1" min="0" max={dailyHours-academicsInc-funInc} onChange={this.handleHealthChange} name="health" type="number"/>
+		    		<label htmlFor="academics">Add Academic Hours</label>
+		    		<input step="1" min="0" max={dailyHours-healthInc-funInc} onChange={this.handleAcademicsChange} name="academics" type="number"/>
+		    		<label htmlFor="fun">Add Fun Hours</label>
+		    		<input step="1" min="0" max={dailyHours-healthInc-academicsInc} onChange={this.handleFunChange} name="fun" type="number"/>
+		    		<button>Next Day</button>
+				</form>
+			</div>
+		)
 	}
 }
 

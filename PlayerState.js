@@ -98,48 +98,8 @@ var PlayerState = function (_React$Component) {
 			return React.createElement(
 				"div",
 				null,
-				React.createElement(
-					"div",
-					null,
-					React.createElement(
-						"h3",
-						null,
-						"You have ",
-						this.state.dailyHours - this.state.healthInc - this.state.academicsInc - this.state.funInc,
-						" hour(s) left to allocate"
-					)
-				),
-				React.createElement(
-					"div",
-					null,
-					React.createElement(
-						"form",
-						{ onSubmit: this.handleStatsSubmit },
-						React.createElement(
-							"label",
-							{ htmlFor: "health" },
-							"Add Health Hours"
-						),
-						React.createElement("input", { step: "1", min: "0", max: this.state.dailyHours - this.state.academicsInc - this.state.funInc, onChange: this.handleHealthChange, name: "health", type: "number" }),
-						React.createElement(
-							"label",
-							{ htmlFor: "academics" },
-							"Add Academic Hours"
-						),
-						React.createElement("input", { step: "1", min: "0", max: this.state.dailyHours - this.state.healthInc - this.state.funInc, onChange: this.handleAcademicsChange, name: "academics", type: "number" }),
-						React.createElement(
-							"label",
-							{ htmlFor: "fun" },
-							"Add Fun Hours"
-						),
-						React.createElement("input", { step: "1", min: "0", max: this.state.dailyHours - this.state.healthInc - this.state.academicsInc, onChange: this.handleFunChange, name: "fun", type: "number" }),
-						React.createElement(
-							"button",
-							null,
-							"Next Day"
-						)
-					)
-				),
+				React.createElement(InputForm, { dailyHours: this.state.dailyHours, healthInc: this.state.healthInc, academicsInc: this.state.academicsInc, funInc: this.state.funInc,
+					onStatsSubmit: this.handleStatsSubmit, onHealthChange: this.handleHealthChange, onAcademicsChange: this.handleAcademicsChange, onFunChange: this.handleFunChange }),
 				React.createElement(Display, { day: this.state.day, health: this.state.health, academics: this.state.academics, fun: this.state.fun })
 			);
 		}
@@ -148,8 +108,95 @@ var PlayerState = function (_React$Component) {
 	return PlayerState;
 }(React.Component);
 
-var Display = function (_React$Component2) {
-	_inherits(Display, _React$Component2);
+var InputForm = function (_React$Component2) {
+	_inherits(InputForm, _React$Component2);
+
+	function InputForm(props) {
+		_classCallCheck(this, InputForm);
+
+		var _this2 = _possibleConstructorReturn(this, (InputForm.__proto__ || Object.getPrototypeOf(InputForm)).call(this, props));
+
+		_this2.handleStatsSubmit = _this2.handleStatsSubmit.bind(_this2);
+		_this2.handleHealthChange = _this2.handleHealthChange.bind(_this2);
+		_this2.handleAcademicsChange = _this2.handleAcademicsChange.bind(_this2);
+		_this2.handleFunChange = _this2.handleFunChange.bind(_this2);
+
+		return _this2;
+	}
+
+	_createClass(InputForm, [{
+		key: "handleStatsSubmit",
+		value: function handleStatsSubmit(e) {
+			this.props.onStatsSubmit(e);
+		}
+	}, {
+		key: "handleHealthChange",
+		value: function handleHealthChange(e) {
+			this.props.onHealthChange(e);
+		}
+	}, {
+		key: "handleAcademicsChange",
+		value: function handleAcademicsChange(e) {
+			this.props.onAcademicsChange(e);
+		}
+	}, {
+		key: "handleFunChange",
+		value: function handleFunChange(e) {
+			this.props.onFunChange(e);
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			var dailyHours = this.props.dailyHours;
+			var healthInc = this.props.healthInc;
+			var academicsInc = this.props.academicsInc;
+			var funInc = this.props.funInc;
+			return React.createElement(
+				"div",
+				null,
+				React.createElement(
+					"h3",
+					null,
+					"You have ",
+					dailyHours - healthInc - academicsInc - funInc,
+					" hours(s) left to allocate"
+				),
+				React.createElement(
+					"form",
+					{ onSubmit: this.handleStatsSubmit },
+					React.createElement(
+						"label",
+						{ htmlFor: "health" },
+						"Add Health Hours"
+					),
+					React.createElement("input", { step: "1", min: "0", max: dailyHours - academicsInc - funInc, onChange: this.handleHealthChange, name: "health", type: "number" }),
+					React.createElement(
+						"label",
+						{ htmlFor: "academics" },
+						"Add Academic Hours"
+					),
+					React.createElement("input", { step: "1", min: "0", max: dailyHours - healthInc - funInc, onChange: this.handleAcademicsChange, name: "academics", type: "number" }),
+					React.createElement(
+						"label",
+						{ htmlFor: "fun" },
+						"Add Fun Hours"
+					),
+					React.createElement("input", { step: "1", min: "0", max: dailyHours - healthInc - academicsInc, onChange: this.handleFunChange, name: "fun", type: "number" }),
+					React.createElement(
+						"button",
+						null,
+						"Next Day"
+					)
+				)
+			);
+		}
+	}]);
+
+	return InputForm;
+}(React.Component);
+
+var Display = function (_React$Component3) {
+	_inherits(Display, _React$Component3);
 
 	function Display(props) {
 		_classCallCheck(this, Display);
