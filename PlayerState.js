@@ -17,6 +17,8 @@ var PlayerState = function (_React$Component) {
 		var _this = _possibleConstructorReturn(this, (PlayerState.__proto__ || Object.getPrototypeOf(PlayerState)).call(this, props));
 
 		_this.state = {
+			displayStartScreen: true,
+			displayGame: false,
 			day: 1,
 			health: 0,
 			academics: 0,
@@ -26,6 +28,7 @@ var PlayerState = function (_React$Component) {
 			funInc: 0,
 			dailyHours: 10
 		};
+		_this.handleStart = _this.handleStart.bind(_this);
 		_this.handleStatsSubmit = _this.handleStatsSubmit.bind(_this);
 		_this.handleHealthChange = _this.handleHealthChange.bind(_this);
 		_this.handleAcademicsChange = _this.handleAcademicsChange.bind(_this);
@@ -34,6 +37,11 @@ var PlayerState = function (_React$Component) {
 	}
 
 	_createClass(PlayerState, [{
+		key: "handleStart",
+		value: function handleStart() {
+			this.setState({ displayStartScreen: false, displayGame: true });
+		}
+	}, {
 		key: "handleHealthChange",
 		value: function handleHealthChange(e) {
 			if (e.target.value) {
@@ -98,9 +106,10 @@ var PlayerState = function (_React$Component) {
 			return React.createElement(
 				"div",
 				null,
-				React.createElement(InputForm, { dailyHours: this.state.dailyHours, healthInc: this.state.healthInc, academicsInc: this.state.academicsInc, funInc: this.state.funInc,
+				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart }),
+				React.createElement(InputForm, { displayGame: this.state.displayGame, dailyHours: this.state.dailyHours, healthInc: this.state.healthInc, academicsInc: this.state.academicsInc, funInc: this.state.funInc,
 					onStatsSubmit: this.handleStatsSubmit, onHealthChange: this.handleHealthChange, onAcademicsChange: this.handleAcademicsChange, onFunChange: this.handleFunChange }),
-				React.createElement(Display, { day: this.state.day, health: this.state.health, academics: this.state.academics, fun: this.state.fun })
+				React.createElement(Display, { displayGame: this.state.displayGame, day: this.state.day, health: this.state.health, academics: this.state.academics, fun: this.state.fun })
 			);
 		}
 	}]);
@@ -151,44 +160,48 @@ var InputForm = function (_React$Component2) {
 			var healthInc = this.props.healthInc;
 			var academicsInc = this.props.academicsInc;
 			var funInc = this.props.funInc;
-			return React.createElement(
-				"div",
-				null,
-				React.createElement(
-					"h3",
+			if (this.props.displayGame) {
+				return React.createElement(
+					"div",
 					null,
-					"You have ",
-					dailyHours - healthInc - academicsInc - funInc,
-					" hours(s) left to allocate"
-				),
-				React.createElement(
-					"form",
-					{ onSubmit: this.handleStatsSubmit },
 					React.createElement(
-						"label",
-						{ htmlFor: "health" },
-						"Add Health Hours"
-					),
-					React.createElement("input", { step: "1", min: "0", max: dailyHours - academicsInc - funInc, onChange: this.handleHealthChange, name: "health", type: "number" }),
-					React.createElement(
-						"label",
-						{ htmlFor: "academics" },
-						"Add Academic Hours"
-					),
-					React.createElement("input", { step: "1", min: "0", max: dailyHours - healthInc - funInc, onChange: this.handleAcademicsChange, name: "academics", type: "number" }),
-					React.createElement(
-						"label",
-						{ htmlFor: "fun" },
-						"Add Fun Hours"
-					),
-					React.createElement("input", { step: "1", min: "0", max: dailyHours - healthInc - academicsInc, onChange: this.handleFunChange, name: "fun", type: "number" }),
-					React.createElement(
-						"button",
+						"h3",
 						null,
-						"Next Day"
+						"You have ",
+						dailyHours - healthInc - academicsInc - funInc,
+						" hours(s) left to allocate"
+					),
+					React.createElement(
+						"form",
+						{ onSubmit: this.handleStatsSubmit },
+						React.createElement(
+							"label",
+							{ htmlFor: "health" },
+							"Add Health Hours"
+						),
+						React.createElement("input", { step: "1", min: "0", max: dailyHours - academicsInc - funInc, onChange: this.handleHealthChange, name: "health", type: "number" }),
+						React.createElement(
+							"label",
+							{ htmlFor: "academics" },
+							"Add Academic Hours"
+						),
+						React.createElement("input", { step: "1", min: "0", max: dailyHours - healthInc - funInc, onChange: this.handleAcademicsChange, name: "academics", type: "number" }),
+						React.createElement(
+							"label",
+							{ htmlFor: "fun" },
+							"Add Fun Hours"
+						),
+						React.createElement("input", { step: "1", min: "0", max: dailyHours - healthInc - academicsInc, onChange: this.handleFunChange, name: "fun", type: "number" }),
+						React.createElement(
+							"button",
+							null,
+							"Next Day"
+						)
 					)
-				)
-			);
+				);
+			} else {
+				return null;
+			}
 		}
 	}]);
 
@@ -211,43 +224,91 @@ var Display = function (_React$Component3) {
 			var health = this.props.health;
 			var academics = this.props.academics;
 			var fun = this.props.fun;
-			return React.createElement(
-				"div",
-				null,
-				React.createElement(
-					"h1",
+			if (this.props.displayGame) {
+				return React.createElement(
+					"div",
 					null,
-					"GAME STATE"
-				),
-				React.createElement(
-					"h2",
-					null,
-					"DAY ",
-					day
-				),
-				React.createElement(
-					"h3",
-					null,
-					"Health: ",
-					health
-				),
-				React.createElement(
-					"h3",
-					null,
-					"Academics: ",
-					academics
-				),
-				React.createElement(
-					"h3",
-					null,
-					"Fun: ",
-					fun
-				)
-			);
+					React.createElement(
+						"h1",
+						null,
+						"GAME STATE"
+					),
+					React.createElement(
+						"h2",
+						null,
+						"DAY ",
+						day
+					),
+					React.createElement(
+						"h3",
+						null,
+						"Health: ",
+						health
+					),
+					React.createElement(
+						"h3",
+						null,
+						"Academics: ",
+						academics
+					),
+					React.createElement(
+						"h3",
+						null,
+						"Fun: ",
+						fun
+					)
+				);
+			} else {
+				return null;
+			}
 		}
 	}]);
 
 	return Display;
+}(React.Component);
+
+var StartScreen = function (_React$Component4) {
+	_inherits(StartScreen, _React$Component4);
+
+	function StartScreen(props) {
+		_classCallCheck(this, StartScreen);
+
+		var _this4 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
+
+		_this4.handleStart = _this4.handleStart.bind(_this4);
+		return _this4;
+	}
+
+	_createClass(StartScreen, [{
+		key: "handleStart",
+		value: function handleStart() {
+			this.props.onStart();
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			if (this.props.displayStartScreen) {
+				return React.createElement(
+					"div",
+					null,
+					React.createElement(
+						"h1",
+						null,
+						"The Funnest Bestest Game Ever"
+					),
+					React.createElement(
+						"button",
+						{ onClick: this.handleStart },
+						"Start"
+					)
+				);
+			} else {
+				return null;
+			}
+		}
+	}]);
+
+	return StartScreen;
 }(React.Component);
 
 var display = document.querySelector("#display");

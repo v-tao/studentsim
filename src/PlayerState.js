@@ -3,6 +3,8 @@ class PlayerState extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			displayStartScreen:true,
+			displayGame: false,
 			day: 1,
 			health: 0,
 			academics: 0,
@@ -12,10 +14,15 @@ class PlayerState extends React.Component {
 			funInc: 0,
 			dailyHours: 10,
 		}
+		this.handleStart = this.handleStart.bind(this);
 		this.handleStatsSubmit = this.handleStatsSubmit.bind(this);
 		this.handleHealthChange = this.handleHealthChange.bind(this);
 		this.handleAcademicsChange = this.handleAcademicsChange.bind(this);
 		this.handleFunChange = this.handleFunChange.bind(this);
+	}
+
+	handleStart() {
+		this.setState({displayStartScreen: false, displayGame: true});
 	}
 
 	handleHealthChange(e) {
@@ -71,9 +78,10 @@ class PlayerState extends React.Component {
 	render() {
 		return (
 			<div>
-				<InputForm dailyHours={this.state.dailyHours} healthInc={this.state.healthInc} academicsInc={this.state.academicsInc} funInc={this.state.funInc} 
+				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart}/>
+				<InputForm displayGame={this.state.displayGame} dailyHours={this.state.dailyHours} healthInc={this.state.healthInc} academicsInc={this.state.academicsInc} funInc={this.state.funInc} 
 				onStatsSubmit={this.handleStatsSubmit} onHealthChange={this.handleHealthChange} onAcademicsChange={this.handleAcademicsChange} onFunChange={this.handleFunChange}/>
-				<Display day={this.state.day} health={this.state.health} academics={this.state.academics} fun={this.state.fun}/>
+				<Display displayGame={this.state.displayGame} day={this.state.day} health={this.state.health} academics={this.state.academics} fun={this.state.fun}/>
 			</div>
 
 		);
@@ -111,20 +119,24 @@ class InputForm extends React.Component {
 		let healthInc = this.props.healthInc;
 		let academicsInc = this.props.academicsInc;
 		let funInc = this.props.funInc;
-		return (
-			<div>
-				<h3>You have {dailyHours-healthInc-academicsInc-funInc} hours(s) left to allocate</h3>
-				<form onSubmit={this.handleStatsSubmit}>
-		    		<label htmlFor="health">Add Health Hours</label>
-		    		<input step="1" min="0" max={dailyHours-academicsInc-funInc} onChange={this.handleHealthChange} name="health" type="number"/>
-		    		<label htmlFor="academics">Add Academic Hours</label>
-		    		<input step="1" min="0" max={dailyHours-healthInc-funInc} onChange={this.handleAcademicsChange} name="academics" type="number"/>
-		    		<label htmlFor="fun">Add Fun Hours</label>
-		    		<input step="1" min="0" max={dailyHours-healthInc-academicsInc} onChange={this.handleFunChange} name="fun" type="number"/>
-		    		<button>Next Day</button>
-				</form>
-			</div>
-		)
+		if (this.props.displayGame) {
+			return (
+				<div>
+					<h3>You have {dailyHours-healthInc-academicsInc-funInc} hours(s) left to allocate</h3>
+					<form onSubmit={this.handleStatsSubmit}>
+			    		<label htmlFor="health">Add Health Hours</label>
+			    		<input step="1" min="0" max={dailyHours-academicsInc-funInc} onChange={this.handleHealthChange} name="health" type="number"/>
+			    		<label htmlFor="academics">Add Academic Hours</label>
+			    		<input step="1" min="0" max={dailyHours-healthInc-funInc} onChange={this.handleAcademicsChange} name="academics" type="number"/>
+			    		<label htmlFor="fun">Add Fun Hours</label>
+			    		<input step="1" min="0" max={dailyHours-healthInc-academicsInc} onChange={this.handleFunChange} name="fun" type="number"/>
+			    		<button>Next Day</button>
+					</form>
+				</div>
+			)
+		} else {
+			return null;
+		}
 	}
 }
 
@@ -138,15 +150,43 @@ class Display extends React.Component {
 		let health = this.props.health;
 		let academics = this.props.academics;
 		let fun = this.props.fun;
-		return (
-			<div>
-				<h1>GAME STATE</h1>
-				<h2>DAY {day}</h2>
-				<h3>Health: {health}</h3>
-				<h3>Academics: {academics}</h3>
-				<h3>Fun: {fun}</h3>
-			</div>
-		)
+		if (this.props.displayGame) {
+			return (
+				<div>
+					<h1>GAME STATE</h1>
+					<h2>DAY {day}</h2>
+					<h3>Health: {health}</h3>
+					<h3>Academics: {academics}</h3>
+					<h3>Fun: {fun}</h3>
+				</div>
+			)
+		} else {
+			return null;
+		}
+	}
+}
+
+class StartScreen extends React.Component {
+	constructor(props) {
+		super(props);
+		this.handleStart = this.handleStart.bind(this);
+	}
+
+	handleStart() {
+		this.props.onStart();
+	}
+
+	render() {
+		if (this.props.displayStartScreen) {
+			return (
+				<div>
+					<h1>The Funnest Bestest Game Ever</h1>
+					<button onClick={this.handleStart}>Start</button>
+				</div>
+			)
+		} else {
+			return null;
+		}
 	}
 }
 
