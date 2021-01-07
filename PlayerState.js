@@ -140,44 +140,67 @@ var PlayerState = function (_React$Component) {
 						)
 					)
 				),
-				React.createElement(
-					"div",
-					null,
-					React.createElement(
-						"h1",
-						null,
-						"GAME STATE"
-					),
-					React.createElement(
-						"h2",
-						null,
-						"DAY ",
-						this.state.day
-					),
-					React.createElement(
-						"h3",
-						null,
-						"Health: ",
-						this.state.health
-					),
-					React.createElement(
-						"h3",
-						null,
-						"Academics: ",
-						this.state.academics
-					),
-					React.createElement(
-						"h3",
-						null,
-						"Fun: ",
-						this.state.fun
-					)
-				)
+				React.createElement(Display, { day: this.state.day, health: this.state.health, academics: this.state.academics, fun: this.state.fun })
 			);
 		}
 	}]);
 
 	return PlayerState;
+}(React.Component);
+
+var Display = function (_React$Component2) {
+	_inherits(Display, _React$Component2);
+
+	function Display(props) {
+		_classCallCheck(this, Display);
+
+		return _possibleConstructorReturn(this, (Display.__proto__ || Object.getPrototypeOf(Display)).call(this, props));
+	}
+
+	_createClass(Display, [{
+		key: "render",
+		value: function render() {
+			var day = this.props.day;
+			var health = this.props.health;
+			var academics = this.props.academics;
+			var fun = this.props.fun;
+			return React.createElement(
+				"div",
+				null,
+				React.createElement(
+					"h1",
+					null,
+					"GAME STATE"
+				),
+				React.createElement(
+					"h2",
+					null,
+					"DAY ",
+					day
+				),
+				React.createElement(
+					"h3",
+					null,
+					"Health: ",
+					health
+				),
+				React.createElement(
+					"h3",
+					null,
+					"Academics: ",
+					academics
+				),
+				React.createElement(
+					"h3",
+					null,
+					"Fun: ",
+					fun
+				)
+			);
+		}
+	}]);
+
+	return Display;
 }(React.Component);
 
 var display = document.querySelector("#display");

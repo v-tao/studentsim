@@ -85,16 +85,32 @@ class PlayerState extends React.Component {
 			    		<button>Next Day</button>
 		    		</form>
 				</div>
-				<div>
-					<h1>GAME STATE</h1>
-					<h2>DAY {this.state.day}</h2>
-					<h3>Health: {this.state.health}</h3>
-					<h3>Academics: {this.state.academics}</h3>
-					<h3>Fun: {this.state.fun}</h3>
-				</div>
+				<Display day={this.state.day} health={this.state.health} academics={this.state.academics} fun={this.state.fun}/>
 			</div>
 
 		);
+	}
+}
+
+class Display extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		let day = this.props.day;
+		let health = this.props.health;
+		let academics = this.props.academics;
+		let fun = this.props.fun;
+		return (
+			<div>
+				<h1>GAME STATE</h1>
+				<h2>DAY {day}</h2>
+				<h3>Health: {health}</h3>
+				<h3>Academics: {academics}</h3>
+				<h3>Fun: {fun}</h3>
+			</div>
+		)
 	}
 }
 
