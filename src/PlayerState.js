@@ -5,6 +5,7 @@ class PlayerState extends React.Component {
 		this.state = {
 			displayStartScreen:true,
 			displayGame: false,
+			numClasses: 4,
 			day: 1,
 			health: 0,
 			academics: 0,
@@ -15,6 +16,8 @@ class PlayerState extends React.Component {
 			dailyHours: 10,
 		}
 		this.handleStart = this.handleStart.bind(this);
+		this.handleClassChange = this.handleClassChange.bind(this);
+		this.handleClassSubmit = this.handleClassSubmit.bind(this);
 		this.handleStatsSubmit = this.handleStatsSubmit.bind(this);
 		this.handleHealthChange = this.handleHealthChange.bind(this);
 		this.handleAcademicsChange = this.handleAcademicsChange.bind(this);
@@ -25,9 +28,16 @@ class PlayerState extends React.Component {
 		this.setState({displayStartScreen: false, displayGame: true});
 	}
 
+	handleClassChange(e) {
+		this.setState({numClasses:e.target.value});
+	}
+
+	handleClassSubmit(e) {
+		e.preventDefault();
+	}
+
 	handleHealthChange(e) {
 		if (e.target.value) {
-
 			this.setState({healthInc: parseInt(e.target.value)});
 		} else {
 			this.setState({healthInc:0});
@@ -78,13 +88,56 @@ class PlayerState extends React.Component {
 	render() {
 		return (
 			<div>
-				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart}/>
+				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 				<InputForm displayGame={this.state.displayGame} dailyHours={this.state.dailyHours} healthInc={this.state.healthInc} academicsInc={this.state.academicsInc} funInc={this.state.funInc} 
 				onStatsSubmit={this.handleStatsSubmit} onHealthChange={this.handleHealthChange} onAcademicsChange={this.handleAcademicsChange} onFunChange={this.handleFunChange}/>
 				<Display displayGame={this.state.displayGame} day={this.state.day} health={this.state.health} academics={this.state.academics} fun={this.state.fun}/>
 			</div>
 
 		);
+	}
+}
+
+class StartScreen extends React.Component {
+	constructor(props) {
+		super(props);
+		this.handleStart = this.handleStart.bind(this);
+		this.handleClassChange = this.handleClassChange.bind(this);
+	}
+
+	handleStart(e) {
+		this.props.onStart();
+		this.props.onClassSubmit(e);
+	}
+
+	handleClassChange(e) {
+		this.props.onClassChange(e);
+	}
+
+	render() {
+		if (this.props.displayStartScreen) {
+			return (
+				<div>
+					<h1>The Funnest Bestest Game Ever</h1>
+					<h3>How many classes will you be taking</h3>
+					<form onSubmit={this.handleStart} onChange={this.handleClassChange}>
+						<div>
+							<input type="radio" name="numClasses" value="4" defaultChecked/>
+							<label htmlFor="4">4</label>
+							<input type="radio" name="numClasses" value="5"/>
+							<label htmlFor="5">5</label>
+							<input type="radio" name="numClasses" value="6"/>
+							<label htmlFor="6">6</label>
+						</div>
+						<div>
+							<button>Start</button>
+						</div>
+					</form>
+				</div>
+			)
+		} else {
+			return null;
+		}
 	}
 }
 
@@ -158,30 +211,6 @@ class Display extends React.Component {
 					<h3>Health: {health}</h3>
 					<h3>Academics: {academics}</h3>
 					<h3>Fun: {fun}</h3>
-				</div>
-			)
-		} else {
-			return null;
-		}
-	}
-}
-
-class StartScreen extends React.Component {
-	constructor(props) {
-		super(props);
-		this.handleStart = this.handleStart.bind(this);
-	}
-
-	handleStart() {
-		this.props.onStart();
-	}
-
-	render() {
-		if (this.props.displayStartScreen) {
-			return (
-				<div>
-					<h1>The Funnest Bestest Game Ever</h1>
-					<button onClick={this.handleStart}>Start</button>
 				</div>
 			)
 		} else {

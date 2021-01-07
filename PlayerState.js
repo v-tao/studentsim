@@ -19,6 +19,7 @@ var PlayerState = function (_React$Component) {
 		_this.state = {
 			displayStartScreen: true,
 			displayGame: false,
+			numClasses: 4,
 			day: 1,
 			health: 0,
 			academics: 0,
@@ -29,6 +30,8 @@ var PlayerState = function (_React$Component) {
 			dailyHours: 10
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
+		_this.handleClassChange = _this.handleClassChange.bind(_this);
+		_this.handleClassSubmit = _this.handleClassSubmit.bind(_this);
 		_this.handleStatsSubmit = _this.handleStatsSubmit.bind(_this);
 		_this.handleHealthChange = _this.handleHealthChange.bind(_this);
 		_this.handleAcademicsChange = _this.handleAcademicsChange.bind(_this);
@@ -42,10 +45,19 @@ var PlayerState = function (_React$Component) {
 			this.setState({ displayStartScreen: false, displayGame: true });
 		}
 	}, {
+		key: "handleClassChange",
+		value: function handleClassChange(e) {
+			this.setState({ numClasses: e.target.value });
+		}
+	}, {
+		key: "handleClassSubmit",
+		value: function handleClassSubmit(e) {
+			e.preventDefault();
+		}
+	}, {
 		key: "handleHealthChange",
 		value: function handleHealthChange(e) {
 			if (e.target.value) {
-
 				this.setState({ healthInc: parseInt(e.target.value) });
 			} else {
 				this.setState({ healthInc: 0 });
@@ -106,7 +118,7 @@ var PlayerState = function (_React$Component) {
 			return React.createElement(
 				"div",
 				null,
-				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart }),
+				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
 				React.createElement(InputForm, { displayGame: this.state.displayGame, dailyHours: this.state.dailyHours, healthInc: this.state.healthInc, academicsInc: this.state.academicsInc, funInc: this.state.funInc,
 					onStatsSubmit: this.handleStatsSubmit, onHealthChange: this.handleHealthChange, onAcademicsChange: this.handleAcademicsChange, onFunChange: this.handleFunChange }),
 				React.createElement(Display, { displayGame: this.state.displayGame, day: this.state.day, health: this.state.health, academics: this.state.academics, fun: this.state.fun })
@@ -117,20 +129,106 @@ var PlayerState = function (_React$Component) {
 	return PlayerState;
 }(React.Component);
 
-var InputForm = function (_React$Component2) {
-	_inherits(InputForm, _React$Component2);
+var StartScreen = function (_React$Component2) {
+	_inherits(StartScreen, _React$Component2);
+
+	function StartScreen(props) {
+		_classCallCheck(this, StartScreen);
+
+		var _this2 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
+
+		_this2.handleStart = _this2.handleStart.bind(_this2);
+		_this2.handleClassChange = _this2.handleClassChange.bind(_this2);
+		return _this2;
+	}
+
+	_createClass(StartScreen, [{
+		key: "handleStart",
+		value: function handleStart(e) {
+			this.props.onStart();
+			this.props.onClassSubmit(e);
+		}
+	}, {
+		key: "handleClassChange",
+		value: function handleClassChange(e) {
+			this.props.onClassChange(e);
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			if (this.props.displayStartScreen) {
+				return React.createElement(
+					"div",
+					null,
+					React.createElement(
+						"h1",
+						null,
+						"The Funnest Bestest Game Ever"
+					),
+					React.createElement(
+						"h3",
+						null,
+						"How many classes will you be taking"
+					),
+					React.createElement(
+						"form",
+						{ onSubmit: this.handleStart, onChange: this.handleClassChange },
+						React.createElement(
+							"div",
+							null,
+							React.createElement("input", { type: "radio", name: "numClasses", value: "4", defaultChecked: true }),
+							React.createElement(
+								"label",
+								{ htmlFor: "4" },
+								"4"
+							),
+							React.createElement("input", { type: "radio", name: "numClasses", value: "5" }),
+							React.createElement(
+								"label",
+								{ htmlFor: "5" },
+								"5"
+							),
+							React.createElement("input", { type: "radio", name: "numClasses", value: "6" }),
+							React.createElement(
+								"label",
+								{ htmlFor: "6" },
+								"6"
+							)
+						),
+						React.createElement(
+							"div",
+							null,
+							React.createElement(
+								"button",
+								null,
+								"Start"
+							)
+						)
+					)
+				);
+			} else {
+				return null;
+			}
+		}
+	}]);
+
+	return StartScreen;
+}(React.Component);
+
+var InputForm = function (_React$Component3) {
+	_inherits(InputForm, _React$Component3);
 
 	function InputForm(props) {
 		_classCallCheck(this, InputForm);
 
-		var _this2 = _possibleConstructorReturn(this, (InputForm.__proto__ || Object.getPrototypeOf(InputForm)).call(this, props));
+		var _this3 = _possibleConstructorReturn(this, (InputForm.__proto__ || Object.getPrototypeOf(InputForm)).call(this, props));
 
-		_this2.handleStatsSubmit = _this2.handleStatsSubmit.bind(_this2);
-		_this2.handleHealthChange = _this2.handleHealthChange.bind(_this2);
-		_this2.handleAcademicsChange = _this2.handleAcademicsChange.bind(_this2);
-		_this2.handleFunChange = _this2.handleFunChange.bind(_this2);
+		_this3.handleStatsSubmit = _this3.handleStatsSubmit.bind(_this3);
+		_this3.handleHealthChange = _this3.handleHealthChange.bind(_this3);
+		_this3.handleAcademicsChange = _this3.handleAcademicsChange.bind(_this3);
+		_this3.handleFunChange = _this3.handleFunChange.bind(_this3);
 
-		return _this2;
+		return _this3;
 	}
 
 	_createClass(InputForm, [{
@@ -208,8 +306,8 @@ var InputForm = function (_React$Component2) {
 	return InputForm;
 }(React.Component);
 
-var Display = function (_React$Component3) {
-	_inherits(Display, _React$Component3);
+var Display = function (_React$Component4) {
+	_inherits(Display, _React$Component4);
 
 	function Display(props) {
 		_classCallCheck(this, Display);
@@ -265,50 +363,6 @@ var Display = function (_React$Component3) {
 	}]);
 
 	return Display;
-}(React.Component);
-
-var StartScreen = function (_React$Component4) {
-	_inherits(StartScreen, _React$Component4);
-
-	function StartScreen(props) {
-		_classCallCheck(this, StartScreen);
-
-		var _this4 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
-
-		_this4.handleStart = _this4.handleStart.bind(_this4);
-		return _this4;
-	}
-
-	_createClass(StartScreen, [{
-		key: "handleStart",
-		value: function handleStart() {
-			this.props.onStart();
-		}
-	}, {
-		key: "render",
-		value: function render() {
-			if (this.props.displayStartScreen) {
-				return React.createElement(
-					"div",
-					null,
-					React.createElement(
-						"h1",
-						null,
-						"The Funnest Bestest Game Ever"
-					),
-					React.createElement(
-						"button",
-						{ onClick: this.handleStart },
-						"Start"
-					)
-				);
-			} else {
-				return null;
-			}
-		}
-	}]);
-
-	return StartScreen;
 }(React.Component);
 
 var display = document.querySelector("#display");
