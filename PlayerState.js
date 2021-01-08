@@ -26,6 +26,7 @@ var PlayerState = function (_React$Component) {
 			numClasses: 4,
 			day: 1,
 			lastDay: 14,
+			startTime: 12,
 			time: 12,
 			timeInc: 0,
 			maxGPA: 4.00,
@@ -46,6 +47,7 @@ var PlayerState = function (_React$Component) {
 		_this.handleActivityClick = _this.handleActivityClick.bind(_this);
 		_this.handleHoursChange = _this.handleHoursChange.bind(_this);
 		_this.handleHoursSubmit = _this.handleHoursSubmit.bind(_this);
+		_this.nextDay = _this.nextDay.bind(_this);
 		return _this;
 	}
 
@@ -123,13 +125,13 @@ var PlayerState = function (_React$Component) {
 				return 100;
 			} else if (stat < 0) {
 				return 0;
+			} else {
+				return stat;
 			}
 		}
 	}, {
 		key: "nextDay",
 		value: function nextDay(e) {
-			var _this2 = this;
-
 			e.preventDefault();
 			if (this.state.day == this.state.lastDay) {
 				this.setState({ displayStats: false, displayEndScreen: true });
@@ -138,13 +140,14 @@ var PlayerState = function (_React$Component) {
 				if (percentage > 1) {
 					percentage = 1;
 				}
-				var funAmount = this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay;
-				var healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
+				var funAmount = this.boundStats(this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay);
+				var healthAmount = this.boundStats(this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay);
 				this.setState(function (state) {
 					return {
 						day: state.day + 1,
-						health: _this2.boundStats(healthAmount),
-						fun: _this2.boundStats(funAmount),
+						time: state.startTime,
+						health: healthAmount,
+						fun: funAmount,
 						totalGP: state.totalGP + percentage * state.maxGPA,
 						healthInc: 0,
 						funInc: 0,
@@ -161,7 +164,7 @@ var PlayerState = function (_React$Component) {
 				"div",
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
-				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick }),
+				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, nextDay: this.nextDay }),
 				React.createElement(HoursDropdown, { displayHoursDropdown: this.state.displayHoursDropdown, hoursDropdownActivity: this.state.hoursDropdownActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange }),
 				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, health: this.state.health, GPA: GPA, fun: this.state.fun }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: GPA, fun: this.state.fun })
@@ -178,11 +181,11 @@ var StartScreen = function (_React$Component2) {
 	function StartScreen(props) {
 		_classCallCheck(this, StartScreen);
 
-		var _this3 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
+		var _this2 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
 
-		_this3.handleStart = _this3.handleStart.bind(_this3);
-		_this3.handleClassChange = _this3.handleClassChange.bind(_this3);
-		return _this3;
+		_this2.handleStart = _this2.handleStart.bind(_this2);
+		_this2.handleClassChange = _this2.handleClassChange.bind(_this2);
+		return _this2;
 	}
 
 	_createClass(StartScreen, [{
@@ -264,10 +267,10 @@ var ChooseActivity = function (_React$Component3) {
 	function ChooseActivity(props) {
 		_classCallCheck(this, ChooseActivity);
 
-		var _this4 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
+		var _this3 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
 
-		_this4.handleActivityClick = _this4.handleActivityClick.bind(_this4);
-		return _this4;
+		_this3.handleActivityClick = _this3.handleActivityClick.bind(_this3);
+		return _this3;
 	}
 
 	_createClass(ChooseActivity, [{
@@ -312,11 +315,11 @@ var HoursDropdown = function (_React$Component4) {
 	function HoursDropdown(props) {
 		_classCallCheck(this, HoursDropdown);
 
-		var _this5 = _possibleConstructorReturn(this, (HoursDropdown.__proto__ || Object.getPrototypeOf(HoursDropdown)).call(this, props));
+		var _this4 = _possibleConstructorReturn(this, (HoursDropdown.__proto__ || Object.getPrototypeOf(HoursDropdown)).call(this, props));
 
-		_this5.handleHoursChange = _this5.handleHoursChange.bind(_this5);
-		_this5.handleHoursSubmit = _this5.handleHoursSubmit.bind(_this5);
-		return _this5;
+		_this4.handleHoursChange = _this4.handleHoursChange.bind(_this4);
+		_this4.handleHoursSubmit = _this4.handleHoursSubmit.bind(_this4);
+		return _this4;
 	}
 
 	_createClass(HoursDropdown, [{

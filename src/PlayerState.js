@@ -12,6 +12,7 @@ class PlayerState extends React.Component {
 			numClasses: 4,
 			day: 1,
 			lastDay: 14,
+			startTime: 12,
 			time: 12,
 			timeInc: 0,
 			maxGPA: 4.00,
@@ -32,6 +33,7 @@ class PlayerState extends React.Component {
 		this.handleActivityClick = this.handleActivityClick.bind(this);
 		this.handleHoursChange = this.handleHoursChange.bind(this);
 		this.handleHoursSubmit = this.handleHoursSubmit.bind(this);
+		this.nextDay = this.nextDay.bind(this);
 	}
 
 	handleStart() {
@@ -90,6 +92,8 @@ class PlayerState extends React.Component {
 			return 100;
 		} else if (stat < 0) {
 			return 0;
+		} else {
+			return stat;
 		}
 	}
 
@@ -102,12 +106,13 @@ class PlayerState extends React.Component {
 			if (percentage > 1) {
 				percentage = 1;
 			}
-			let funAmount = this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay;
-			let healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
+			let funAmount = this.boundStats(this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay);
+			let healthAmount = this.boundStats(this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay);
 			this.setState((state) => ({
 				day: state.day + 1,
-				health: this.boundStats(healthAmount),
-				fun: this.boundStats(funAmount),
+				time: state.startTime,
+				health: healthAmount,
+				fun: funAmount,
 				totalGP: state.totalGP + percentage * state.maxGPA,
 				healthInc: 0,
 				funInc: 0,
@@ -121,7 +126,7 @@ class PlayerState extends React.Component {
 		return (
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
-				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick}/>
+				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} nextDay={this.nextDay}/>
 				<HoursDropdown displayHoursDropdown={this.state.displayHoursDropdown} hoursDropdownActivity={this.state.hoursDropdownActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange}/>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
