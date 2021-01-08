@@ -27,6 +27,7 @@ var PlayerState = function (_React$Component) {
 			day: 1,
 			lastDay: 14,
 			time: 12,
+			timeInc: 0,
 			maxGPA: 4.00,
 			totalGP: 0.00,
 			GPAInc: 0,
@@ -80,7 +81,7 @@ var PlayerState = function (_React$Component) {
 		key: "handleHoursChange",
 		value: function handleHoursChange(e, activity) {
 			this.setState(function (state) {
-				return { time: state.time + e.target.value };
+				return { timeInc: parseInt(e.target.value) };
 			});
 			if (e.target.value) {
 				if (activity == "exercise") {
@@ -96,12 +97,24 @@ var PlayerState = function (_React$Component) {
 						return { funInc: state.funInc + e.target.value };
 					});
 				}
+			} else {
+				this.setState({ timeInc: 0 });
 			}
 		}
 	}, {
 		key: "handleHoursSubmit",
 		value: function handleHoursSubmit() {
-			this.setState({ displayHoursDropdown: false, displayChooseActivity: true });
+			var currentTime = this.state.time + parseInt(this.state.timeInc);
+			if (currentTime >= 24) {
+				currentTime -= 24;
+			}
+			this.setState(function (state) {
+				return {
+					displayHoursDropdown: false,
+					displayChooseActivity: true,
+					time: currentTime
+				};
+			});
 		}
 	}, {
 		key: "nextDay",
@@ -368,9 +381,9 @@ var DisplayStats = function (_React$Component5) {
 				} else if (this.props.time == 12) {
 					timeDisplay = "12 PM";
 				} else if (this.props.time < 12) {
-					timeDisplay = this.state.time + " AM";
+					timeDisplay = this.props.time + " AM";
 				} else {
-					timeDisplay = this.props.time % 12 + "PM";
+					timeDisplay = this.props.time % 12 + " PM";
 				}
 				return React.createElement(
 					"div",
