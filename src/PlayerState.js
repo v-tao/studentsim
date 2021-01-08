@@ -96,6 +96,8 @@ class PlayerState extends React.Component {
 		let healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
 		if (healthAmount > 100) {
 			healthAmount = 100;
+		} else if (healthAmount < 0) {
+			healthAmount = 0;
 		}
 		this.setState((state) => ({
 			day: state.day + 1,

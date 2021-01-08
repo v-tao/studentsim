@@ -121,6 +121,8 @@ var PlayerState = function (_React$Component) {
 			var healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
 			if (healthAmount > 100) {
 				healthAmount = 100;
+			} else if (healthAmount < 0) {
+				healthAmount = 0;
 			}
 			this.setState(function (state) {
 				return {
