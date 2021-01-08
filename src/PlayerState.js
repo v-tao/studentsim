@@ -8,19 +8,21 @@ class PlayerState extends React.Component {
 			numClasses: 4,
 			day: 1,
 			health: 0,
-			academics: 0,
+			maxGPA: 4.00,
+			totalGP: 0.00,
 			fun: 0,
 			healthInc: 0,
-			academicsInc: 0,
+			GPAInc: 0,
 			funInc: 0,
 			dailyHours: 10,
 		}
+
 		this.handleStart = this.handleStart.bind(this);
 		this.handleClassChange = this.handleClassChange.bind(this);
 		this.handleClassSubmit = this.handleClassSubmit.bind(this);
 		this.handleStatsSubmit = this.handleStatsSubmit.bind(this);
 		this.handleHealthChange = this.handleHealthChange.bind(this);
-		this.handleAcademicsChange = this.handleAcademicsChange.bind(this);
+		this.handleGPAChange = this.handleGPAChange.bind(this);
 		this.handleFunChange = this.handleFunChange.bind(this);
 	}
 
@@ -30,6 +32,13 @@ class PlayerState extends React.Component {
 
 	handleClassChange(e) {
 		this.setState({numClasses:e.target.value});
+		if (e.target.value == 4) {
+			this.setState({maxGPA: 4.00});
+		} else if (e.target.value == 5) {
+			this.setState({maxGPA: 4.50});
+		} else if (e.target.value == 6) {
+			this.setState({maxGPA: 5.00});
+		}
 	}
 
 	handleClassSubmit(e) {
@@ -44,11 +53,11 @@ class PlayerState extends React.Component {
 		}
 	}
 
-	handleAcademicsChange(e) {
+	handleGPAChange(e) {
 		if (e.target.value) {
-			this.setState({academicsInc: parseInt(e.target.value)});
+			this.setState({GPAInc: parseInt(e.target.value)});
 		} else {
-			this.setState({academicsInc:0});
+			this.setState({GPAInc:0});
 		}
 	}
 
@@ -69,18 +78,22 @@ class PlayerState extends React.Component {
 
 	handleStatsSubmit(e) {
 		e.preventDefault();
+		let percentage = this.state.GPAInc/this.state.numClasses;
+		if (percentage > 1) {
+			percentage = 1;
+		}
 		this.setState((state) => ({
 			day: state.day + 1,
 			health: state.health + state.healthInc,
-			academics: state.academics + state.academicsInc,
 			fun: state.fun + state.funInc,
-		}))
+			totalGP: state.totalGP + percentage * state.maxGPA,
+		}));
 	}
 
 	reset() {
 		this.setState({
 			healthInc: 0,
-			academicsInc: 0,
+			GPAInc: 0,
 			funInc: 0,
 		})
 	}
@@ -89,9 +102,9 @@ class PlayerState extends React.Component {
 		return (
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
-				<InputForm displayGame={this.state.displayGame} dailyHours={this.state.dailyHours} healthInc={this.state.healthInc} academicsInc={this.state.academicsInc} funInc={this.state.funInc} 
-				onStatsSubmit={this.handleStatsSubmit} onHealthChange={this.handleHealthChange} onAcademicsChange={this.handleAcademicsChange} onFunChange={this.handleFunChange}/>
-				<Display displayGame={this.state.displayGame} day={this.state.day} health={this.state.health} academics={this.state.academics} fun={this.state.fun}/>
+				<InputForm displayGame={this.state.displayGame} dailyHours={this.state.dailyHours} healthInc={this.state.healthInc} GPAInc={this.state.GPAInc} funInc={this.state.funInc} 
+				onStatsSubmit={this.handleStatsSubmit} onHealthChange={this.handleHealthChange} onGPAChange={this.handleGPAChange} onFunChange={this.handleFunChange}/>
+				<Display displayGame={this.state.displayGame} day={this.state.day} health={this.state.health} GPA={Math.round(this.state.totalGP/(this.state.day-1) * 100)/100} fun={this.state.fun}/>
 			</div>
 
 		);
@@ -146,7 +159,7 @@ class InputForm extends React.Component {
 		super(props);
 		this.handleStatsSubmit = this.handleStatsSubmit.bind(this);
 		this.handleHealthChange = this.handleHealthChange.bind(this);
-		this.handleAcademicsChange = this.handleAcademicsChange.bind(this);
+		this.handleGPAChange = this.handleGPAChange.bind(this);
 		this.handleFunChange = this.handleFunChange.bind(this);
 
 	}
@@ -159,8 +172,8 @@ class InputForm extends React.Component {
 		this.props.onHealthChange(e);
 	}
 
-	handleAcademicsChange(e){
-		this.props.onAcademicsChange(e);
+	handleGPAChange(e){
+		this.props.onGPAChange(e);
 	}
 
 	handleFunChange(e){
@@ -170,19 +183,19 @@ class InputForm extends React.Component {
 	render() {
 		let dailyHours = this.props.dailyHours;
 		let healthInc = this.props.healthInc;
-		let academicsInc = this.props.academicsInc;
+		let GPAInc = this.props.GPAInc;
 		let funInc = this.props.funInc;
 		if (this.props.displayGame) {
 			return (
 				<div>
-					<h3>You have {dailyHours-healthInc-academicsInc-funInc} hours(s) left to allocate</h3>
+					<h3>You have {dailyHours-healthInc-GPAInc-funInc} hours(s) left to allocate</h3>
 					<form onSubmit={this.handleStatsSubmit}>
 			    		<label htmlFor="health">Add Health Hours</label>
-			    		<input step="1" min="0" max={dailyHours-academicsInc-funInc} onChange={this.handleHealthChange} name="health" type="number"/>
-			    		<label htmlFor="academics">Add Academic Hours</label>
-			    		<input step="1" min="0" max={dailyHours-healthInc-funInc} onChange={this.handleAcademicsChange} name="academics" type="number"/>
+			    		<input step="1" min="0" max={dailyHours-GPAInc-funInc} onChange={this.handleHealthChange} name="health" type="number"/>
+			    		<label htmlFor="GPA">Add GPA Hours</label>
+			    		<input step="1" min="0" max={dailyHours-healthInc-funInc} onChange={this.handleGPAChange} name="GPA" type="number"/>
 			    		<label htmlFor="fun">Add Fun Hours</label>
-			    		<input step="1" min="0" max={dailyHours-healthInc-academicsInc} onChange={this.handleFunChange} name="fun" type="number"/>
+			    		<input step="1" min="0" max={dailyHours-healthInc-GPAInc} onChange={this.handleFunChange} name="fun" type="number"/>
 			    		<button>Next Day</button>
 					</form>
 				</div>
@@ -201,7 +214,7 @@ class Display extends React.Component {
 	render() {
 		let day = this.props.day;
 		let health = this.props.health;
-		let academics = this.props.academics;
+		let GPA = this.props.GPA;
 		let fun = this.props.fun;
 		if (this.props.displayGame) {
 			return (
@@ -209,7 +222,7 @@ class Display extends React.Component {
 					<h1>GAME STATE</h1>
 					<h2>DAY {day}</h2>
 					<h3>Health: {health}</h3>
-					<h3>Academics: {academics}</h3>
+					<h3>GPA: {GPA}</h3>
 					<h3>Fun: {fun}</h3>
 				</div>
 			)

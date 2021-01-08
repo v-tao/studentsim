@@ -22,19 +22,21 @@ var PlayerState = function (_React$Component) {
 			numClasses: 4,
 			day: 1,
 			health: 0,
-			academics: 0,
+			maxGPA: 4.00,
+			totalGP: 0.00,
 			fun: 0,
 			healthInc: 0,
-			academicsInc: 0,
+			GPAInc: 0,
 			funInc: 0,
 			dailyHours: 10
 		};
+
 		_this.handleStart = _this.handleStart.bind(_this);
 		_this.handleClassChange = _this.handleClassChange.bind(_this);
 		_this.handleClassSubmit = _this.handleClassSubmit.bind(_this);
 		_this.handleStatsSubmit = _this.handleStatsSubmit.bind(_this);
 		_this.handleHealthChange = _this.handleHealthChange.bind(_this);
-		_this.handleAcademicsChange = _this.handleAcademicsChange.bind(_this);
+		_this.handleGPAChange = _this.handleGPAChange.bind(_this);
 		_this.handleFunChange = _this.handleFunChange.bind(_this);
 		return _this;
 	}
@@ -48,6 +50,13 @@ var PlayerState = function (_React$Component) {
 		key: "handleClassChange",
 		value: function handleClassChange(e) {
 			this.setState({ numClasses: e.target.value });
+			if (e.target.value == 4) {
+				this.setState({ maxGPA: 4.00 });
+			} else if (e.target.value == 5) {
+				this.setState({ maxGPA: 4.50 });
+			} else if (e.target.value == 6) {
+				this.setState({ maxGPA: 5.00 });
+			}
 		}
 	}, {
 		key: "handleClassSubmit",
@@ -64,12 +73,12 @@ var PlayerState = function (_React$Component) {
 			}
 		}
 	}, {
-		key: "handleAcademicsChange",
-		value: function handleAcademicsChange(e) {
+		key: "handleGPAChange",
+		value: function handleGPAChange(e) {
 			if (e.target.value) {
-				this.setState({ academicsInc: parseInt(e.target.value) });
+				this.setState({ GPAInc: parseInt(e.target.value) });
 			} else {
-				this.setState({ academicsInc: 0 });
+				this.setState({ GPAInc: 0 });
 			}
 		}
 	}, {
@@ -94,12 +103,16 @@ var PlayerState = function (_React$Component) {
 		key: "handleStatsSubmit",
 		value: function handleStatsSubmit(e) {
 			e.preventDefault();
+			var percentage = this.state.GPAInc / this.state.numClasses;
+			if (percentage > 1) {
+				percentage = 1;
+			}
 			this.setState(function (state) {
 				return {
 					day: state.day + 1,
 					health: state.health + state.healthInc,
-					academics: state.academics + state.academicsInc,
-					fun: state.fun + state.funInc
+					fun: state.fun + state.funInc,
+					totalGP: state.totalGP + percentage * state.maxGPA
 				};
 			});
 		}
@@ -108,7 +121,7 @@ var PlayerState = function (_React$Component) {
 		value: function reset() {
 			this.setState({
 				healthInc: 0,
-				academicsInc: 0,
+				GPAInc: 0,
 				funInc: 0
 			});
 		}
@@ -119,9 +132,9 @@ var PlayerState = function (_React$Component) {
 				"div",
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
-				React.createElement(InputForm, { displayGame: this.state.displayGame, dailyHours: this.state.dailyHours, healthInc: this.state.healthInc, academicsInc: this.state.academicsInc, funInc: this.state.funInc,
-					onStatsSubmit: this.handleStatsSubmit, onHealthChange: this.handleHealthChange, onAcademicsChange: this.handleAcademicsChange, onFunChange: this.handleFunChange }),
-				React.createElement(Display, { displayGame: this.state.displayGame, day: this.state.day, health: this.state.health, academics: this.state.academics, fun: this.state.fun })
+				React.createElement(InputForm, { displayGame: this.state.displayGame, dailyHours: this.state.dailyHours, healthInc: this.state.healthInc, GPAInc: this.state.GPAInc, funInc: this.state.funInc,
+					onStatsSubmit: this.handleStatsSubmit, onHealthChange: this.handleHealthChange, onGPAChange: this.handleGPAChange, onFunChange: this.handleFunChange }),
+				React.createElement(Display, { displayGame: this.state.displayGame, day: this.state.day, health: this.state.health, GPA: Math.round(this.state.totalGP / (this.state.day - 1) * 100) / 100, fun: this.state.fun })
 			);
 		}
 	}]);
@@ -225,7 +238,7 @@ var InputForm = function (_React$Component3) {
 
 		_this3.handleStatsSubmit = _this3.handleStatsSubmit.bind(_this3);
 		_this3.handleHealthChange = _this3.handleHealthChange.bind(_this3);
-		_this3.handleAcademicsChange = _this3.handleAcademicsChange.bind(_this3);
+		_this3.handleGPAChange = _this3.handleGPAChange.bind(_this3);
 		_this3.handleFunChange = _this3.handleFunChange.bind(_this3);
 
 		return _this3;
@@ -242,9 +255,9 @@ var InputForm = function (_React$Component3) {
 			this.props.onHealthChange(e);
 		}
 	}, {
-		key: "handleAcademicsChange",
-		value: function handleAcademicsChange(e) {
-			this.props.onAcademicsChange(e);
+		key: "handleGPAChange",
+		value: function handleGPAChange(e) {
+			this.props.onGPAChange(e);
 		}
 	}, {
 		key: "handleFunChange",
@@ -256,7 +269,7 @@ var InputForm = function (_React$Component3) {
 		value: function render() {
 			var dailyHours = this.props.dailyHours;
 			var healthInc = this.props.healthInc;
-			var academicsInc = this.props.academicsInc;
+			var GPAInc = this.props.GPAInc;
 			var funInc = this.props.funInc;
 			if (this.props.displayGame) {
 				return React.createElement(
@@ -266,7 +279,7 @@ var InputForm = function (_React$Component3) {
 						"h3",
 						null,
 						"You have ",
-						dailyHours - healthInc - academicsInc - funInc,
+						dailyHours - healthInc - GPAInc - funInc,
 						" hours(s) left to allocate"
 					),
 					React.createElement(
@@ -277,19 +290,19 @@ var InputForm = function (_React$Component3) {
 							{ htmlFor: "health" },
 							"Add Health Hours"
 						),
-						React.createElement("input", { step: "1", min: "0", max: dailyHours - academicsInc - funInc, onChange: this.handleHealthChange, name: "health", type: "number" }),
+						React.createElement("input", { step: "1", min: "0", max: dailyHours - GPAInc - funInc, onChange: this.handleHealthChange, name: "health", type: "number" }),
 						React.createElement(
 							"label",
-							{ htmlFor: "academics" },
-							"Add Academic Hours"
+							{ htmlFor: "GPA" },
+							"Add GPA Hours"
 						),
-						React.createElement("input", { step: "1", min: "0", max: dailyHours - healthInc - funInc, onChange: this.handleAcademicsChange, name: "academics", type: "number" }),
+						React.createElement("input", { step: "1", min: "0", max: dailyHours - healthInc - funInc, onChange: this.handleGPAChange, name: "GPA", type: "number" }),
 						React.createElement(
 							"label",
 							{ htmlFor: "fun" },
 							"Add Fun Hours"
 						),
-						React.createElement("input", { step: "1", min: "0", max: dailyHours - healthInc - academicsInc, onChange: this.handleFunChange, name: "fun", type: "number" }),
+						React.createElement("input", { step: "1", min: "0", max: dailyHours - healthInc - GPAInc, onChange: this.handleFunChange, name: "fun", type: "number" }),
 						React.createElement(
 							"button",
 							null,
@@ -320,7 +333,7 @@ var Display = function (_React$Component4) {
 		value: function render() {
 			var day = this.props.day;
 			var health = this.props.health;
-			var academics = this.props.academics;
+			var GPA = this.props.GPA;
 			var fun = this.props.fun;
 			if (this.props.displayGame) {
 				return React.createElement(
@@ -346,8 +359,8 @@ var Display = function (_React$Component4) {
 					React.createElement(
 						"h3",
 						null,
-						"Academics: ",
-						academics
+						"GPA: ",
+						GPA
 					),
 					React.createElement(
 						"h3",
