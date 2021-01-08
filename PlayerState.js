@@ -24,7 +24,9 @@ var PlayerState = function (_React$Component) {
 			health: 0,
 			maxGPA: 4.00,
 			totalGP: 0.00,
-			fun: 0,
+			fun: 50,
+			funDecay: 10,
+			funValue: 10,
 			healthInc: 0,
 			GPAInc: 0,
 			funInc: 0,
@@ -107,11 +109,15 @@ var PlayerState = function (_React$Component) {
 			if (percentage > 1) {
 				percentage = 1;
 			}
+			var funAmount = this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay;
+			if (funAmount > 100) {
+				funAmount = 100;
+			}
 			this.setState(function (state) {
 				return {
 					day: state.day + 1,
 					health: state.health + state.healthInc,
-					fun: state.fun + state.funInc,
+					fun: funAmount,
 					totalGP: state.totalGP + percentage * state.maxGPA
 				};
 			});
