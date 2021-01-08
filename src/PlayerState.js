@@ -5,8 +5,10 @@ class PlayerState extends React.Component {
 		this.state = {
 			displayStartScreen:true,
 			displayGame: false,
+			displayEndScreen: false,
 			numClasses: 4,
 			day: 1,
+			lastDay: 14,
 			maxGPA: 4.00,
 			totalGP: 0.00,
 			GPAInc: 0,
@@ -73,55 +75,47 @@ class PlayerState extends React.Component {
 		}
 	}
 
-
-	nextDay() {
-		this.setState((state) => ({
-			day: state.day+1,
-		}));
-	}
-
+	//next day
 	handleStatsSubmit(e) {
 		e.preventDefault();
-		let percentage = this.state.GPAInc/this.state.numClasses;
-		if (percentage > 1) {
-			percentage = 1;
-		}
-		let funAmount = this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay;
-		if (funAmount > 100) {
-			funAmount = 100;
-		} else if (funAmount < 0) {
-			funAmount = 0;
-		}
+		if (this.state.day == this.state.lastDay) {
+			this.setState({displayGame: false, displayEndScreen: true});
+		} else {
+			let percentage = this.state.GPAInc/this.state.numClasses;
+			if (percentage > 1) {
+				percentage = 1;
+			}
+			let funAmount = this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay;
+			if (funAmount > 100) {
+				funAmount = 100;
+			} else if (funAmount < 0) {
+				funAmount = 0;
+			}
 
-		let healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
-		if (healthAmount > 100) {
-			healthAmount = 100;
-		} else if (healthAmount < 0) {
-			healthAmount = 0;
+			let healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
+			if (healthAmount > 100) {
+				healthAmount = 100;
+			} else if (healthAmount < 0) {
+				healthAmount = 0;
+			}
+			this.setState((state) => ({
+				day: state.day + 1,
+				health: healthAmount,
+				fun: funAmount,
+				totalGP: state.totalGP + percentage * state.maxGPA,
+			}));
 		}
-		this.setState((state) => ({
-			day: state.day + 1,
-			health: healthAmount,
-			fun: funAmount,
-			totalGP: state.totalGP + percentage * state.maxGPA,
-		}));
-	}
-
-	reset() {
-		this.setState({
-			healthInc: 0,
-			GPAInc: 0,
-			funInc: 0,
-		})
 	}
 
 	render() {
+		let GPA = Math.round(this.state.totalGP/(this.state.day-1) * 100)/100;
 		return (
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 				<InputForm displayGame={this.state.displayGame} dailyHours={this.state.dailyHours} healthInc={this.state.healthInc} GPAInc={this.state.GPAInc} funInc={this.state.funInc} 
 				onStatsSubmit={this.handleStatsSubmit} onHealthChange={this.handleHealthChange} onGPAChange={this.handleGPAChange} onFunChange={this.handleFunChange}/>
-				<Display displayGame={this.state.displayGame} day={this.state.day} health={this.state.health} GPA={Math.round(this.state.totalGP/(this.state.day-1) * 100)/100} fun={this.state.fun}/>
+				<Display displayGame={this.state.displayGame} day={this.state.day} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
+				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 			</div>
 
 		);
@@ -237,6 +231,27 @@ class Display extends React.Component {
 					<h3>Health: {this.props.health}</h3>
 					<h3>GPA: {this.props.GPA}</h3>
 					<h3>Fun: {this.props.fun}</h3>
+				</div>
+			)
+		} else {
+			return null;
+		}
+	}
+}
+
+class EndScreen extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		if (this.props.displayEndScreen) {
+			return (
+				<div>
+					<h1>HIGH SCHOOL IS OVER</h1>
+					<h2>Your Health: {this.props.health}</h2>
+					<h2>Your GPA: {this.props.GPA}</h2>
+					<h2>Your Fun: {this.props.fun}</h2>
 				</div>
 			)
 		} else {

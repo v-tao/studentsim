@@ -19,8 +19,10 @@ var PlayerState = function (_React$Component) {
 		_this.state = {
 			displayStartScreen: true,
 			displayGame: false,
+			displayEndScreen: false,
 			numClasses: 4,
 			day: 1,
+			lastDay: 14,
 			maxGPA: 4.00,
 			totalGP: 0.00,
 			GPAInc: 0,
@@ -94,64 +96,55 @@ var PlayerState = function (_React$Component) {
 				this.setState({ funInc: 0 });
 			}
 		}
-	}, {
-		key: "nextDay",
-		value: function nextDay() {
-			this.setState(function (state) {
-				return {
-					day: state.day + 1
-				};
-			});
-		}
+
+		//next day
+
 	}, {
 		key: "handleStatsSubmit",
 		value: function handleStatsSubmit(e) {
 			e.preventDefault();
-			var percentage = this.state.GPAInc / this.state.numClasses;
-			if (percentage > 1) {
-				percentage = 1;
-			}
-			var funAmount = this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay;
-			if (funAmount > 100) {
-				funAmount = 100;
-			} else if (funAmount < 0) {
-				funAmount = 0;
-			}
+			if (this.state.day == this.state.lastDay) {
+				this.setState({ displayGame: false, displayEndScreen: true });
+			} else {
+				var percentage = this.state.GPAInc / this.state.numClasses;
+				if (percentage > 1) {
+					percentage = 1;
+				}
+				var funAmount = this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay;
+				if (funAmount > 100) {
+					funAmount = 100;
+				} else if (funAmount < 0) {
+					funAmount = 0;
+				}
 
-			var healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
-			if (healthAmount > 100) {
-				healthAmount = 100;
-			} else if (healthAmount < 0) {
-				healthAmount = 0;
+				var healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
+				if (healthAmount > 100) {
+					healthAmount = 100;
+				} else if (healthAmount < 0) {
+					healthAmount = 0;
+				}
+				this.setState(function (state) {
+					return {
+						day: state.day + 1,
+						health: healthAmount,
+						fun: funAmount,
+						totalGP: state.totalGP + percentage * state.maxGPA
+					};
+				});
 			}
-			this.setState(function (state) {
-				return {
-					day: state.day + 1,
-					health: healthAmount,
-					fun: funAmount,
-					totalGP: state.totalGP + percentage * state.maxGPA
-				};
-			});
-		}
-	}, {
-		key: "reset",
-		value: function reset() {
-			this.setState({
-				healthInc: 0,
-				GPAInc: 0,
-				funInc: 0
-			});
 		}
 	}, {
 		key: "render",
 		value: function render() {
+			var GPA = Math.round(this.state.totalGP / (this.state.day - 1) * 100) / 100;
 			return React.createElement(
 				"div",
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
 				React.createElement(InputForm, { displayGame: this.state.displayGame, dailyHours: this.state.dailyHours, healthInc: this.state.healthInc, GPAInc: this.state.GPAInc, funInc: this.state.funInc,
 					onStatsSubmit: this.handleStatsSubmit, onHealthChange: this.handleHealthChange, onGPAChange: this.handleGPAChange, onFunChange: this.handleFunChange }),
-				React.createElement(Display, { displayGame: this.state.displayGame, day: this.state.day, health: this.state.health, GPA: Math.round(this.state.totalGP / (this.state.day - 1) * 100) / 100, fun: this.state.fun })
+				React.createElement(Display, { displayGame: this.state.displayGame, day: this.state.day, health: this.state.health, GPA: GPA, fun: this.state.fun }),
+				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: GPA, fun: this.state.fun })
 			);
 		}
 	}]);
@@ -389,6 +382,55 @@ var Display = function (_React$Component4) {
 	}]);
 
 	return Display;
+}(React.Component);
+
+var EndScreen = function (_React$Component5) {
+	_inherits(EndScreen, _React$Component5);
+
+	function EndScreen(props) {
+		_classCallCheck(this, EndScreen);
+
+		return _possibleConstructorReturn(this, (EndScreen.__proto__ || Object.getPrototypeOf(EndScreen)).call(this, props));
+	}
+
+	_createClass(EndScreen, [{
+		key: "render",
+		value: function render() {
+			if (this.props.displayEndScreen) {
+				return React.createElement(
+					"div",
+					null,
+					React.createElement(
+						"h1",
+						null,
+						"HIGH SCHOOL IS OVER"
+					),
+					React.createElement(
+						"h2",
+						null,
+						"Your Health: ",
+						this.props.health
+					),
+					React.createElement(
+						"h2",
+						null,
+						"Your GPA: ",
+						this.props.GPA
+					),
+					React.createElement(
+						"h2",
+						null,
+						"Your Fun: ",
+						this.props.fun
+					)
+				);
+			} else {
+				return null;
+			}
+		}
+	}]);
+
+	return EndScreen;
 }(React.Component);
 
 var display = document.querySelector("#display");
