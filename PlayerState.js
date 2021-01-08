@@ -21,8 +21,8 @@ var PlayerState = function (_React$Component) {
 			displayStats: false,
 			displayChooseActivity: false,
 			displayEndScreen: false,
-			displayHoursDropdown: false,
-			hoursDropdownActivity: "",
+			displayHoursForm: false,
+			hoursFormActivity: "",
 			numClasses: 4,
 			day: 1,
 			lastDay: 14,
@@ -76,8 +76,8 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleActivityClick",
 		value: function handleActivityClick(activity) {
-			this.setState({ displayHoursDropdown: true, displayChooseActivity: false });
-			this.setState({ hoursDropdownActivity: activity });
+			this.setState({ displayHoursForm: true, displayChooseActivity: false });
+			this.setState({ hoursFormActivity: activity });
 		}
 	}, {
 		key: "handleHoursChange",
@@ -112,7 +112,7 @@ var PlayerState = function (_React$Component) {
 			}
 			this.setState(function (state) {
 				return {
-					displayHoursDropdown: false,
+					displayHoursForm: false,
 					displayChooseActivity: true,
 					time: currentTime
 				};
@@ -165,7 +165,7 @@ var PlayerState = function (_React$Component) {
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
 				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, nextDay: this.nextDay }),
-				React.createElement(HoursDropdown, { displayHoursDropdown: this.state.displayHoursDropdown, hoursDropdownActivity: this.state.hoursDropdownActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange }),
+				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange }),
 				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, health: this.state.health, GPA: GPA, fun: this.state.fun }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: GPA, fun: this.state.fun })
 			);
@@ -309,23 +309,23 @@ var ChooseActivity = function (_React$Component3) {
 	return ChooseActivity;
 }(React.Component);
 
-var HoursDropdown = function (_React$Component4) {
-	_inherits(HoursDropdown, _React$Component4);
+var HoursForm = function (_React$Component4) {
+	_inherits(HoursForm, _React$Component4);
 
-	function HoursDropdown(props) {
-		_classCallCheck(this, HoursDropdown);
+	function HoursForm(props) {
+		_classCallCheck(this, HoursForm);
 
-		var _this4 = _possibleConstructorReturn(this, (HoursDropdown.__proto__ || Object.getPrototypeOf(HoursDropdown)).call(this, props));
+		var _this4 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
 
 		_this4.handleHoursChange = _this4.handleHoursChange.bind(_this4);
 		_this4.handleHoursSubmit = _this4.handleHoursSubmit.bind(_this4);
 		return _this4;
 	}
 
-	_createClass(HoursDropdown, [{
+	_createClass(HoursForm, [{
 		key: "handleHoursChange",
 		value: function handleHoursChange(e) {
-			this.props.onHoursChange(e, this.props.hoursDropdownActivity);
+			this.props.onHoursChange(e, this.props.hoursFormActivity);
 		}
 	}, {
 		key: "handleHoursSubmit",
@@ -336,7 +336,7 @@ var HoursDropdown = function (_React$Component4) {
 	}, {
 		key: "render",
 		value: function render() {
-			if (this.props.displayHoursDropdown) {
+			if (this.props.displayHoursForm) {
 				return React.createElement(
 					"div",
 					null,
@@ -348,7 +348,7 @@ var HoursDropdown = function (_React$Component4) {
 					React.createElement(
 						"form",
 						{ onSubmit: this.handleHoursSubmit },
-						React.createElement("input", { step: "1", min: "0", type: "number", onChange: this.handleHoursChange, name: this.props.hoursDropdownActivity }),
+						React.createElement("input", { step: "1", min: "0", type: "number", onChange: this.handleHoursChange, name: this.props.hoursFormActivity }),
 						React.createElement(
 							"button",
 							null,
@@ -362,7 +362,7 @@ var HoursDropdown = function (_React$Component4) {
 		}
 	}]);
 
-	return HoursDropdown;
+	return HoursForm;
 }(React.Component);
 
 var DisplayStats = function (_React$Component5) {

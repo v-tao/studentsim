@@ -7,8 +7,8 @@ class PlayerState extends React.Component {
 			displayStats: false,
 			displayChooseActivity: false,
 			displayEndScreen: false,
-			displayHoursDropdown: false,
-			hoursDropdownActivity: "",
+			displayHoursForm: false,
+			hoursFormActivity: "",
 			numClasses: 4,
 			day: 1,
 			lastDay: 14,
@@ -56,8 +56,8 @@ class PlayerState extends React.Component {
 	}
 
 	handleActivityClick(activity) {
-		this.setState({displayHoursDropdown: true, displayChooseActivity: false});
-		this.setState({hoursDropdownActivity: activity});
+		this.setState({displayHoursForm: true, displayChooseActivity: false});
+		this.setState({hoursFormActivity: activity});
 	}
 
 	handleHoursChange(e, activity) {
@@ -81,7 +81,7 @@ class PlayerState extends React.Component {
 			currentTime -= 24;
 		}
 		this.setState((state) => ({
-			displayHoursDropdown: false, 
+			displayHoursForm: false, 
 			displayChooseActivity: true,
 			time: currentTime,
 		}));
@@ -127,7 +127,7 @@ class PlayerState extends React.Component {
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} nextDay={this.nextDay}/>
-				<HoursDropdown displayHoursDropdown={this.state.displayHoursDropdown} hoursDropdownActivity={this.state.hoursDropdownActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange}/>
+				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange}/>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 			</div>
@@ -208,7 +208,7 @@ class ChooseActivity extends React.Component {
 	}
 }
 
-class HoursDropdown extends React.Component {
+class HoursForm extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleHoursChange = this.handleHoursChange.bind(this);
@@ -216,7 +216,7 @@ class HoursDropdown extends React.Component {
 	}
 
 	handleHoursChange(e) {
-		this.props.onHoursChange(e, this.props.hoursDropdownActivity);
+		this.props.onHoursChange(e, this.props.hoursFormActivity);
 	}
 
 	handleHoursSubmit(e) {
@@ -225,12 +225,12 @@ class HoursDropdown extends React.Component {
 	}
 
 	render() {
-		if (this.props.displayHoursDropdown) {
+		if (this.props.displayHoursForm) {
 			return (
 				<div>
 					<h3>How many hours do you want to spend?</h3>
 					<form onSubmit={this.handleHoursSubmit}>
-						<input step="1" min="0" type="number" onChange={this.handleHoursChange} name={this.props.hoursDropdownActivity}/>
+						<input step="1" min="0" type="number" onChange={this.handleHoursChange} name={this.props.hoursFormActivity}/>
 						<button>Submit</button>
 					</form>
 				</div>
