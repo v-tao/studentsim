@@ -4,7 +4,7 @@ class PlayerState extends React.Component {
 		super(props);
 		this.state = {
 			displayStartScreen:true,
-			displayGame: false,
+			displayStats: false,
 			displayChooseActivity: false,
 			displayEndScreen: false,
 			displayHoursDropdown: false,
@@ -28,16 +28,13 @@ class PlayerState extends React.Component {
 		}
 		this.handleStart = this.handleStart.bind(this);
 		this.handleClassChange = this.handleClassChange.bind(this);
-		this.handleExerciseClick = this.handleExerciseClick.bind(this);
-		this.handleStudyClick = this.handleStudyClick.bind(this);
-		this.handlePlayGamesClick = this.handlePlayGamesClick.bind(this);
-		this.handleExerciseChange = this.handleExerciseClick.bind(this);
-		this.handleStudyChange = this.handleStudyChange.bind(this);
-		this.handlePlayGamesChange = this.handlePlayGamesChange.bind(this);
+		this.handleActivityClick = this.handleActivityClick.bind(this);
+		this.handleHoursChange = this.handleHoursChange.bind(this);
+		this.handleHoursSubmit = this.handleHoursSubmit.bind(this);
 	}
 
 	handleStart() {
-		this.setState({displayStartScreen: false, displayGame: true, displayChooseActivity: true,});
+		this.setState({displayStartScreen: false, displayStats: true, displayChooseActivity: true,});
 	}
 
 	handleClassChange(e) {
@@ -55,46 +52,32 @@ class PlayerState extends React.Component {
 		e.preventDefault();
 	}
 
-	handleExerciseClick() {
-		this.setState({hoursDropdownActivity: "exercise", displayHoursDropdown: true, displayChooseActivity: false});
+	handleActivityClick(activity) {
+		this.setState({displayHoursDropdown: true, displayChooseActivity: false});
+		this.setState({hoursDropdownActivity: activity});
 	}
 
-	handleStudyClick() {
-		this.setState({hoursDropdownActivity: "study", displayHoursDropdown: true, displayChooseActivity: false});
-	}
-
-	handlePlayGamesClick() {
-		this.setState({hoursDropdownActivity: "playGames", displayHoursDropdown: true, displayChooseActivity: false});
-	}
-
-	handleExerciseChange(e) {
+	handleHoursChange(e, activity) {
+		this.setState((state) => ({time: state.time + e.target.value}));
 		if (e.target.value) {
-			this.setState({healthInc: parseInt(e.target.value)});
-		} else {
-			this.setState({healthInc:0});
+			if (activity == "exercise") {
+				this.setState((state) => ({healthInc: state.healthInc + e.target.value}));
+			} else if (activity == "study") {
+				this.setState((state) => ({GPAInc: state.GPAInc + e.target.value}));
+			} else if (activity == "playGames") {
+				this.setState((state) => ({funInc: state.funInc + e.target.value}))
+			}
 		}
 	}
 
-	handleStudyChange(e) {
-		if (e.target.value) {
-			this.setState({GPAInc: parseInt(e.target.value)});
-		} else {
-			this.setState({GPAInc:0});
-		}
-	}
-
-	handlePlayGamesChange(e) {
-		if (e.target.value) {
-			this.setState({funInc: parseInt(e.target.value)});
-		} else {
-			this.setState({funInc:0});
-		}
+	handleHoursSubmit() {
+		this.setState({displayHoursDropdown: false, displayChooseActivity: true});
 	}
 
 	nextDay(e) {
 		e.preventDefault();
 		if (this.state.day == this.state.lastDay) {
-			this.setState({displayGame: false, displayEndScreen: true});
+			this.setState({displayStats: false, displayEndScreen: true});
 		} else {
 			let percentage = this.state.GPAInc/this.state.numClasses;
 			if (percentage > 1) {
@@ -118,6 +101,9 @@ class PlayerState extends React.Component {
 				health: healthAmount,
 				fun: funAmount,
 				totalGP: state.totalGP + percentage * state.maxGPA,
+				healthInc: 0,
+				funInc: 0,
+				GPAInc: 0,
 			}));
 		}
 	}
@@ -127,9 +113,9 @@ class PlayerState extends React.Component {
 		return (
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
-				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onExerciseClick={this.handleExerciseClick} onStudyClick={this.handleStudyClick} onPlayGames={this.handlePlayGamesClick}/>
-				<HoursDropdown displayHoursDropdown={this.state.displayHoursDropdown} hoursDropdownActivity={this.state.hoursDropdownActivity} onExerciseChange={this.handleExerciseChange} onStudyChange={this.handleStudyChange} onPlayGamesChange={this.handlePlayGamesChange}/>
-				<Display displayGame={this.state.displayGame} day={this.state.day} time={this.state.time} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
+				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick}/>
+				<HoursDropdown displayHoursDropdown={this.state.displayHoursDropdown} hoursDropdownActivity={this.state.hoursDropdownActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange}/>
+				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 			</div>
 
@@ -183,34 +169,22 @@ class StartScreen extends React.Component {
 class ChooseActivity extends React.Component {
 	constructor(props) {
 		super(props);
-		this.handleExerciseClick = this.handleExerciseClick.bind(this);
-		this.handleStudyClick = this.handleStudyClick.bind(this);
-		this.handlePlayGamesClick = this.handlePlayGamesClick.bind(this);
-
+		this.handleActivityClick = this.handleActivityClick.bind(this);
 	}
 
-	handleExerciseClick(e) {
+	handleActivityClick(e) {
 		e.preventDefault();
-		this.props.onExerciseClick(e);
+		this.props.onActivityClick(e.target.name)
 	}
 
-	handleStudyClick(e) {
-		e.preventDefault();
-		this.props.onStudyClick(e);
-	}
-
-	handlePlayGamesClick (e) {
-		e.preventDefault(e);
-		this.props.onPlayGamesClick();
-	}
 	render() {
 		if (this.props.displayChooseActivity) {
 			return (
 				<div>
 					<h2>What do you want to do?</h2>
-					<button onClick={this.handleExerciseClick}>Exercise</button>
-					<button onClick={this.handleStudyClick}>Study</button>
-					<button onClick={this.handlePlayGamesClick}>Play Videogames</button>
+					<input onClick={this.handleActivityClick} type="button" name="exercise" value="Exercise"/>
+					<input onClick={this.handleActivityClick} type="button" name="study" value="Study"/>
+					<input onClick={this.handleActivityClick} type="button" name="playGames" value="Play Videogames"/>
 					<button onClick={this.props.nextDay}>Sleep</button>
 
 				</div>
@@ -225,16 +199,16 @@ class HoursDropdown extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleHoursChange = this.handleHoursChange.bind(this);
+		this.handleHoursSubmit = this.handleHoursSubmit.bind(this);
 	}
 
 	handleHoursChange(e) {
-		if (this.props.hoursDropdownActivity == "exercise") {
-			this.props.onExerciseChange(e);
-		} else if (this.props.hoursDropdownActiviy == "study") {
-			this.props.onStudyChange(e);
-		} else if (this.props.hoursDropdownActivity == "playGames") {
-			this.props.onPlayGamesChange(e);
-		}
+		this.props.onHoursChange(e, this.props.hoursDropdownActivity);
+	}
+
+	handleHoursSubmit(e) {
+		e.preventDefault();
+		this.props.onHoursSubmit();
 	}
 
 	render() {
@@ -242,7 +216,7 @@ class HoursDropdown extends React.Component {
 			return (
 				<div>
 					<h3>How many hours do you want to spend?</h3>
-					<form onSubmit=>
+					<form onSubmit={this.handleHoursSubmit}>
 						<input step="1" min="0" type="number" onChange={this.handleHoursChange} name={this.props.hoursDropdownActivity}/>
 						<button>Submit</button>
 					</form>
@@ -254,13 +228,13 @@ class HoursDropdown extends React.Component {
 	}
 }
 
-class Display extends React.Component {
+class DisplayStats extends React.Component {
 	constructor(props) {
 		super(props);
 	}
 
 	render() {
-		if (this.props.displayGame) {
+		if (this.props.displayStats) {
 			let timeDisplay;
 			if (this.props.time == 0) {
 				timeDisplay = "12 AM";

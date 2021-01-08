@@ -18,7 +18,7 @@ var PlayerState = function (_React$Component) {
 
 		_this.state = {
 			displayStartScreen: true,
-			displayGame: false,
+			displayStats: false,
 			displayChooseActivity: false,
 			displayEndScreen: false,
 			displayHoursDropdown: false,
@@ -42,19 +42,16 @@ var PlayerState = function (_React$Component) {
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
 		_this.handleClassChange = _this.handleClassChange.bind(_this);
-		_this.handleExerciseClick = _this.handleExerciseClick.bind(_this);
-		_this.handleStudyClick = _this.handleStudyClick.bind(_this);
-		_this.handlePlayGamesClick = _this.handlePlayGamesClick.bind(_this);
-		_this.handleExerciseChange = _this.handleExerciseClick.bind(_this);
-		_this.handleStudyChange = _this.handleStudyChange.bind(_this);
-		_this.handlePlayGamesChange = _this.handlePlayGamesChange.bind(_this);
+		_this.handleActivityClick = _this.handleActivityClick.bind(_this);
+		_this.handleHoursChange = _this.handleHoursChange.bind(_this);
+		_this.handleHoursSubmit = _this.handleHoursSubmit.bind(_this);
 		return _this;
 	}
 
 	_createClass(PlayerState, [{
 		key: "handleStart",
 		value: function handleStart() {
-			this.setState({ displayStartScreen: false, displayGame: true, displayChooseActivity: true });
+			this.setState({ displayStartScreen: false, displayStats: true, displayChooseActivity: true });
 		}
 	}, {
 		key: "handleClassChange",
@@ -74,53 +71,44 @@ var PlayerState = function (_React$Component) {
 			e.preventDefault();
 		}
 	}, {
-		key: "handleExerciseClick",
-		value: function handleExerciseClick() {
-			this.setState({ hoursDropdownActivity: "exercise", displayHoursDropdown: true, displayChooseActivity: false });
+		key: "handleActivityClick",
+		value: function handleActivityClick(activity) {
+			this.setState({ displayHoursDropdown: true, displayChooseActivity: false });
+			this.setState({ hoursDropdownActivity: activity });
 		}
 	}, {
-		key: "handleStudyClick",
-		value: function handleStudyClick() {
-			this.setState({ hoursDropdownActivity: "study", displayHoursDropdown: true, displayChooseActivity: false });
-		}
-	}, {
-		key: "handlePlayGamesClick",
-		value: function handlePlayGamesClick() {
-			this.setState({ hoursDropdownActivity: "playGames", displayHoursDropdown: true, displayChooseActivity: false });
-		}
-	}, {
-		key: "handleExerciseChange",
-		value: function handleExerciseChange(e) {
+		key: "handleHoursChange",
+		value: function handleHoursChange(e, activity) {
+			this.setState(function (state) {
+				return { time: state.time + e.target.value };
+			});
 			if (e.target.value) {
-				this.setState({ healthInc: parseInt(e.target.value) });
-			} else {
-				this.setState({ healthInc: 0 });
+				if (activity == "exercise") {
+					this.setState(function (state) {
+						return { healthInc: state.healthInc + e.target.value };
+					});
+				} else if (activity == "study") {
+					this.setState(function (state) {
+						return { GPAInc: state.GPAInc + e.target.value };
+					});
+				} else if (activity == "playGames") {
+					this.setState(function (state) {
+						return { funInc: state.funInc + e.target.value };
+					});
+				}
 			}
 		}
 	}, {
-		key: "handleStudyChange",
-		value: function handleStudyChange(e) {
-			if (e.target.value) {
-				this.setState({ GPAInc: parseInt(e.target.value) });
-			} else {
-				this.setState({ GPAInc: 0 });
-			}
-		}
-	}, {
-		key: "handlePlayGamesChange",
-		value: function handlePlayGamesChange(e) {
-			if (e.target.value) {
-				this.setState({ funInc: parseInt(e.target.value) });
-			} else {
-				this.setState({ funInc: 0 });
-			}
+		key: "handleHoursSubmit",
+		value: function handleHoursSubmit() {
+			this.setState({ displayHoursDropdown: false, displayChooseActivity: true });
 		}
 	}, {
 		key: "nextDay",
 		value: function nextDay(e) {
 			e.preventDefault();
 			if (this.state.day == this.state.lastDay) {
-				this.setState({ displayGame: false, displayEndScreen: true });
+				this.setState({ displayStats: false, displayEndScreen: true });
 			} else {
 				var percentage = this.state.GPAInc / this.state.numClasses;
 				if (percentage > 1) {
@@ -144,7 +132,10 @@ var PlayerState = function (_React$Component) {
 						day: state.day + 1,
 						health: healthAmount,
 						fun: funAmount,
-						totalGP: state.totalGP + percentage * state.maxGPA
+						totalGP: state.totalGP + percentage * state.maxGPA,
+						healthInc: 0,
+						funInc: 0,
+						GPAInc: 0
 					};
 				});
 			}
@@ -157,9 +148,9 @@ var PlayerState = function (_React$Component) {
 				"div",
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
-				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onExerciseClick: this.handleExerciseClick, onStudyClick: this.handleStudyClick, onPlayGames: this.handlePlayGamesClick }),
-				React.createElement(HoursDropdown, { displayHoursDropdown: this.state.displayHoursDropdown, hoursDropdownActivity: this.state.hoursDropdownActivity, onExerciseChange: this.handleExerciseChange, onStudyChange: this.handleStudyChange, onPlayGamesChange: this.handlePlayGamesChange }),
-				React.createElement(Display, { displayGame: this.state.displayGame, day: this.state.day, time: this.state.time, health: this.state.health, GPA: GPA, fun: this.state.fun }),
+				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick }),
+				React.createElement(HoursDropdown, { displayHoursDropdown: this.state.displayHoursDropdown, hoursDropdownActivity: this.state.hoursDropdownActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange }),
+				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, health: this.state.health, GPA: GPA, fun: this.state.fun }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: GPA, fun: this.state.fun })
 			);
 		}
@@ -262,30 +253,15 @@ var ChooseActivity = function (_React$Component3) {
 
 		var _this3 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
 
-		_this3.handleExerciseClick = _this3.handleExerciseClick.bind(_this3);
-		_this3.handleStudyClick = _this3.handleStudyClick.bind(_this3);
-		_this3.handlePlayGamesClick = _this3.handlePlayGamesClick.bind(_this3);
-
+		_this3.handleActivityClick = _this3.handleActivityClick.bind(_this3);
 		return _this3;
 	}
 
 	_createClass(ChooseActivity, [{
-		key: "handleExerciseClick",
-		value: function handleExerciseClick(e) {
+		key: "handleActivityClick",
+		value: function handleActivityClick(e) {
 			e.preventDefault();
-			this.props.onExerciseClick(e);
-		}
-	}, {
-		key: "handleStudyClick",
-		value: function handleStudyClick(e) {
-			e.preventDefault();
-			this.props.onStudyClick(e);
-		}
-	}, {
-		key: "handlePlayGamesClick",
-		value: function handlePlayGamesClick(e) {
-			e.preventDefault(e);
-			this.props.onPlayGamesClick();
+			this.props.onActivityClick(e.target.name);
 		}
 	}, {
 		key: "render",
@@ -299,21 +275,9 @@ var ChooseActivity = function (_React$Component3) {
 						null,
 						"What do you want to do?"
 					),
-					React.createElement(
-						"button",
-						{ onClick: this.handleExerciseClick },
-						"Exercise"
-					),
-					React.createElement(
-						"button",
-						{ onClick: this.handleStudyClick },
-						"Study"
-					),
-					React.createElement(
-						"button",
-						{ onClick: this.handlePlayGamesClick },
-						"Play Videogames"
-					),
+					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "exercise", value: "Exercise" }),
+					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "study", value: "Study" }),
+					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "playGames", value: "Play Videogames" }),
 					React.createElement(
 						"button",
 						{ onClick: this.props.nextDay },
@@ -338,19 +302,20 @@ var HoursDropdown = function (_React$Component4) {
 		var _this4 = _possibleConstructorReturn(this, (HoursDropdown.__proto__ || Object.getPrototypeOf(HoursDropdown)).call(this, props));
 
 		_this4.handleHoursChange = _this4.handleHoursChange.bind(_this4);
+		_this4.handleHoursSubmit = _this4.handleHoursSubmit.bind(_this4);
 		return _this4;
 	}
 
 	_createClass(HoursDropdown, [{
 		key: "handleHoursChange",
 		value: function handleHoursChange(e) {
-			if (this.props.hoursDropdownActivity == "exercise") {
-				this.props.onExerciseChange(e);
-			} else if (this.props.hoursDropdownActiviy == "study") {
-				this.props.onStudyChange(e);
-			} else if (this.props.hoursDropdownActivity == "playGames") {
-				this.props.onPlayGamesChange(e);
-			}
+			this.props.onHoursChange(e, this.props.hoursDropdownActivity);
+		}
+	}, {
+		key: "handleHoursSubmit",
+		value: function handleHoursSubmit(e) {
+			e.preventDefault();
+			this.props.onHoursSubmit();
 		}
 	}, {
 		key: "render",
@@ -366,7 +331,7 @@ var HoursDropdown = function (_React$Component4) {
 					),
 					React.createElement(
 						"form",
-						null,
+						{ onSubmit: this.handleHoursSubmit },
 						React.createElement("input", { step: "1", min: "0", type: "number", onChange: this.handleHoursChange, name: this.props.hoursDropdownActivity }),
 						React.createElement(
 							"button",
@@ -384,19 +349,19 @@ var HoursDropdown = function (_React$Component4) {
 	return HoursDropdown;
 }(React.Component);
 
-var Display = function (_React$Component5) {
-	_inherits(Display, _React$Component5);
+var DisplayStats = function (_React$Component5) {
+	_inherits(DisplayStats, _React$Component5);
 
-	function Display(props) {
-		_classCallCheck(this, Display);
+	function DisplayStats(props) {
+		_classCallCheck(this, DisplayStats);
 
-		return _possibleConstructorReturn(this, (Display.__proto__ || Object.getPrototypeOf(Display)).call(this, props));
+		return _possibleConstructorReturn(this, (DisplayStats.__proto__ || Object.getPrototypeOf(DisplayStats)).call(this, props));
 	}
 
-	_createClass(Display, [{
+	_createClass(DisplayStats, [{
 		key: "render",
 		value: function render() {
-			if (this.props.displayGame) {
+			if (this.props.displayStats) {
 				var timeDisplay = void 0;
 				if (this.props.time == 0) {
 					timeDisplay = "12 AM";
@@ -448,7 +413,7 @@ var Display = function (_React$Component5) {
 		}
 	}]);
 
-	return Display;
+	return DisplayStats;
 }(React.Component);
 
 var EndScreen = function (_React$Component6) {
