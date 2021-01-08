@@ -7,15 +7,17 @@ class PlayerState extends React.Component {
 			displayGame: false,
 			numClasses: 4,
 			day: 1,
-			health: 0,
 			maxGPA: 4.00,
 			totalGP: 0.00,
+			GPAInc: 0,
 			fun: 50,
 			funDecay: 10,
-			funValue: 10,
-			healthInc: 0,
-			GPAInc: 0,
 			funInc: 0,
+			funValue: 10,
+			health: 50,
+			healthDecay: 10,
+			healthInc: 0,
+			healthValue: 10,
 			dailyHours: 10,
 		}
 
@@ -88,9 +90,14 @@ class PlayerState extends React.Component {
 		if (funAmount > 100) {
 			funAmount = 100;
 		}
+
+		let healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
+		if (healthAmount > 100) {
+			healthAmount = 100;
+		}
 		this.setState((state) => ({
 			day: state.day + 1,
-			health: state.health + state.healthInc,
+			health: healthAmount,
 			fun: funAmount,
 			totalGP: state.totalGP + percentage * state.maxGPA,
 		}));
