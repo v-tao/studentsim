@@ -348,10 +348,6 @@ var Display = function (_React$Component4) {
 	_createClass(Display, [{
 		key: "render",
 		value: function render() {
-			var day = this.props.day;
-			var health = this.props.health;
-			var GPA = this.props.GPA;
-			var fun = this.props.fun;
 			if (this.props.displayGame) {
 				return React.createElement(
 					"div",
@@ -365,25 +361,25 @@ var Display = function (_React$Component4) {
 						"h2",
 						null,
 						"DAY ",
-						day
+						this.props.day
 					),
 					React.createElement(
 						"h3",
 						null,
 						"Health: ",
-						health
+						this.props.health
 					),
 					React.createElement(
 						"h3",
 						null,
 						"GPA: ",
-						GPA
+						this.props.GPA
 					),
 					React.createElement(
 						"h3",
 						null,
 						"Fun: ",
-						fun
+						this.props.fun
 					)
 				);
 			} else {

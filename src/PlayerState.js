@@ -229,18 +229,14 @@ class Display extends React.Component {
 	}
 
 	render() {
-		let day = this.props.day;
-		let health = this.props.health;
-		let GPA = this.props.GPA;
-		let fun = this.props.fun;
 		if (this.props.displayGame) {
 			return (
 				<div>
 					<h1>GAME STATE</h1>
-					<h2>DAY {day}</h2>
-					<h3>Health: {health}</h3>
-					<h3>GPA: {GPA}</h3>
-					<h3>Fun: {fun}</h3>
+					<h2>DAY {this.props.day}</h2>
+					<h3>Health: {this.props.health}</h3>
+					<h3>GPA: {this.props.GPA}</h3>
+					<h3>Fun: {this.props.fun}</h3>
 				</div>
 			)
 		} else {
