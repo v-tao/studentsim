@@ -117,8 +117,19 @@ var PlayerState = function (_React$Component) {
 			});
 		}
 	}, {
+		key: "boundStats",
+		value: function boundStats(stat) {
+			if (stat > 100) {
+				return 100;
+			} else if (stat < 0) {
+				return 0;
+			}
+		}
+	}, {
 		key: "nextDay",
 		value: function nextDay(e) {
+			var _this2 = this;
+
 			e.preventDefault();
 			if (this.state.day == this.state.lastDay) {
 				this.setState({ displayStats: false, displayEndScreen: true });
@@ -128,23 +139,12 @@ var PlayerState = function (_React$Component) {
 					percentage = 1;
 				}
 				var funAmount = this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay;
-				if (funAmount > 100) {
-					funAmount = 100;
-				} else if (funAmount < 0) {
-					funAmount = 0;
-				}
-
 				var healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
-				if (healthAmount > 100) {
-					healthAmount = 100;
-				} else if (healthAmount < 0) {
-					healthAmount = 0;
-				}
 				this.setState(function (state) {
 					return {
 						day: state.day + 1,
-						health: healthAmount,
-						fun: funAmount,
+						health: _this2.boundStats(healthAmount),
+						fun: _this2.boundStats(funAmount),
 						totalGP: state.totalGP + percentage * state.maxGPA,
 						healthInc: 0,
 						funInc: 0,
@@ -178,11 +178,11 @@ var StartScreen = function (_React$Component2) {
 	function StartScreen(props) {
 		_classCallCheck(this, StartScreen);
 
-		var _this2 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
+		var _this3 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
 
-		_this2.handleStart = _this2.handleStart.bind(_this2);
-		_this2.handleClassChange = _this2.handleClassChange.bind(_this2);
-		return _this2;
+		_this3.handleStart = _this3.handleStart.bind(_this3);
+		_this3.handleClassChange = _this3.handleClassChange.bind(_this3);
+		return _this3;
 	}
 
 	_createClass(StartScreen, [{
@@ -264,10 +264,10 @@ var ChooseActivity = function (_React$Component3) {
 	function ChooseActivity(props) {
 		_classCallCheck(this, ChooseActivity);
 
-		var _this3 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
+		var _this4 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
 
-		_this3.handleActivityClick = _this3.handleActivityClick.bind(_this3);
-		return _this3;
+		_this4.handleActivityClick = _this4.handleActivityClick.bind(_this4);
+		return _this4;
 	}
 
 	_createClass(ChooseActivity, [{
@@ -312,11 +312,11 @@ var HoursDropdown = function (_React$Component4) {
 	function HoursDropdown(props) {
 		_classCallCheck(this, HoursDropdown);
 
-		var _this4 = _possibleConstructorReturn(this, (HoursDropdown.__proto__ || Object.getPrototypeOf(HoursDropdown)).call(this, props));
+		var _this5 = _possibleConstructorReturn(this, (HoursDropdown.__proto__ || Object.getPrototypeOf(HoursDropdown)).call(this, props));
 
-		_this4.handleHoursChange = _this4.handleHoursChange.bind(_this4);
-		_this4.handleHoursSubmit = _this4.handleHoursSubmit.bind(_this4);
-		return _this4;
+		_this5.handleHoursChange = _this5.handleHoursChange.bind(_this5);
+		_this5.handleHoursSubmit = _this5.handleHoursSubmit.bind(_this5);
+		return _this5;
 	}
 
 	_createClass(HoursDropdown, [{

@@ -85,6 +85,14 @@ class PlayerState extends React.Component {
 		}));
 	}
 
+	boundStats(stat) {
+		if (stat > 100) {
+			return 100;
+		} else if (stat < 0) {
+			return 0;
+		}
+	}
+
 	nextDay(e) {
 		e.preventDefault();
 		if (this.state.day == this.state.lastDay) {
@@ -95,22 +103,11 @@ class PlayerState extends React.Component {
 				percentage = 1;
 			}
 			let funAmount = this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay;
-			if (funAmount > 100) {
-				funAmount = 100;
-			} else if (funAmount < 0) {
-				funAmount = 0;
-			}
-
 			let healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
-			if (healthAmount > 100) {
-				healthAmount = 100;
-			} else if (healthAmount < 0) {
-				healthAmount = 0;
-			}
 			this.setState((state) => ({
 				day: state.day + 1,
-				health: healthAmount,
-				fun: funAmount,
+				health: this.boundStats(healthAmount),
+				fun: this.boundStats(funAmount),
 				totalGP: state.totalGP + percentage * state.maxGPA,
 				healthInc: 0,
 				funInc: 0,
