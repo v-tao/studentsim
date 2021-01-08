@@ -114,6 +114,8 @@ var PlayerState = function (_React$Component) {
 			var funAmount = this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay;
 			if (funAmount > 100) {
 				funAmount = 100;
+			} else if (funAmount < 0) {
+				funAmount = 0;
 			}
 
 			var healthAmount = this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay;
