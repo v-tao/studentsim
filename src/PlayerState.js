@@ -9,6 +9,7 @@ class PlayerState extends React.Component {
 			numClasses: 4,
 			day: 1,
 			lastDay: 14,
+			time: 12,
 			maxGPA: 4.00,
 			totalGP: 0.00,
 			GPAInc: 0,
@@ -114,7 +115,7 @@ class PlayerState extends React.Component {
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 				<InputForm displayGame={this.state.displayGame} dailyHours={this.state.dailyHours} healthInc={this.state.healthInc} GPAInc={this.state.GPAInc} funInc={this.state.funInc} 
 				onStatsSubmit={this.handleStatsSubmit} onHealthChange={this.handleHealthChange} onGPAChange={this.handleGPAChange} onFunChange={this.handleFunChange}/>
-				<Display displayGame={this.state.displayGame} day={this.state.day} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
+				<Display displayGame={this.state.displayGame} day={this.state.day} time={this.state.time} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 			</div>
 
@@ -224,10 +225,20 @@ class Display extends React.Component {
 
 	render() {
 		if (this.props.displayGame) {
+			let timeDisplay;
+			if (this.props.time == 0) {
+				timeDisplay = "12 AM";
+			} else if (this.props.time == 12) {
+				timeDisplay = "12 PM";
+			} else if (this.props.time < 12) {
+				timeDisplay = this.state.time + " AM"
+			} else {
+				timeDisplay = this.props.time%12 + "PM"
+			}
 			return (
 				<div>
 					<h1>GAME STATE</h1>
-					<h2>DAY {this.props.day}</h2>
+					<h2>DAY {this.props.day} TIME {timeDisplay}</h2>
 					<h3>Health: {this.props.health}</h3>
 					<h3>GPA: {this.props.GPA}</h3>
 					<h3>Fun: {this.props.fun}</h3>

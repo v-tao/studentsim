@@ -23,6 +23,7 @@ var PlayerState = function (_React$Component) {
 			numClasses: 4,
 			day: 1,
 			lastDay: 14,
+			time: 12,
 			maxGPA: 4.00,
 			totalGP: 0.00,
 			GPAInc: 0,
@@ -143,7 +144,7 @@ var PlayerState = function (_React$Component) {
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
 				React.createElement(InputForm, { displayGame: this.state.displayGame, dailyHours: this.state.dailyHours, healthInc: this.state.healthInc, GPAInc: this.state.GPAInc, funInc: this.state.funInc,
 					onStatsSubmit: this.handleStatsSubmit, onHealthChange: this.handleHealthChange, onGPAChange: this.handleGPAChange, onFunChange: this.handleFunChange }),
-				React.createElement(Display, { displayGame: this.state.displayGame, day: this.state.day, health: this.state.health, GPA: GPA, fun: this.state.fun }),
+				React.createElement(Display, { displayGame: this.state.displayGame, day: this.state.day, time: this.state.time, health: this.state.health, GPA: GPA, fun: this.state.fun }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: GPA, fun: this.state.fun })
 			);
 		}
@@ -342,6 +343,16 @@ var Display = function (_React$Component4) {
 		key: "render",
 		value: function render() {
 			if (this.props.displayGame) {
+				var timeDisplay = void 0;
+				if (this.props.time == 0) {
+					timeDisplay = "12 AM";
+				} else if (this.props.time == 12) {
+					timeDisplay = "12 PM";
+				} else if (this.props.time < 12) {
+					timeDisplay = this.state.time + " AM";
+				} else {
+					timeDisplay = this.props.time % 12 + "PM";
+				}
 				return React.createElement(
 					"div",
 					null,
@@ -354,7 +365,9 @@ var Display = function (_React$Component4) {
 						"h2",
 						null,
 						"DAY ",
-						this.props.day
+						this.props.day,
+						" TIME ",
+						timeDisplay
 					),
 					React.createElement(
 						"h3",
