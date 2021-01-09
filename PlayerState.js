@@ -26,8 +26,9 @@ var PlayerState = function (_React$Component) {
 			numClasses: 4,
 			day: 1,
 			lastDay: 14,
-			startTime: 12,
-			time: 12,
+			startTime: 15,
+			wakeUpTime: 6,
+			time: 15,
 			timeInc: 0,
 			maxGPA: 4.00,
 			totalGP: 0.00,
@@ -46,6 +47,7 @@ var PlayerState = function (_React$Component) {
 		_this.handleClassChange = _this.handleClassChange.bind(_this);
 		_this.handleActivityClick = _this.handleActivityClick.bind(_this);
 		_this.handleHoursChange = _this.handleHoursChange.bind(_this);
+		_this.calculateMaxHours = _this.calculateMaxHours.bind(_this);
 		_this.handleHoursSubmit = _this.handleHoursSubmit.bind(_this);
 		_this.nextDay = _this.nextDay.bind(_this);
 		return _this;
@@ -101,6 +103,15 @@ var PlayerState = function (_React$Component) {
 				}
 			} else {
 				this.setState({ timeInc: 0 });
+			}
+		}
+	}, {
+		key: "calculateMaxHours",
+		value: function calculateMaxHours() {
+			if (this.state.time > this.state.wakeUpTime) {
+				return 24 - this.state.time + this.state.wakeUpTime;
+			} else {
+				return this.state.wakeUpTime - this.state.time;
 			}
 		}
 	}, {
@@ -165,7 +176,7 @@ var PlayerState = function (_React$Component) {
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
 				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, nextDay: this.nextDay }),
-				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange }),
+				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
 				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, health: this.state.health, GPA: GPA, fun: this.state.fun }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: GPA, fun: this.state.fun })
 			);
@@ -337,6 +348,7 @@ var HoursForm = function (_React$Component4) {
 		key: "render",
 		value: function render() {
 			if (this.props.displayHoursForm) {
+				var maxHours = this.props.calculateMaxHours();
 				return React.createElement(
 					"div",
 					null,
@@ -348,7 +360,7 @@ var HoursForm = function (_React$Component4) {
 					React.createElement(
 						"form",
 						{ onSubmit: this.handleHoursSubmit },
-						React.createElement("input", { step: "1", min: "0", type: "number", onChange: this.handleHoursChange, name: this.props.hoursFormActivity }),
+						React.createElement("input", { step: "1", min: "0", max: maxHours, type: "number", onChange: this.handleHoursChange, name: this.props.hoursFormActivity }),
 						React.createElement(
 							"button",
 							null,

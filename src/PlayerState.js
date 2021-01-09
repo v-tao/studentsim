@@ -12,8 +12,9 @@ class PlayerState extends React.Component {
 			numClasses: 4,
 			day: 1,
 			lastDay: 14,
-			startTime: 12,
-			time: 12,
+			startTime: 15,
+			wakeUpTime: 6,
+			time: 15,
 			timeInc: 0,
 			maxGPA: 4.00,
 			totalGP: 0.00,
@@ -32,6 +33,7 @@ class PlayerState extends React.Component {
 		this.handleClassChange = this.handleClassChange.bind(this);
 		this.handleActivityClick = this.handleActivityClick.bind(this);
 		this.handleHoursChange = this.handleHoursChange.bind(this);
+		this.calculateMaxHours = this.calculateMaxHours.bind(this);
 		this.handleHoursSubmit = this.handleHoursSubmit.bind(this);
 		this.nextDay = this.nextDay.bind(this);
 	}
@@ -72,6 +74,14 @@ class PlayerState extends React.Component {
 			}
 		} else {
 			this.setState({timeInc: 0});
+		}
+	}
+
+	calculateMaxHours() {
+		if (this.state.time > this.state.wakeUpTime) {
+			return 24 - this.state.time + this.state.wakeUpTime;
+		} else {
+			return this.state.wakeUpTime - this.state.time;
 		}
 	}
 
@@ -127,7 +137,7 @@ class PlayerState extends React.Component {
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} nextDay={this.nextDay}/>
-				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange}/>
+				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 			</div>
@@ -226,11 +236,12 @@ class HoursForm extends React.Component {
 
 	render() {
 		if (this.props.displayHoursForm) {
+			let maxHours = this.props.calculateMaxHours();
 			return (
 				<div>
 					<h3>How many hours do you want to spend?</h3>
 					<form onSubmit={this.handleHoursSubmit}>
-						<input step="1" min="0" type="number" onChange={this.handleHoursChange} name={this.props.hoursFormActivity}/>
+						<input step="1" min="0" max={maxHours} type="number" onChange={this.handleHoursChange} name={this.props.hoursFormActivity}/>
 						<button>Submit</button>
 					</form>
 				</div>
