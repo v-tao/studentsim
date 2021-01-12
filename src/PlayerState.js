@@ -27,6 +27,7 @@ class PlayerState extends React.Component {
 			healthDecay: 10,
 			healthInc: 0,
 			healthValue: 10,
+			necessarySleepHours: 8,
 			dailyHours: 10,
 		}
 		this.handleStart = this.handleStart.bind(this);
@@ -116,8 +117,15 @@ class PlayerState extends React.Component {
 			if (percentage > 1) {
 				percentage = 1;
 			}
+			let sleepDecay = 0;
+			if (this.state.time < this.state.wakeUpTime && (this.state.wakeUpTime - this.state.time) < this.state.necessarySleepHours) {
+				sleepDecay = this.state.healthValue*(this.state.necessarySleepHours-(this.state.wakeUpTime - this.state.time));
+			} else if (this.state.time > this.state.wakeUpTime && ((24 - this.state.time + this.state.wakeUpTime) < this.state.necessarySleepHours)) {
+				sleepDecay = this.state.healthValue*(this.state.necessarySleepHours-(24 - this.state.time + this.state.wakeUpTime));
+			}
+			
 			let funAmount = this.boundStats(this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay);
-			let healthAmount = this.boundStats(this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay);
+			let healthAmount = this.boundStats(this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay - sleepDecay);
 			this.setState((state) => ({
 				day: state.day + 1,
 				time: state.startTime,

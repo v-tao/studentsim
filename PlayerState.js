@@ -41,6 +41,7 @@ var PlayerState = function (_React$Component) {
 			healthDecay: 10,
 			healthInc: 0,
 			healthValue: 10,
+			necessarySleepHours: 8,
 			dailyHours: 10
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
@@ -151,8 +152,15 @@ var PlayerState = function (_React$Component) {
 				if (percentage > 1) {
 					percentage = 1;
 				}
+				var sleepDecay = 0;
+				if (this.state.time < this.state.wakeUpTime && this.state.wakeUpTime - this.state.time < this.state.necessarySleepHours) {
+					sleepDecay = this.state.healthValue * (this.state.necessarySleepHours - (this.state.wakeUpTime - this.state.time));
+				} else if (this.state.time > this.state.wakeUpTime && 24 - this.state.time + this.state.wakeUpTime < this.state.necessarySleepHours) {
+					sleepDecay = this.state.healthValue * (this.state.necessarySleepHours - (24 - this.state.time + this.state.wakeUpTime));
+				}
+
 				var funAmount = this.boundStats(this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay);
-				var healthAmount = this.boundStats(this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay);
+				var healthAmount = this.boundStats(this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay - sleepDecay);
 				this.setState(function (state) {
 					return {
 						day: state.day + 1,
