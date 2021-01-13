@@ -31,7 +31,6 @@ class PlayerState extends React.Component {
 			healthValue: 10,
 			dailyHealthInc: 0,
 			necessarySleepHours: 8,
-			dailyHours: 10,
 		}
 		this.handleStart = this.handleStart.bind(this);
 		this.handleClassChange = this.handleClassChange.bind(this);

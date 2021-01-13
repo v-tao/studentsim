@@ -44,8 +44,7 @@ var PlayerState = function (_React$Component) {
 			healthInc: 0,
 			healthValue: 10,
 			dailyHealthInc: 0,
-			necessarySleepHours: 8,
-			dailyHours: 10
+			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
 		_this.handleClassChange = _this.handleClassChange.bind(_this);
