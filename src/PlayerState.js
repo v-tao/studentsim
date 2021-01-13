@@ -1,4 +1,48 @@
 "use strict";
+class Club {
+    constructor(name, hours, healthInc, GPAInc, funInc) {
+        this.name = name;
+        this.hours = hours;
+        this.healthInc = healthInc;
+        this.GPAInc = GPAInc;
+        this.funInc = funInc;
+    }
+
+	getName() {
+		return this.name;
+	}
+
+	getHours() {
+		return this.hours;
+	}
+	
+	getHealthInc() {
+		return this.healthInc;
+	}
+
+	getGPAInc() {
+		return this.GPAInc;
+	}
+
+	getFunInc() {
+		return this.funInc;
+	}
+
+    print() {
+        console.log("name: " + this.name);
+        console.log("hours: " + this.hours);
+        console.log("healthInc: " + this.healthInc);
+        console.log("GPAInc: " + this.GPAInc);
+        console.log("funInc: " + this.funInc);
+    }
+}
+
+const clubs = {
+	soccerClub: new Club("Soccer Team", 2, 2, 0, 2),
+	quizClub: new Club("Quiz Bowl", 2, 0, 2, 2),
+	comedyClub: new Club("Comedy Club", 2, 0, 0, 4),
+}
+
 class PlayerState extends React.Component {
 	constructor(props) {
 		super(props);
@@ -30,6 +74,7 @@ class PlayerState extends React.Component {
 			healthInc: 0,
 			healthValue: 10,
 			dailyHealthInc: 0,
+			club: "none",
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);

@@ -2,11 +2,67 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Club = function () {
+	function Club(name, hours, healthInc, GPAInc, funInc) {
+		_classCallCheck(this, Club);
+
+		this.name = name;
+		this.hours = hours;
+		this.healthInc = healthInc;
+		this.GPAInc = GPAInc;
+		this.funInc = funInc;
+	}
+
+	_createClass(Club, [{
+		key: "getName",
+		value: function getName() {
+			return this.name;
+		}
+	}, {
+		key: "getHours",
+		value: function getHours() {
+			return this.hours;
+		}
+	}, {
+		key: "getHealthInc",
+		value: function getHealthInc() {
+			return this.healthInc;
+		}
+	}, {
+		key: "getGPAInc",
+		value: function getGPAInc() {
+			return this.GPAInc;
+		}
+	}, {
+		key: "getFunInc",
+		value: function getFunInc() {
+			return this.funInc;
+		}
+	}, {
+		key: "print",
+		value: function print() {
+			console.log("name: " + this.name);
+			console.log("hours: " + this.hours);
+			console.log("healthInc: " + this.healthInc);
+			console.log("GPAInc: " + this.GPAInc);
+			console.log("funInc: " + this.funInc);
+		}
+	}]);
+
+	return Club;
+}();
+
+var clubs = {
+	soccerClub: new Club("Soccer Team", 2, 2, 0, 2),
+	quizClub: new Club("Quiz Bowl", 2, 0, 2, 2),
+	comedyClub: new Club("Comedy Club", 2, 0, 0, 4)
+};
 
 var PlayerState = function (_React$Component) {
 	_inherits(PlayerState, _React$Component);
@@ -44,6 +100,7 @@ var PlayerState = function (_React$Component) {
 			healthInc: 0,
 			healthValue: 10,
 			dailyHealthInc: 0,
+			club: "none",
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
