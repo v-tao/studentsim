@@ -33,14 +33,17 @@ var PlayerState = function (_React$Component) {
 			maxGPA: 4.00,
 			totalGP: 0.00,
 			GPAInc: 0,
+			dailyGPAInc: 0,
 			fun: 50,
 			funDecay: 10,
 			funInc: 0,
 			funValue: 10,
+			dailyFunInc: 0,
 			health: 50,
 			healthDecay: 10,
 			healthInc: 0,
 			healthValue: 10,
+			dailyHealthInc: 0,
 			necessarySleepHours: 8,
 			dailyHours: 10
 		};
@@ -85,25 +88,30 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleHoursChange",
 		value: function handleHoursChange(e, activity) {
-			this.setState(function (state) {
-				return { timeInc: parseInt(e.target.value) };
-			});
 			if (e.target.value) {
+				this.setState(function (state) {
+					return { timeInc: parseInt(e.target.value) };
+				});
 				if (activity == "exercise") {
 					this.setState(function (state) {
-						return { healthInc: state.healthInc + e.target.value };
+						return { healthInc: parseInt(e.target.value) };
 					});
 				} else if (activity == "study") {
 					this.setState(function (state) {
-						return { GPAInc: state.GPAInc + e.target.value };
+						return { GPAInc: parseInt(e.target.value) };
 					});
 				} else if (activity == "playGames") {
 					this.setState(function (state) {
-						return { funInc: state.funInc + e.target.value };
+						return { funInc: parseInt(e.target.value) };
 					});
 				}
 			} else {
-				this.setState({ timeInc: 0 });
+				this.setState({
+					timeInc: 0,
+					healthInc: 0,
+					GPAInc: 0,
+					funInc: 0
+				});
 			}
 		}
 	}, {
@@ -117,16 +125,33 @@ var PlayerState = function (_React$Component) {
 		}
 	}, {
 		key: "handleHoursSubmit",
-		value: function handleHoursSubmit() {
+		value: function handleHoursSubmit(activity) {
 			var currentTime = this.state.time + parseInt(this.state.timeInc);
 			if (currentTime >= 24) {
 				currentTime -= 24;
+			}
+			if (activity == "exercise") {
+				this.setState(function (state) {
+					return { dailyHealthInc: state.dailyHealthInc + state.healthInc };
+				});
+			} else if (activity == "study") {
+				this.setState(function (state) {
+					return { dailyGPAInc: state.dailyGPAInc + state.GPAInc };
+				});
+			} else if (activity == "playGames") {
+				this.setState(function (state) {
+					return { dailyFunInc: state.dailyFunInc + state.funInc };
+				});
 			}
 			this.setState(function (state) {
 				return {
 					displayHoursForm: false,
 					displayChooseActivity: true,
-					time: currentTime
+					time: currentTime,
+					timeInc: 0,
+					healthInc: 0,
+					GPAInc: 0,
+					funInc: 0
 				};
 			});
 		}
@@ -148,7 +173,7 @@ var PlayerState = function (_React$Component) {
 			if (this.state.day == this.state.lastDay) {
 				this.setState({ displayStats: false, displayEndScreen: true });
 			} else {
-				var percentage = this.state.GPAInc / this.state.numClasses;
+				var percentage = this.state.dailyGPAInc / this.state.numClasses;
 				if (percentage > 1) {
 					percentage = 1;
 				}
@@ -159,8 +184,8 @@ var PlayerState = function (_React$Component) {
 					sleepDecay = this.state.healthValue * (this.state.necessarySleepHours - (24 - this.state.time + this.state.wakeUpTime));
 				}
 
-				var funAmount = this.boundStats(this.state.fun + this.state.funInc * this.state.funValue - this.state.funDecay);
-				var healthAmount = this.boundStats(this.state.health + this.state.healthInc * this.state.healthValue - this.state.healthDecay - sleepDecay);
+				var funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay);
+				var healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay);
 				this.setState(function (state) {
 					return {
 						day: state.day + 1,
@@ -170,7 +195,10 @@ var PlayerState = function (_React$Component) {
 						totalGP: state.totalGP + percentage * state.maxGPA,
 						healthInc: 0,
 						funInc: 0,
-						GPAInc: 0
+						GPAInc: 0,
+						dailyHealthInc: 0,
+						dailyFunInc: 0,
+						dailyGPAInc: 0
 					};
 				});
 			}
@@ -350,7 +378,7 @@ var HoursForm = function (_React$Component4) {
 		key: "handleHoursSubmit",
 		value: function handleHoursSubmit(e) {
 			e.preventDefault();
-			this.props.onHoursSubmit();
+			this.props.onHoursSubmit(this.props.hoursFormActivity);
 		}
 	}, {
 		key: "render",
