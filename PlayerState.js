@@ -78,6 +78,7 @@ var PlayerState = function (_React$Component) {
 			displayChooseActivity: false,
 			displayEndScreen: false,
 			displayHoursForm: false,
+			displayChooseClub: false,
 			hoursFormActivity: "",
 			numClasses: 4,
 			day: 1,
@@ -109,6 +110,9 @@ var PlayerState = function (_React$Component) {
 		_this.handleHoursChange = _this.handleHoursChange.bind(_this);
 		_this.calculateMaxHours = _this.calculateMaxHours.bind(_this);
 		_this.handleHoursSubmit = _this.handleHoursSubmit.bind(_this);
+		_this.handleJoinClubClick = _this.handleJoinClubClick.bind(_this);
+		_this.handleChooseClubClick = _this.handleChooseClubClick.bind(_this);
+		_this.handleLeaveClubClick = _this.handleLeaveClubClick.bind(_this);
 		_this.nextDay = _this.nextDay.bind(_this);
 		return _this;
 	}
@@ -212,6 +216,30 @@ var PlayerState = function (_React$Component) {
 			});
 		}
 	}, {
+		key: "handleJoinClubClick",
+		value: function handleJoinClubClick() {
+			this.setState({
+				displayChooseClub: true,
+				displayChooseActivity: false
+			});
+		}
+	}, {
+		key: "handleChooseClubClick",
+		value: function handleChooseClubClick(e) {
+			this.setState({
+				club: e.target.name,
+				displayChooseClub: false,
+				displayChooseActivity: true
+			});
+		}
+	}, {
+		key: "handleLeaveClubClick",
+		value: function handleLeaveClubClick() {
+			this.setState({
+				club: "none"
+			});
+		}
+	}, {
 		key: "boundStats",
 		value: function boundStats(stat) {
 			if (stat > 100) {
@@ -267,7 +295,8 @@ var PlayerState = function (_React$Component) {
 				"div",
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
-				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, nextDay: this.nextDay }),
+				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay }),
+				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
 				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, health: this.state.health, GPA: GPA, fun: this.state.fun }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: GPA, fun: this.state.fun })
@@ -379,13 +408,13 @@ var ClubButton = function (_React$Component3) {
 			if (this.props.club == "none") {
 				return React.createElement(
 					"button",
-					{ onClick: this.props.handleJoinClub },
+					{ onClick: this.props.onJoinClubClick },
 					"Join Club"
 				);
 			} else {
 				return React.createElement(
 					"button",
-					{ onClick: this.props.handleLeaveClub },
+					{ onClick: this.props.onLeaveClubClick },
 					"Leave Club"
 				);
 			}
@@ -428,12 +457,12 @@ var ChooseActivity = function (_React$Component4) {
 					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "exercise", value: "Exercise" }),
 					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "study", value: "Study" }),
 					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "playGames", value: "Play Videogames" }),
+					React.createElement(ClubButton, { club: this.props.club, onJoinClubClick: this.props.onJoinClubClick, onLeaveClubClick: this.props.onLeaveClubClick }),
 					React.createElement(
 						"button",
 						{ onClick: this.props.nextDay },
 						"Sleep"
-					),
-					React.createElement(ClubButton, { club: this.props.club })
+					)
 				);
 			} else {
 				return null;
@@ -444,17 +473,66 @@ var ChooseActivity = function (_React$Component4) {
 	return ChooseActivity;
 }(React.Component);
 
-var HoursForm = function (_React$Component5) {
-	_inherits(HoursForm, _React$Component5);
+var ChooseClub = function (_React$Component5) {
+	_inherits(ChooseClub, _React$Component5);
+
+	function ChooseClub(props) {
+		_classCallCheck(this, ChooseClub);
+
+		var _this5 = _possibleConstructorReturn(this, (ChooseClub.__proto__ || Object.getPrototypeOf(ChooseClub)).call(this, props));
+
+		_this5.handleChooseClubClick = _this5.handleChooseClubClick.bind(_this5);
+		return _this5;
+	}
+
+	_createClass(ChooseClub, [{
+		key: "handleChooseClubClick",
+		value: function handleChooseClubClick(e) {
+			this.props.onChooseClubClick(e);
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			var _this6 = this;
+
+			var buttons = Object.keys(clubs).map(function (club, i) {
+				return React.createElement(
+					"button",
+					{ key: i, onClick: _this6.handleChooseClubClick, name: club },
+					clubs[club].getName()
+				);
+			});
+			if (this.props.displayChooseClub) {
+				return React.createElement(
+					"div",
+					null,
+					React.createElement(
+						"h2",
+						null,
+						"What club do you want to try out for?"
+					),
+					buttons
+				);
+			} else {
+				return null;
+			}
+		}
+	}]);
+
+	return ChooseClub;
+}(React.Component);
+
+var HoursForm = function (_React$Component6) {
+	_inherits(HoursForm, _React$Component6);
 
 	function HoursForm(props) {
 		_classCallCheck(this, HoursForm);
 
-		var _this5 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
+		var _this7 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
 
-		_this5.handleHoursChange = _this5.handleHoursChange.bind(_this5);
-		_this5.handleHoursSubmit = _this5.handleHoursSubmit.bind(_this5);
-		return _this5;
+		_this7.handleHoursChange = _this7.handleHoursChange.bind(_this7);
+		_this7.handleHoursSubmit = _this7.handleHoursSubmit.bind(_this7);
+		return _this7;
 	}
 
 	_createClass(HoursForm, [{
@@ -501,8 +579,8 @@ var HoursForm = function (_React$Component5) {
 	return HoursForm;
 }(React.Component);
 
-var DisplayStats = function (_React$Component6) {
-	_inherits(DisplayStats, _React$Component6);
+var DisplayStats = function (_React$Component7) {
+	_inherits(DisplayStats, _React$Component7);
 
 	function DisplayStats(props) {
 		_classCallCheck(this, DisplayStats);
@@ -568,8 +646,8 @@ var DisplayStats = function (_React$Component6) {
 	return DisplayStats;
 }(React.Component);
 
-var EndScreen = function (_React$Component7) {
-	_inherits(EndScreen, _React$Component7);
+var EndScreen = function (_React$Component8) {
+	_inherits(EndScreen, _React$Component8);
 
 	function EndScreen(props) {
 		_classCallCheck(this, EndScreen);

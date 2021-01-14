@@ -52,6 +52,7 @@ class PlayerState extends React.Component {
 			displayChooseActivity: false,
 			displayEndScreen: false,
 			displayHoursForm: false,
+			displayChooseClub: false,
 			hoursFormActivity: "",
 			numClasses: 4,
 			day: 1,
@@ -83,6 +84,9 @@ class PlayerState extends React.Component {
 		this.handleHoursChange = this.handleHoursChange.bind(this);
 		this.calculateMaxHours = this.calculateMaxHours.bind(this);
 		this.handleHoursSubmit = this.handleHoursSubmit.bind(this);
+		this.handleJoinClubClick = this.handleJoinClubClick.bind(this);
+		this.handleChooseClubClick = this.handleChooseClubClick.bind(this);
+		this.handleLeaveClubClick = this.handleLeaveClubClick.bind(this);
 		this.nextDay = this.nextDay.bind(this);
 	}
 
@@ -161,6 +165,27 @@ class PlayerState extends React.Component {
 		}));
 	}
 
+	handleJoinClubClick() {
+		this.setState({
+			displayChooseClub: true,
+			displayChooseActivity: false,
+		});
+	}
+
+	handleChooseClubClick(e) {
+		this.setState({
+			club: e.target.name,
+			displayChooseClub: false,
+			displayChooseActivity: true,
+		})
+	}
+
+	handleLeaveClubClick() {
+		this.setState({
+			club: "none"
+		})
+	}
+
 	boundStats(stat) {
 		if (stat > 100) {
 			return 100;
@@ -210,7 +235,8 @@ class PlayerState extends React.Component {
 		return (
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
-				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} nextDay={this.nextDay}/>
+				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay}/>
+				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
@@ -271,11 +297,11 @@ class ClubButton extends React.Component {
 	render() {
 		if (this.props.club == "none") {
 			return (
-				<button onClick={this.props.handleJoinClub}>Join Club</button>
+				<button onClick={this.props.onJoinClubClick}>Join Club</button>
 			);
 		} else {
 			return (
-				<button onClick={this.props.handleLeaveClub}>Leave Club</button>
+				<button onClick={this.props.onLeaveClubClick}>Leave Club</button>
 			);
 		}
 	}
@@ -300,8 +326,35 @@ class ChooseActivity extends React.Component {
 					<input onClick={this.handleActivityClick} type="button" name="exercise" value="Exercise"/>
 					<input onClick={this.handleActivityClick} type="button" name="study" value="Study"/>
 					<input onClick={this.handleActivityClick} type="button" name="playGames" value="Play Videogames"/>
+					<ClubButton club={this.props.club} onJoinClubClick={this.props.onJoinClubClick} onLeaveClubClick={this.props.onLeaveClubClick}/>
 					<button onClick={this.props.nextDay}>Sleep</button>
-					<ClubButton club={this.props.club}/>
+				</div>
+			)
+		} else {
+			return null;
+		}
+	}
+}
+
+class ChooseClub extends React.Component {
+	constructor(props) {
+		super(props);
+		this.handleChooseClubClick = this.handleChooseClubClick.bind(this);
+	}
+
+	handleChooseClubClick(e) {
+		this.props.onChooseClubClick(e);
+	}
+
+	render() {
+		const buttons = Object.keys(clubs).map((club, i) => {
+			return <button key={i} onClick={this.handleChooseClubClick} name={club}>{clubs[club].getName()}</button>
+		})
+		if (this.props.displayChooseClub) {
+			return (
+				<div>
+					<h2>What club do you want to try out for?</h2>
+					{buttons}
 				</div>
 			)
 		} else {
