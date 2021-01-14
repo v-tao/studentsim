@@ -232,13 +232,17 @@ class PlayerState extends React.Component {
 
 	render() {
 		let GPA = Math.round(this.state.totalGP/(this.state.day-1) * 100)/100;
+		let clubName = "none";
+		if (this.state.club != "none") {
+			clubName = clubs[this.state.club].getName();
+		}
 		return (
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
-				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
+				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={clubName} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 			</div>
 
@@ -418,9 +422,10 @@ class DisplayStats extends React.Component {
 				<div>
 					<h1>GAME STATE</h1>
 					<h2>DAY {this.props.day} TIME {timeDisplay}</h2>
-					<h3>Health: {this.props.health}</h3>
+					<h3>CLUB: {this.props.clubName}</h3>
+					<h3>HEALTH: {this.props.health}</h3>
 					<h3>GPA: {this.props.GPA}</h3>
-					<h3>Fun: {this.props.fun}</h3>
+					<h3>FUN: {this.props.fun}</h3>
 				</div>
 			)
 		} else {

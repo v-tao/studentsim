@@ -291,6 +291,10 @@ var PlayerState = function (_React$Component) {
 		key: "render",
 		value: function render() {
 			var GPA = Math.round(this.state.totalGP / (this.state.day - 1) * 100) / 100;
+			var clubName = "none";
+			if (this.state.club != "none") {
+				clubName = clubs[this.state.club].getName();
+			}
 			return React.createElement(
 				"div",
 				null,
@@ -298,7 +302,7 @@ var PlayerState = function (_React$Component) {
 				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay }),
 				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
-				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, health: this.state.health, GPA: GPA, fun: this.state.fun }),
+				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: clubName, health: this.state.health, GPA: GPA, fun: this.state.fun }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: GPA, fun: this.state.fun })
 			);
 		}
@@ -621,7 +625,13 @@ var DisplayStats = function (_React$Component7) {
 					React.createElement(
 						"h3",
 						null,
-						"Health: ",
+						"CLUB: ",
+						this.props.clubName
+					),
+					React.createElement(
+						"h3",
+						null,
+						"HEALTH: ",
 						this.props.health
 					),
 					React.createElement(
@@ -633,7 +643,7 @@ var DisplayStats = function (_React$Component7) {
 					React.createElement(
 						"h3",
 						null,
-						"Fun: ",
+						"FUN: ",
 						this.props.fun
 					)
 				);
