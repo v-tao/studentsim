@@ -210,7 +210,7 @@ class PlayerState extends React.Component {
 		return (
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
-				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} nextDay={this.nextDay}/>
+				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} nextDay={this.nextDay}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
@@ -263,6 +263,24 @@ class StartScreen extends React.Component {
 	}
 }
 
+class ClubButton extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		if (this.props.club == "none") {
+			return (
+				<button onClick={this.props.handleJoinClub}>Join Club</button>
+			);
+		} else {
+			return (
+				<button onClick={this.props.handleLeaveClub}>Leave Club</button>
+			);
+		}
+	}
+}
+
 class ChooseActivity extends React.Component {
 	constructor(props) {
 		super(props);
@@ -283,7 +301,7 @@ class ChooseActivity extends React.Component {
 					<input onClick={this.handleActivityClick} type="button" name="study" value="Study"/>
 					<input onClick={this.handleActivityClick} type="button" name="playGames" value="Play Videogames"/>
 					<button onClick={this.props.nextDay}>Sleep</button>
-
+					<ClubButton club={this.props.club}/>
 				</div>
 			)
 		} else {

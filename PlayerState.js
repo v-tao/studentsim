@@ -267,7 +267,7 @@ var PlayerState = function (_React$Component) {
 				"div",
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
-				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, nextDay: this.nextDay }),
+				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, nextDay: this.nextDay }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
 				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, health: this.state.health, GPA: GPA, fun: this.state.fun }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: GPA, fun: this.state.fun })
@@ -364,16 +364,47 @@ var StartScreen = function (_React$Component2) {
 	return StartScreen;
 }(React.Component);
 
-var ChooseActivity = function (_React$Component3) {
-	_inherits(ChooseActivity, _React$Component3);
+var ClubButton = function (_React$Component3) {
+	_inherits(ClubButton, _React$Component3);
+
+	function ClubButton(props) {
+		_classCallCheck(this, ClubButton);
+
+		return _possibleConstructorReturn(this, (ClubButton.__proto__ || Object.getPrototypeOf(ClubButton)).call(this, props));
+	}
+
+	_createClass(ClubButton, [{
+		key: "render",
+		value: function render() {
+			if (this.props.club == "none") {
+				return React.createElement(
+					"button",
+					{ onClick: this.props.handleJoinClub },
+					"Join Club"
+				);
+			} else {
+				return React.createElement(
+					"button",
+					{ onClick: this.props.handleLeaveClub },
+					"Leave Club"
+				);
+			}
+		}
+	}]);
+
+	return ClubButton;
+}(React.Component);
+
+var ChooseActivity = function (_React$Component4) {
+	_inherits(ChooseActivity, _React$Component4);
 
 	function ChooseActivity(props) {
 		_classCallCheck(this, ChooseActivity);
 
-		var _this3 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
+		var _this4 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
 
-		_this3.handleActivityClick = _this3.handleActivityClick.bind(_this3);
-		return _this3;
+		_this4.handleActivityClick = _this4.handleActivityClick.bind(_this4);
+		return _this4;
 	}
 
 	_createClass(ChooseActivity, [{
@@ -401,7 +432,8 @@ var ChooseActivity = function (_React$Component3) {
 						"button",
 						{ onClick: this.props.nextDay },
 						"Sleep"
-					)
+					),
+					React.createElement(ClubButton, { club: this.props.club })
 				);
 			} else {
 				return null;
@@ -412,17 +444,17 @@ var ChooseActivity = function (_React$Component3) {
 	return ChooseActivity;
 }(React.Component);
 
-var HoursForm = function (_React$Component4) {
-	_inherits(HoursForm, _React$Component4);
+var HoursForm = function (_React$Component5) {
+	_inherits(HoursForm, _React$Component5);
 
 	function HoursForm(props) {
 		_classCallCheck(this, HoursForm);
 
-		var _this4 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
+		var _this5 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
 
-		_this4.handleHoursChange = _this4.handleHoursChange.bind(_this4);
-		_this4.handleHoursSubmit = _this4.handleHoursSubmit.bind(_this4);
-		return _this4;
+		_this5.handleHoursChange = _this5.handleHoursChange.bind(_this5);
+		_this5.handleHoursSubmit = _this5.handleHoursSubmit.bind(_this5);
+		return _this5;
 	}
 
 	_createClass(HoursForm, [{
@@ -469,8 +501,8 @@ var HoursForm = function (_React$Component4) {
 	return HoursForm;
 }(React.Component);
 
-var DisplayStats = function (_React$Component5) {
-	_inherits(DisplayStats, _React$Component5);
+var DisplayStats = function (_React$Component6) {
+	_inherits(DisplayStats, _React$Component6);
 
 	function DisplayStats(props) {
 		_classCallCheck(this, DisplayStats);
@@ -536,8 +568,8 @@ var DisplayStats = function (_React$Component5) {
 	return DisplayStats;
 }(React.Component);
 
-var EndScreen = function (_React$Component6) {
-	_inherits(EndScreen, _React$Component6);
+var EndScreen = function (_React$Component7) {
+	_inherits(EndScreen, _React$Component7);
 
 	function EndScreen(props) {
 		_classCallCheck(this, EndScreen);
