@@ -216,7 +216,7 @@ class PlayerState extends React.Component {
 			let healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay);
 			this.setState((state) => ({
 				day: state.day + 1,
-				time: state.startTime,
+				time: state.club=="none" ? state.startTime : state.startTime + clubs[state.club].getHours(),
 				health: healthAmount,
 				fun: funAmount,
 				totalGP: state.totalGP + percentage * state.maxGPA,
