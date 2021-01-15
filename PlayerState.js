@@ -258,7 +258,7 @@ var PlayerState = function (_React$Component) {
 			if (this.state.day == this.state.lastDay) {
 				this.setState({ displayStats: false, displayEndScreen: true });
 			} else {
-				var percentage = this.state.dailyGPAInc / this.state.numClasses;
+				var percentage = (this.state.dailyGPAInc + clubs[this.state.club].getGPAInc()) / this.state.numClasses;
 				if (percentage > 1) {
 					percentage = 1;
 				}
@@ -269,8 +269,8 @@ var PlayerState = function (_React$Component) {
 					sleepDecay = this.state.healthValue * (this.state.necessarySleepHours - (24 - this.state.time + this.state.wakeUpTime));
 				}
 
-				var funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay);
-				var healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay);
+				var funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].getFunInc() * this.state.funValue);
+				var healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].getHealthInc() * this.state.healthValue);
 				this.setState(function (state) {
 					return {
 						day: state.day + 1,

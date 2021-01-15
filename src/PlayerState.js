@@ -202,7 +202,7 @@ class PlayerState extends React.Component {
 		if (this.state.day == this.state.lastDay) {
 			this.setState({displayStats: false, displayEndScreen: true});
 		} else {
-			let percentage = this.state.dailyGPAInc/this.state.numClasses;
+			let percentage = (this.state.dailyGPAInc + clubs[this.state.club].getGPAInc())/this.state.numClasses;
 			if (percentage > 1) {
 				percentage = 1;
 			}
@@ -213,8 +213,8 @@ class PlayerState extends React.Component {
 				sleepDecay = this.state.healthValue*(this.state.necessarySleepHours-(24 - this.state.time + this.state.wakeUpTime));
 			}
 			
-			let funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay);
-			let healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay);
+			let funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].getFunInc() * this.state.funValue);
+			let healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].getHealthInc() * this.state.healthValue);
 			this.setState((state) => ({
 				day: state.day + 1,
 				time: state.club=="none" ? state.startTime : state.startTime + clubs[state.club].getHours(),
