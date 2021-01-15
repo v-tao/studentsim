@@ -38,6 +38,7 @@ class Club {
 }
 
 const clubs = {
+	none: new  Club("none", 0, 0, 0, 0),
 	soccerClub: new Club("Soccer Team", 2, 2, 0, 2),
 	quizClub: new Club("Quiz Bowl", 2, 0, 2, 2),
 	comedyClub: new Club("Comedy Club", 2, 0, 0, 4),
@@ -232,17 +233,13 @@ class PlayerState extends React.Component {
 
 	render() {
 		let GPA = Math.round(this.state.totalGP/(this.state.day-1) * 100)/100;
-		let clubName = "none";
-		if (this.state.club != "none") {
-			clubName = clubs[this.state.club].getName();
-		}
 		return (
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
-				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={clubName} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
+				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={clubs[this.state.club].getName()} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
 			</div>
 
@@ -352,7 +349,9 @@ class ChooseClub extends React.Component {
 
 	render() {
 		const buttons = Object.keys(clubs).map((club, i) => {
-			return <button key={i} onClick={this.handleChooseClubClick} name={club}>{clubs[club].getName()}</button>
+			if (club != "none") {
+				return <button key={i} onClick={this.handleChooseClubClick} name={club}>{clubs[club].getName()}</button>
+			}
 		})
 		if (this.props.displayChooseClub) {
 			return (
