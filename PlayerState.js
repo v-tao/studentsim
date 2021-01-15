@@ -236,6 +236,7 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleLeaveClubClick",
 		value: function handleLeaveClubClick() {
+			delete clubs[this.state.club];
 			this.setState({
 				club: "none"
 			});

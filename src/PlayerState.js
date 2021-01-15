@@ -182,6 +182,7 @@ class PlayerState extends React.Component {
 	}
 
 	handleLeaveClubClick() {
+		delete clubs[this.state.club];
 		this.setState({
 			club: "none"
 		})
