@@ -237,7 +237,7 @@ class PlayerState extends React.Component {
 		return (
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
-				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay}/>
+				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + clubs[this.state.club].getHours()}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={clubs[this.state.club].getName()} health={this.state.health} GPA={GPA} fun={this.state.fun}/>
@@ -297,14 +297,18 @@ class ClubButton extends React.Component {
 	}
 
 	render() {
-		if (this.props.club == "none") {
-			return (
-				<button onClick={this.props.onJoinClubClick}>Join Club</button>
-			);
+		if (this.props.time == this.props.startTime) {
+			if (this.props.club == "none") {
+				return (
+					<button onClick={this.props.onJoinClubClick}>Join Club</button>
+				);
+			} else {
+				return (
+					<button onClick={this.props.onLeaveClubClick}>Leave Club</button>
+				);
+			}
 		} else {
-			return (
-				<button onClick={this.props.onLeaveClubClick}>Leave Club</button>
-			);
+			return null;
 		}
 	}
 }
@@ -328,7 +332,7 @@ class ChooseActivity extends React.Component {
 					<input onClick={this.handleActivityClick} type="button" name="exercise" value="Exercise"/>
 					<input onClick={this.handleActivityClick} type="button" name="study" value="Study"/>
 					<input onClick={this.handleActivityClick} type="button" name="playGames" value="Play Videogames"/>
-					<ClubButton club={this.props.club} onJoinClubClick={this.props.onJoinClubClick} onLeaveClubClick={this.props.onLeaveClubClick}/>
+					<ClubButton club={this.props.club} onJoinClubClick={this.props.onJoinClubClick} onLeaveClubClick={this.props.onLeaveClubClick} time={this.props.time} startTime={this.props.startTime}/>
 					<button onClick={this.props.nextDay}>Sleep</button>
 				</div>
 			)

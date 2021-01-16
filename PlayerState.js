@@ -297,7 +297,7 @@ var PlayerState = function (_React$Component) {
 				"div",
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
-				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay }),
+				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + clubs[this.state.club].getHours() }),
 				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
 				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: clubs[this.state.club].getName(), health: this.state.health, GPA: GPA, fun: this.state.fun }),
@@ -407,18 +407,22 @@ var ClubButton = function (_React$Component3) {
 	_createClass(ClubButton, [{
 		key: "render",
 		value: function render() {
-			if (this.props.club == "none") {
-				return React.createElement(
-					"button",
-					{ onClick: this.props.onJoinClubClick },
-					"Join Club"
-				);
+			if (this.props.time == this.props.startTime) {
+				if (this.props.club == "none") {
+					return React.createElement(
+						"button",
+						{ onClick: this.props.onJoinClubClick },
+						"Join Club"
+					);
+				} else {
+					return React.createElement(
+						"button",
+						{ onClick: this.props.onLeaveClubClick },
+						"Leave Club"
+					);
+				}
 			} else {
-				return React.createElement(
-					"button",
-					{ onClick: this.props.onLeaveClubClick },
-					"Leave Club"
-				);
+				return null;
 			}
 		}
 	}]);
@@ -459,7 +463,7 @@ var ChooseActivity = function (_React$Component4) {
 					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "exercise", value: "Exercise" }),
 					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "study", value: "Study" }),
 					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "playGames", value: "Play Videogames" }),
-					React.createElement(ClubButton, { club: this.props.club, onJoinClubClick: this.props.onJoinClubClick, onLeaveClubClick: this.props.onLeaveClubClick }),
+					React.createElement(ClubButton, { club: this.props.club, onJoinClubClick: this.props.onJoinClubClick, onLeaveClubClick: this.props.onLeaveClubClick, time: this.props.time, startTime: this.props.startTime }),
 					React.createElement(
 						"button",
 						{ onClick: this.props.nextDay },
