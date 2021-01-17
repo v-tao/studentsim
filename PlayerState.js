@@ -9,7 +9,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Club = function () {
-	function Club(name, hours, healthInc, GPAInc, funInc) {
+	function Club(name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq) {
 		_classCallCheck(this, Club);
 
 		this.name = name;
@@ -17,6 +17,9 @@ var Club = function () {
 		this.healthInc = healthInc;
 		this.GPAInc = GPAInc;
 		this.funInc = funInc;
+		this.healthReq = healthReq;
+		this.GPAReq = GPAReq;
+		this.funReq = funReq;
 	}
 
 	_createClass(Club, [{
@@ -53,16 +56,22 @@ var Club = function () {
 			console.log("GPAInc: " + this.GPAInc);
 			console.log("funInc: " + this.funInc);
 		}
+	}, {
+		key: "succesfulTryout",
+		value: function succesfulTryout(health, GPA, fun) {
+			console.log(health, GPA, fun);
+			return health >= this.healthReq && GPA >= this.GPAReq && fun >= this.funReq;
+		}
 	}]);
 
 	return Club;
 }();
 
 var clubs = {
-	none: new Club("none", 0, 0, 0, 0),
-	soccerClub: new Club("Soccer Team", 2, 2, 0, 2),
-	quizClub: new Club("Quiz Bowl", 2, 0, 2, 2),
-	comedyClub: new Club("Comedy Club", 2, 0, 0, 4)
+	none: new Club("none", 0, 0, 0, 0, 0, 0, 0),
+	soccerClub: new Club("Soccer Team", 2, 2, 0, 2, 70, 2.0, 0),
+	quizClub: new Club("Quiz Bowl", 2, 0, 2, 2, 0, 3.5, 0),
+	comedyClub: new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70)
 };
 
 var PlayerState = function (_React$Component) {
@@ -92,6 +101,7 @@ var PlayerState = function (_React$Component) {
 			totalGP: 0.00,
 			GPAInc: 0,
 			dailyGPAInc: 0,
+			GPA: 0,
 			fun: 50,
 			funDecay: 10,
 			funInc: 0,
@@ -227,8 +237,11 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleChooseClubClick",
 		value: function handleChooseClubClick(e) {
+			if (clubs[e.target.name].succesfulTryout(this.state.health, this.state.GPA, this.state.fun)) {
+				console.log("rah");
+				this.setState({ club: e.target.name });
+			}
 			this.setState({
-				club: e.target.name,
 				displayChooseClub: false,
 				displayChooseActivity: true
 			});
@@ -255,6 +268,8 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "nextDay",
 		value: function nextDay(e) {
+			var _this2 = this;
+
 			e.preventDefault();
 			if (this.state.day == this.state.lastDay) {
 				this.setState({ displayStats: false, displayEndScreen: true });
@@ -279,6 +294,7 @@ var PlayerState = function (_React$Component) {
 						health: healthAmount,
 						fun: funAmount,
 						totalGP: state.totalGP + percentage * state.maxGPA,
+						GPA: Math.round((state.totalGP + percentage * state.maxGPA) / _this2.state.day * 100) / 100,
 						healthInc: 0,
 						funInc: 0,
 						GPAInc: 0,
@@ -292,7 +308,6 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "render",
 		value: function render() {
-			var GPA = Math.round(this.state.totalGP / (this.state.day - 1) * 100) / 100;
 			return React.createElement(
 				"div",
 				null,
@@ -300,8 +315,8 @@ var PlayerState = function (_React$Component) {
 				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + clubs[this.state.club].getHours() }),
 				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
-				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: clubs[this.state.club].getName(), health: this.state.health, GPA: GPA, fun: this.state.fun }),
-				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: GPA, fun: this.state.fun })
+				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: clubs[this.state.club].getName(), health: this.state.health, GPA: this.state.GPA, fun: this.state.fun }),
+				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: this.state.GPA, fun: this.state.fun })
 			);
 		}
 	}]);
@@ -315,11 +330,11 @@ var StartScreen = function (_React$Component2) {
 	function StartScreen(props) {
 		_classCallCheck(this, StartScreen);
 
-		var _this2 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
+		var _this3 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
 
-		_this2.handleStart = _this2.handleStart.bind(_this2);
-		_this2.handleClassChange = _this2.handleClassChange.bind(_this2);
-		return _this2;
+		_this3.handleStart = _this3.handleStart.bind(_this3);
+		_this3.handleClassChange = _this3.handleClassChange.bind(_this3);
+		return _this3;
 	}
 
 	_createClass(StartScreen, [{
@@ -436,10 +451,10 @@ var ChooseActivity = function (_React$Component4) {
 	function ChooseActivity(props) {
 		_classCallCheck(this, ChooseActivity);
 
-		var _this4 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
+		var _this5 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
 
-		_this4.handleActivityClick = _this4.handleActivityClick.bind(_this4);
-		return _this4;
+		_this5.handleActivityClick = _this5.handleActivityClick.bind(_this5);
+		return _this5;
 	}
 
 	_createClass(ChooseActivity, [{
@@ -485,10 +500,10 @@ var ChooseClub = function (_React$Component5) {
 	function ChooseClub(props) {
 		_classCallCheck(this, ChooseClub);
 
-		var _this5 = _possibleConstructorReturn(this, (ChooseClub.__proto__ || Object.getPrototypeOf(ChooseClub)).call(this, props));
+		var _this6 = _possibleConstructorReturn(this, (ChooseClub.__proto__ || Object.getPrototypeOf(ChooseClub)).call(this, props));
 
-		_this5.handleChooseClubClick = _this5.handleChooseClubClick.bind(_this5);
-		return _this5;
+		_this6.handleChooseClubClick = _this6.handleChooseClubClick.bind(_this6);
+		return _this6;
 	}
 
 	_createClass(ChooseClub, [{
@@ -499,13 +514,13 @@ var ChooseClub = function (_React$Component5) {
 	}, {
 		key: "render",
 		value: function render() {
-			var _this6 = this;
+			var _this7 = this;
 
 			var buttons = Object.keys(clubs).map(function (club, i) {
 				if (club != "none") {
 					return React.createElement(
 						"button",
-						{ key: i, onClick: _this6.handleChooseClubClick, name: club },
+						{ key: i, onClick: _this7.handleChooseClubClick, name: club },
 						clubs[club].getName()
 					);
 				}
@@ -536,11 +551,11 @@ var HoursForm = function (_React$Component6) {
 	function HoursForm(props) {
 		_classCallCheck(this, HoursForm);
 
-		var _this7 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
+		var _this8 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
 
-		_this7.handleHoursChange = _this7.handleHoursChange.bind(_this7);
-		_this7.handleHoursSubmit = _this7.handleHoursSubmit.bind(_this7);
-		return _this7;
+		_this8.handleHoursChange = _this8.handleHoursChange.bind(_this8);
+		_this8.handleHoursSubmit = _this8.handleHoursSubmit.bind(_this8);
+		return _this8;
 	}
 
 	_createClass(HoursForm, [{
