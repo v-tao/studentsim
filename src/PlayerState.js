@@ -45,7 +45,7 @@ class Club {
 }
 
 const clubs = {
-	none: new  Club("none", 0, 0, 0, 0, 0, 0, 0),
+	none: new Club("none", 0, 0, 0, 0, 0, 0, 0),
 	soccerClub: new Club("Soccer Team", 2, 2, 0, 2, 70, 2.0, 0),
 	quizClub: new Club("Quiz Bowl", 2, 0, 2, 2, 0, 3.5, 0),
 	comedyClub: new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70),
@@ -61,6 +61,7 @@ class PlayerState extends React.Component {
 			displayEndScreen: false,
 			displayHoursForm: false,
 			displayChooseClub: false,
+			messageType: "",
 			hoursFormActivity: "",
 			numClasses: 4,
 			day: 1,
@@ -96,6 +97,7 @@ class PlayerState extends React.Component {
 		this.handleJoinClubClick = this.handleJoinClubClick.bind(this);
 		this.handleChooseClubClick = this.handleChooseClubClick.bind(this);
 		this.handleLeaveClubClick = this.handleLeaveClubClick.bind(this);
+		this.handleConfirmLeaveClubClick = this.handleConfirmLeaveClubClick.bind(this);
 		this.nextDay = this.nextDay.bind(this);
 	}
 
@@ -184,6 +186,8 @@ class PlayerState extends React.Component {
 	handleChooseClubClick(e) {
 		if (clubs[e.target.name].succesfulTryout(this.state.health, this.state.GPA, this.state.fun)) {
 			this.setState({club: e.target.name});
+		} else {
+			this.setState({messageType: "warning"});
 		}
 		this.setState({
 			displayChooseClub: false,
@@ -192,9 +196,15 @@ class PlayerState extends React.Component {
 	}
 
 	handleLeaveClubClick() {
+		this.setState({displayChooseActivity: false, messageType: "danger"});
+	}
+
+	handleConfirmLeaveClubClick() {
 		delete clubs[this.state.club];
 		this.setState({
-			club: "none"
+			displayChooseActivity: true,
+			messageType: "",
+			club: "none",
 		})
 	}
 
@@ -227,6 +237,7 @@ class PlayerState extends React.Component {
 			let funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].getFunInc() * this.state.funValue);
 			let healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].getHealthInc() * this.state.healthValue);
 			this.setState((state) => ({
+				messageType: "",
 				day: state.day + 1,
 				time: state.club=="none" ? state.startTime : state.startTime + clubs[state.club].getHours(),
 				health: healthAmount,
@@ -247,6 +258,7 @@ class PlayerState extends React.Component {
 		return (
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
+				<Message type={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}></Message>
 				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + clubs[this.state.club].getHours()}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
@@ -412,6 +424,57 @@ class HoursForm extends React.Component {
 		} else {
 			return null;
 		}
+	}
+}
+
+class Message extends React.Component {
+	constructor(props) {
+		super(props);
+		this.messages = {
+			"warning": <WarningMessage></WarningMessage>,
+			"danger": <DangerMessage onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></DangerMessage>
+		}
+	}
+
+	render() {
+		if (this.props.type in this.messages) {
+			return this.messages[this.props.type];
+		} else {
+			return null;
+		}
+	}
+}
+
+//the names of these classes are based off of the bootstrap colors
+
+class WarningMessage extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		return (
+			<div>
+				<h4>You did not meet the requirements for this club</h4>
+			</div>
+		)
+
+	}
+}
+
+class DangerMessage extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		return (
+			<div>
+				<h1>ARE YOU SURE YOU WANT TO LEAVE THIS CLUB?</h1>
+				<h1>IF YOU LEAVE THE CLUB YOU CANNOT REJOIN BECAUSE YOUR CLUB MEMBERS NEED COMMITMENT</h1>
+				<button onClick={this.props.onConfirmLeaveClubClick}>I am sure I want to leave the club</button>
+			</div>
+		)
 	}
 }
 
