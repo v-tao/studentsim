@@ -40,7 +40,6 @@ class Club {
 	}
 	
 	succesfulTryout(health, GPA, fun) {
-		console.log(health, GPA, fun)
 		return ((health >= this.healthReq) && (GPA >= this.GPAReq) && (fun >= this.funReq));
 	}
 }
@@ -184,7 +183,6 @@ class PlayerState extends React.Component {
 
 	handleChooseClubClick(e) {
 		if (clubs[e.target.name].succesfulTryout(this.state.health, this.state.GPA, this.state.fun)) {
-			console.log("rah")
 			this.setState({club: e.target.name});
 		}
 		this.setState({

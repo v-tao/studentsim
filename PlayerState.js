@@ -59,7 +59,6 @@ var Club = function () {
 	}, {
 		key: "succesfulTryout",
 		value: function succesfulTryout(health, GPA, fun) {
-			console.log(health, GPA, fun);
 			return health >= this.healthReq && GPA >= this.GPAReq && fun >= this.funReq;
 		}
 	}]);
@@ -238,7 +237,6 @@ var PlayerState = function (_React$Component) {
 		key: "handleChooseClubClick",
 		value: function handleChooseClubClick(e) {
 			if (clubs[e.target.name].succesfulTryout(this.state.health, this.state.GPA, this.state.fun)) {
-				console.log("rah");
 				this.setState({ club: e.target.name });
 			}
 			this.setState({
