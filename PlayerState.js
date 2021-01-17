@@ -279,7 +279,7 @@ var PlayerState = function (_React$Component) {
 		value: function nextDay(e) {
 			e.preventDefault();
 			if (this.state.day == this.state.lastDay) {
-				this.setState({ displayStats: false, displayEndScreen: true });
+				this.setState({ displayChooseActivity: false, displayStats: false, displayEndScreen: true });
 			} else {
 				var percentage = (this.state.dailyGPAInc + clubs[this.state.club].getGPAInc()) / this.state.numClasses;
 				if (percentage > 1) {

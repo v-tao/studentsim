@@ -221,7 +221,7 @@ class PlayerState extends React.Component {
 	nextDay(e) {
 		e.preventDefault();
 		if (this.state.day == this.state.lastDay) {
-			this.setState({displayStats: false, displayEndScreen: true});
+			this.setState({displayChooseActivity: false, displayStats: false, displayEndScreen: true});
 		} else {
 			let percentage = (this.state.dailyGPAInc + clubs[this.state.club].getGPAInc())/this.state.numClasses;
 			if (percentage > 1) {
