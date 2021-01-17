@@ -39,7 +39,7 @@ class Club {
         console.log("funInc: " + this.funInc);
 	}
 	
-	succesfulTryout(health, GPA, fun) {
+	isEligible(health, GPA, fun) {
 		return ((health >= this.healthReq) && (GPA >= this.GPAReq) && (fun >= this.funReq));
 	}
 }
@@ -184,7 +184,7 @@ class PlayerState extends React.Component {
 	}
 
 	handleChooseClubClick(e) {
-		if (clubs[e.target.name].succesfulTryout(this.state.health, this.state.GPA, this.state.fun)) {
+		if (clubs[e.target.name].isEligible(this.state.health, this.state.GPA, this.state.fun)) {
 			this.setState({club: e.target.name});
 		} else {
 			this.setState({messageType: "warning"});
@@ -236,6 +236,7 @@ class PlayerState extends React.Component {
 			
 			let funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].getFunInc() * this.state.funValue);
 			let healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].getHealthInc() * this.state.healthValue);
+			let GPAAmount = Math.round((this.state.totalGP + percentage * this.state.maxGPA)/(this.state.day) * 100)/100;
 			this.setState((state) => ({
 				messageType: "",
 				day: state.day + 1,
@@ -243,7 +244,7 @@ class PlayerState extends React.Component {
 				health: healthAmount,
 				fun: funAmount,
 				totalGP: state.totalGP + percentage * state.maxGPA,
-				GPA: Math.round((state.totalGP + percentage * state.maxGPA)/(this.state.day) * 100)/100,
+				GPA: GPAAmount,
 				healthInc: 0,
 				funInc: 0,
 				GPAInc: 0,
@@ -251,6 +252,12 @@ class PlayerState extends React.Component {
 				dailyFunInc: 0,
 				dailyGPAInc: 0,
 			}));
+			if (!clubs[this.state.club].isEligible(healthAmount, GPAAmount, funAmount)) {
+				this.setState({
+					messageType: "warning",
+					club: "none",
+				});
+			}
 		}
 	}
 

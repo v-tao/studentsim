@@ -57,8 +57,8 @@ var Club = function () {
 			console.log("funInc: " + this.funInc);
 		}
 	}, {
-		key: "succesfulTryout",
-		value: function succesfulTryout(health, GPA, fun) {
+		key: "isEligible",
+		value: function isEligible(health, GPA, fun) {
 			return health >= this.healthReq && GPA >= this.GPAReq && fun >= this.funReq;
 		}
 	}]);
@@ -238,7 +238,7 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleChooseClubClick",
 		value: function handleChooseClubClick(e) {
-			if (clubs[e.target.name].succesfulTryout(this.state.health, this.state.GPA, this.state.fun)) {
+			if (clubs[e.target.name].isEligible(this.state.health, this.state.GPA, this.state.fun)) {
 				this.setState({ club: e.target.name });
 			} else {
 				this.setState({ messageType: "warning" });
@@ -277,8 +277,6 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "nextDay",
 		value: function nextDay(e) {
-			var _this2 = this;
-
 			e.preventDefault();
 			if (this.state.day == this.state.lastDay) {
 				this.setState({ displayStats: false, displayEndScreen: true });
@@ -296,6 +294,7 @@ var PlayerState = function (_React$Component) {
 
 				var funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].getFunInc() * this.state.funValue);
 				var healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].getHealthInc() * this.state.healthValue);
+				var GPAAmount = Math.round((this.state.totalGP + percentage * this.state.maxGPA) / this.state.day * 100) / 100;
 				this.setState(function (state) {
 					return {
 						messageType: "",
@@ -304,7 +303,7 @@ var PlayerState = function (_React$Component) {
 						health: healthAmount,
 						fun: funAmount,
 						totalGP: state.totalGP + percentage * state.maxGPA,
-						GPA: Math.round((state.totalGP + percentage * state.maxGPA) / _this2.state.day * 100) / 100,
+						GPA: GPAAmount,
 						healthInc: 0,
 						funInc: 0,
 						GPAInc: 0,
@@ -313,6 +312,12 @@ var PlayerState = function (_React$Component) {
 						dailyGPAInc: 0
 					};
 				});
+				if (!clubs[this.state.club].isEligible(healthAmount, GPAAmount, funAmount)) {
+					this.setState({
+						messageType: "warning",
+						club: "none"
+					});
+				}
 			}
 		}
 	}, {
@@ -341,11 +346,11 @@ var StartScreen = function (_React$Component2) {
 	function StartScreen(props) {
 		_classCallCheck(this, StartScreen);
 
-		var _this3 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
+		var _this2 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
 
-		_this3.handleStart = _this3.handleStart.bind(_this3);
-		_this3.handleClassChange = _this3.handleClassChange.bind(_this3);
-		return _this3;
+		_this2.handleStart = _this2.handleStart.bind(_this2);
+		_this2.handleClassChange = _this2.handleClassChange.bind(_this2);
+		return _this2;
 	}
 
 	_createClass(StartScreen, [{
@@ -462,10 +467,10 @@ var ChooseActivity = function (_React$Component4) {
 	function ChooseActivity(props) {
 		_classCallCheck(this, ChooseActivity);
 
-		var _this5 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
+		var _this4 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
 
-		_this5.handleActivityClick = _this5.handleActivityClick.bind(_this5);
-		return _this5;
+		_this4.handleActivityClick = _this4.handleActivityClick.bind(_this4);
+		return _this4;
 	}
 
 	_createClass(ChooseActivity, [{
@@ -511,10 +516,10 @@ var ChooseClub = function (_React$Component5) {
 	function ChooseClub(props) {
 		_classCallCheck(this, ChooseClub);
 
-		var _this6 = _possibleConstructorReturn(this, (ChooseClub.__proto__ || Object.getPrototypeOf(ChooseClub)).call(this, props));
+		var _this5 = _possibleConstructorReturn(this, (ChooseClub.__proto__ || Object.getPrototypeOf(ChooseClub)).call(this, props));
 
-		_this6.handleChooseClubClick = _this6.handleChooseClubClick.bind(_this6);
-		return _this6;
+		_this5.handleChooseClubClick = _this5.handleChooseClubClick.bind(_this5);
+		return _this5;
 	}
 
 	_createClass(ChooseClub, [{
@@ -525,13 +530,13 @@ var ChooseClub = function (_React$Component5) {
 	}, {
 		key: "render",
 		value: function render() {
-			var _this7 = this;
+			var _this6 = this;
 
 			var buttons = Object.keys(clubs).map(function (club, i) {
 				if (club != "none") {
 					return React.createElement(
 						"button",
-						{ key: i, onClick: _this7.handleChooseClubClick, name: club },
+						{ key: i, onClick: _this6.handleChooseClubClick, name: club },
 						clubs[club].getName()
 					);
 				}
@@ -562,11 +567,11 @@ var HoursForm = function (_React$Component6) {
 	function HoursForm(props) {
 		_classCallCheck(this, HoursForm);
 
-		var _this8 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
+		var _this7 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
 
-		_this8.handleHoursChange = _this8.handleHoursChange.bind(_this8);
-		_this8.handleHoursSubmit = _this8.handleHoursSubmit.bind(_this8);
-		return _this8;
+		_this7.handleHoursChange = _this7.handleHoursChange.bind(_this7);
+		_this7.handleHoursSubmit = _this7.handleHoursSubmit.bind(_this7);
+		return _this7;
 	}
 
 	_createClass(HoursForm, [{
@@ -619,13 +624,13 @@ var Message = function (_React$Component7) {
 	function Message(props) {
 		_classCallCheck(this, Message);
 
-		var _this9 = _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
+		var _this8 = _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
 
-		_this9.messages = {
+		_this8.messages = {
 			"warning": React.createElement(WarningMessage, null),
-			"danger": React.createElement(DangerMessage, { onConfirmLeaveClubClick: _this9.props.onConfirmLeaveClubClick })
+			"danger": React.createElement(DangerMessage, { onConfirmLeaveClubClick: _this8.props.onConfirmLeaveClubClick })
 		};
-		return _this9;
+		return _this8;
 	}
 
 	_createClass(Message, [{
