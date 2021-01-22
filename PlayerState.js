@@ -154,7 +154,7 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleActivityClick",
 		value: function handleActivityClick(activity) {
-			this.setState({ displayHoursForm: true, displayChooseActivity: false });
+			this.setState({ displayHoursForm: true, displayChooseActivity: false, messageType: "" });
 			this.setState({ hoursFormActivity: activity });
 		}
 	}, {
@@ -232,7 +232,8 @@ var PlayerState = function (_React$Component) {
 		value: function handleJoinClubClick() {
 			this.setState({
 				displayChooseClub: true,
-				displayChooseActivity: false
+				displayChooseActivity: false,
+				messageType: ""
 			});
 		}
 	}, {

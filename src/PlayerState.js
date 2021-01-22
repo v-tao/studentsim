@@ -9,7 +9,7 @@ class Club {
 		this.healthReq = healthReq;
 		this.GPAReq = GPAReq;
 		this.funReq = funReq;
-    }
+	}
 
 	getName() {
 		return this.name;
@@ -121,7 +121,7 @@ class PlayerState extends React.Component {
 	}
 
 	handleActivityClick(activity) {
-		this.setState({displayHoursForm: true, displayChooseActivity: false});
+		this.setState({displayHoursForm: true, displayChooseActivity: false, messageType: ""});
 		this.setState({hoursFormActivity: activity});
 	}
 
@@ -180,6 +180,7 @@ class PlayerState extends React.Component {
 		this.setState({
 			displayChooseClub: true,
 			displayChooseActivity: false,
+			messageType: "",
 		});
 	}
 
