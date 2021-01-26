@@ -44,11 +44,56 @@ class Club {
 	}
 }
 
+class Event {
+	constructor(name, text, hours, healthInc, funInc, GPAInc) {
+		this.name = name;
+		this.text = text;
+		this.hours = hours;
+		this.healthInc = healthInc;
+		this.funInc = funInc;
+		this.GPAInc = GPAInc;
+	}
+
+	getName() {
+		return this.name;
+	}
+
+	getText() {
+		return this.text;
+	}
+
+	getHours() {
+		return this.hours;
+	}
+
+	getHealthInc() {
+		return this.healthInc;
+	}
+
+	getFunInc() {
+		return this.funInc;
+	}
+
+	getGPAInc() {
+		return this.GPAInc;
+	}
+}
+
+//name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq
 const clubs = {
 	none: new Club("none", 0, 0, 0, 0, 0, 0, 0),
 	soccerClub: new Club("Soccer Team", 2, 2, 0, 2, 70, 2.0, 0),
 	quizClub: new Club("Quiz Bowl", 2, 0, 2, 2, 0, 3.5, 0),
 	comedyClub: new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70),
+}
+//have events for a club
+
+//name, text, hours, healthInc, funInc, GPAInc, 
+//popQuiz, hangout, bullies, substitute, slept through alarm, pizza for lunch, meme
+const events = {
+	popQuiz: new Event("popQuiz", "You had a pop quiz today", 0, 0, 10),
+	pizzaLunch: new Event("pizzaLunch", "You had pizza for lunch", 10, 10, 0),
+	meme: new Event("meme","Your friend showed you a funny meme", 0, 20, 0),
 }
 
 class PlayerState extends React.Component {

@@ -66,12 +66,66 @@ var Club = function () {
 	return Club;
 }();
 
+var Event = function () {
+	function Event(name, text, hours, healthInc, funInc, GPAInc) {
+		_classCallCheck(this, Event);
+
+		this.name = name;
+		this.text = text;
+		this.hours = hours;
+		this.healthInc = healthInc;
+		this.funInc = funInc;
+		this.GPAInc = GPAInc;
+	}
+
+	_createClass(Event, [{
+		key: "getName",
+		value: function getName() {
+			return this.name;
+		}
+	}, {
+		key: "getText",
+		value: function getText() {
+			return this.text;
+		}
+	}, {
+		key: "getHours",
+		value: function getHours() {
+			return this.hours;
+		}
+	}, {
+		key: "getHealthInc",
+		value: function getHealthInc() {
+			return this.healthInc;
+		}
+	}, {
+		key: "getFunInc",
+		value: function getFunInc() {
+			return this.funInc;
+		}
+	}, {
+		key: "getGPAInc",
+		value: function getGPAInc() {
+			return this.GPAInc;
+		}
+	}]);
+
+	return Event;
+}();
+
+//name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq
+
+
 var clubs = {
 	none: new Club("none", 0, 0, 0, 0, 0, 0, 0),
 	soccerClub: new Club("Soccer Team", 2, 2, 0, 2, 70, 2.0, 0),
 	quizClub: new Club("Quiz Bowl", 2, 0, 2, 2, 0, 3.5, 0),
 	comedyClub: new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70)
-};
+	//have events for a club
+
+	//name, text, hours, healthInc, funInc, GPAInc, substitute, slept through alarm, pizza for lunch, meme
+	//popQuiz, hangout, bullies
+};var events = {};
 
 var PlayerState = function (_React$Component) {
 	_inherits(PlayerState, _React$Component);
