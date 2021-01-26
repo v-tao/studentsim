@@ -45,10 +45,9 @@ class Club {
 }
 
 class Event {
-	constructor(name, text, hours, healthInc, funInc, GPAInc) {
+	constructor(name, text, healthInc, funInc, GPAInc) {
 		this.name = name;
 		this.text = text;
-		this.hours = hours;
 		this.healthInc = healthInc;
 		this.funInc = funInc;
 		this.GPAInc = GPAInc;
@@ -60,10 +59,6 @@ class Event {
 
 	getText() {
 		return this.text;
-	}
-
-	getHours() {
-		return this.hours;
 	}
 
 	getHealthInc() {
@@ -91,6 +86,7 @@ const clubs = {
 //name, text, hours, healthInc, funInc, GPAInc, 
 //popQuiz, hangout, bullies, substitute, slept through alarm, pizza for lunch, meme
 const events = {
+	none: new Event("none", "", 0, 0, 0),
 	popQuiz: new Event("popQuiz", "You had a pop quiz today", 0, 0, 10),
 	pizzaLunch: new Event("pizzaLunch", "You had pizza for lunch", 10, 10, 0),
 	meme: new Event("meme","Your friend showed you a funny meme", 0, 20, 0),
@@ -106,7 +102,7 @@ class PlayerState extends React.Component {
 			displayEndScreen: false,
 			displayHoursForm: false,
 			displayChooseClub: false,
-			displayEventBox: true,
+			displayEventBox: false,
 			messageType: "",
 			hoursFormActivity: "",
 			numClasses: 4,
@@ -132,7 +128,8 @@ class PlayerState extends React.Component {
 			healthValue: 10,
 			dailyHealthInc: 0,
 			club: "none",
-			event: "popQuiz",
+			event: "none",
+			eventProb: 0.5,
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);
@@ -145,6 +142,7 @@ class PlayerState extends React.Component {
 		this.handleChooseClubClick = this.handleChooseClubClick.bind(this);
 		this.handleLeaveClubClick = this.handleLeaveClubClick.bind(this);
 		this.handleConfirmLeaveClubClick = this.handleConfirmLeaveClubClick.bind(this);
+		this.chooseEvent = this.chooseEvent.bind(this);
 		this.nextDay = this.nextDay.bind(this);
 	}
 
@@ -266,10 +264,27 @@ class PlayerState extends React.Component {
 		}
 	}
 
+	chooseEvent() {
+		if (Math.random() <= this.state.eventProb) {
+			let eventIndex = Math.floor(Math.random() * (Object.keys(events).length));
+			let eventArray = Object.values(events)
+			let event = eventArray[eventIndex]
+			this.setState((state) => ({
+				displayEventBox: true,
+				event: event.getName(),
+				health: state.health + event.getHealthInc(),
+				GPA: state.health + event.getGPAInc(),
+				fun: state.fun + event.getFunInc(),
+			}));
+		} else {
+			this.setState({displayEventBox: false, event: "none"});
+		}
+	}
+
 	nextDay(e) {
 		e.preventDefault();
 		if (this.state.day == this.state.lastDay) {
-			this.setState({displayChooseActivity: false, displayStats: false, displayEndScreen: true});
+			this.setState({displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true});
 		} else {
 			let percentage = (this.state.dailyGPAInc + clubs[this.state.club].getGPAInc())/this.state.numClasses;
 			if (percentage > 1) {
@@ -300,6 +315,7 @@ class PlayerState extends React.Component {
 				dailyFunInc: 0,
 				dailyGPAInc: 0,
 			}));
+			this.chooseEvent();
 			if (!clubs[this.state.club].isEligible(healthAmount, GPAAmount, funAmount)) {
 				this.setState({
 					messageType: "warning",

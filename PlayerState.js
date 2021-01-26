@@ -67,12 +67,11 @@ var Club = function () {
 }();
 
 var Event = function () {
-	function Event(name, text, hours, healthInc, funInc, GPAInc) {
+	function Event(name, text, healthInc, funInc, GPAInc) {
 		_classCallCheck(this, Event);
 
 		this.name = name;
 		this.text = text;
-		this.hours = hours;
 		this.healthInc = healthInc;
 		this.funInc = funInc;
 		this.GPAInc = GPAInc;
@@ -87,11 +86,6 @@ var Event = function () {
 		key: "getText",
 		value: function getText() {
 			return this.text;
-		}
-	}, {
-		key: "getHours",
-		value: function getHours() {
-			return this.hours;
 		}
 	}, {
 		key: "getHealthInc",
@@ -126,6 +120,7 @@ var clubs = {
 	//name, text, hours, healthInc, funInc, GPAInc, 
 	//popQuiz, hangout, bullies, substitute, slept through alarm, pizza for lunch, meme
 };var events = {
+	none: new Event("none", "", 0, 0, 0),
 	popQuiz: new Event("popQuiz", "You had a pop quiz today", 0, 0, 10),
 	pizzaLunch: new Event("pizzaLunch", "You had pizza for lunch", 10, 10, 0),
 	meme: new Event("meme", "Your friend showed you a funny meme", 0, 20, 0)
@@ -146,7 +141,7 @@ var PlayerState = function (_React$Component) {
 			displayEndScreen: false,
 			displayHoursForm: false,
 			displayChooseClub: false,
-			displayEventBox: true,
+			displayEventBox: false,
 			messageType: "",
 			hoursFormActivity: "",
 			numClasses: 4,
@@ -172,7 +167,8 @@ var PlayerState = function (_React$Component) {
 			healthValue: 10,
 			dailyHealthInc: 0,
 			club: "none",
-			event: "popQuiz",
+			event: "none",
+			eventProb: 0.5,
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
@@ -185,6 +181,7 @@ var PlayerState = function (_React$Component) {
 		_this.handleChooseClubClick = _this.handleChooseClubClick.bind(_this);
 		_this.handleLeaveClubClick = _this.handleLeaveClubClick.bind(_this);
 		_this.handleConfirmLeaveClubClick = _this.handleConfirmLeaveClubClick.bind(_this);
+		_this.chooseEvent = _this.chooseEvent.bind(_this);
 		_this.nextDay = _this.nextDay.bind(_this);
 		return _this;
 	}
@@ -336,11 +333,31 @@ var PlayerState = function (_React$Component) {
 			}
 		}
 	}, {
+		key: "chooseEvent",
+		value: function chooseEvent() {
+			if (Math.random() <= this.state.eventProb) {
+				var eventIndex = Math.floor(Math.random() * Object.keys(events).length);
+				var eventArray = Object.values(events);
+				var event = eventArray[eventIndex];
+				this.setState(function (state) {
+					return {
+						displayEventBox: true,
+						event: event.getName(),
+						health: state.health + event.getHealthInc(),
+						GPA: state.health + event.getGPAInc(),
+						fun: state.fun + event.getFunInc()
+					};
+				});
+			} else {
+				this.setState({ displayEventBox: false, event: "none" });
+			}
+		}
+	}, {
 		key: "nextDay",
 		value: function nextDay(e) {
 			e.preventDefault();
 			if (this.state.day == this.state.lastDay) {
-				this.setState({ displayChooseActivity: false, displayStats: false, displayEndScreen: true });
+				this.setState({ displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true });
 			} else {
 				var percentage = (this.state.dailyGPAInc + clubs[this.state.club].getGPAInc()) / this.state.numClasses;
 				if (percentage > 1) {
@@ -373,6 +390,7 @@ var PlayerState = function (_React$Component) {
 						dailyGPAInc: 0
 					};
 				});
+				this.chooseEvent();
 				if (!clubs[this.state.club].isEligible(healthAmount, GPAAmount, funAmount)) {
 					this.setState({
 						messageType: "warning",
