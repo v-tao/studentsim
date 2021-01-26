@@ -8,64 +8,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Club = function () {
-	function Club(name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq) {
-		_classCallCheck(this, Club);
-
-		this.name = name;
-		this.hours = hours;
-		this.healthInc = healthInc;
-		this.GPAInc = GPAInc;
-		this.funInc = funInc;
-		this.healthReq = healthReq;
-		this.GPAReq = GPAReq;
-		this.funReq = funReq;
-	}
-
-	_createClass(Club, [{
-		key: "getName",
-		value: function getName() {
-			return this.name;
-		}
-	}, {
-		key: "getHours",
-		value: function getHours() {
-			return this.hours;
-		}
-	}, {
-		key: "getHealthInc",
-		value: function getHealthInc() {
-			return this.healthInc;
-		}
-	}, {
-		key: "getGPAInc",
-		value: function getGPAInc() {
-			return this.GPAInc;
-		}
-	}, {
-		key: "getFunInc",
-		value: function getFunInc() {
-			return this.funInc;
-		}
-	}, {
-		key: "print",
-		value: function print() {
-			console.log("name: " + this.name);
-			console.log("hours: " + this.hours);
-			console.log("healthInc: " + this.healthInc);
-			console.log("GPAInc: " + this.GPAInc);
-			console.log("funInc: " + this.funInc);
-		}
-	}, {
-		key: "isEligible",
-		value: function isEligible(health, GPA, fun) {
-			return health >= this.healthReq && GPA >= this.GPAReq && fun >= this.funReq;
-		}
-	}]);
-
-	return Club;
-}();
-
 var Event = function () {
 	function Event(name, text, healthInc, funInc, GPAInc) {
 		_classCallCheck(this, Event);
@@ -359,7 +301,7 @@ var PlayerState = function (_React$Component) {
 			if (this.state.day == this.state.lastDay) {
 				this.setState({ displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true });
 			} else {
-				var percentage = (this.state.dailyGPAInc + clubs[this.state.club].getGPAInc()) / this.state.numClasses;
+				var percentage = this.state.dailyGPAInc + clubs[this.state.club].GPAInc / this.state.numClasses;
 				if (percentage > 1) {
 					percentage = 1;
 				}
@@ -370,14 +312,14 @@ var PlayerState = function (_React$Component) {
 					sleepDecay = this.state.healthValue * (this.state.necessarySleepHours - (24 - this.state.time + this.state.wakeUpTime));
 				}
 
-				var funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].getFunInc() * this.state.funValue);
-				var healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].getHealthInc() * this.state.healthValue);
+				var funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].funInc * this.state.funValue);
+				var healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].healthInc * this.state.healthValue);
 				var GPAAmount = Math.round((this.state.totalGP + percentage * this.state.maxGPA) / this.state.day * 100) / 100;
 				this.setState(function (state) {
 					return {
 						messageType: "",
 						day: state.day + 1,
-						time: state.club == "none" ? state.startTime : state.startTime + clubs[state.club].getHours(),
+						time: state.club == "none" ? state.startTime : state.startTime + clubs[state.club].hours,
 						health: healthAmount,
 						fun: funAmount,
 						totalGP: state.totalGP + percentage * state.maxGPA,
@@ -407,11 +349,11 @@ var PlayerState = function (_React$Component) {
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
 				React.createElement(Message, { type: this.state.messageType, onConfirmLeaveClubClick: this.handleConfirmLeaveClubClick }),
-				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + clubs[this.state.club].getHours() }),
+				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + clubs[this.state.club].hours }),
 				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
 				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventText: events[this.state.event].getText() }),
-				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: clubs[this.state.club].getName(), health: this.state.health, GPA: this.state.GPA, fun: this.state.fun }),
+				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: clubs[this.state.club].name, health: this.state.health, GPA: this.state.GPA, fun: this.state.fun }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: this.state.GPA, fun: this.state.fun })
 			);
 		}
@@ -617,7 +559,7 @@ var ChooseClub = function (_React$Component5) {
 					return React.createElement(
 						"button",
 						{ key: i, onClick: _this6.handleChooseClubClick, name: club },
-						clubs[club].getName()
+						clubs[club].name
 					);
 				}
 			});

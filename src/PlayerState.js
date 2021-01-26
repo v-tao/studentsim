@@ -1,49 +1,4 @@
 "use strict";
-class Club {
-    constructor(name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq) {
-        this.name = name;
-        this.hours = hours;
-        this.healthInc = healthInc;
-        this.GPAInc = GPAInc;
-		this.funInc = funInc;
-		this.healthReq = healthReq;
-		this.GPAReq = GPAReq;
-		this.funReq = funReq;
-	}
-
-	getName() {
-		return this.name;
-	}
-
-	getHours() {
-		return this.hours;
-	}
-	
-	getHealthInc() {
-		return this.healthInc;
-	}
-
-	getGPAInc() {
-		return this.GPAInc;
-	}
-
-	getFunInc() {
-		return this.funInc;
-	}
-
-    print() {
-        console.log("name: " + this.name);
-        console.log("hours: " + this.hours);
-        console.log("healthInc: " + this.healthInc);
-        console.log("GPAInc: " + this.GPAInc);
-        console.log("funInc: " + this.funInc);
-	}
-	
-	isEligible(health, GPA, fun) {
-		return ((health >= this.healthReq) && (GPA >= this.GPAReq) && (fun >= this.funReq));
-	}
-}
-
 class Event {
 	constructor(name, text, healthInc, funInc, GPAInc) {
 		this.name = name;
@@ -286,7 +241,7 @@ class PlayerState extends React.Component {
 		if (this.state.day == this.state.lastDay) {
 			this.setState({displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true});
 		} else {
-			let percentage = (this.state.dailyGPAInc + clubs[this.state.club].getGPAInc())/this.state.numClasses;
+			let percentage = (this.state.dailyGPAInc + clubs[this.state.club].GPAInc/this.state.numClasses);
 			if (percentage > 1) {
 				percentage = 1;
 			}
@@ -297,13 +252,13 @@ class PlayerState extends React.Component {
 				sleepDecay = this.state.healthValue*(this.state.necessarySleepHours-(24 - this.state.time + this.state.wakeUpTime));
 			}
 			
-			let funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].getFunInc() * this.state.funValue);
-			let healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].getHealthInc() * this.state.healthValue);
+			let funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].funInc * this.state.funValue);
+			let healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].healthInc * this.state.healthValue);
 			let GPAAmount = Math.round((this.state.totalGP + percentage * this.state.maxGPA)/(this.state.day) * 100)/100;
 			this.setState((state) => ({
 				messageType: "",
 				day: state.day + 1,
-				time: state.club=="none" ? state.startTime : state.startTime + clubs[state.club].getHours(),
+				time: state.club=="none" ? state.startTime : state.startTime + clubs[state.club].hours,
 				health: healthAmount,
 				fun: funAmount,
 				totalGP: state.totalGP + percentage * state.maxGPA,
@@ -330,11 +285,12 @@ class PlayerState extends React.Component {
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 				<Message type={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}></Message>
-				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + clubs[this.state.club].getHours()}/>
+				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + clubs[this.state.club].hours
+				}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
 				<EventBox displayEventBox={this.state.displayEventBox} eventText={events[this.state.event].getText()}/>
-				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={clubs[this.state.club].getName()} health={this.state.health} GPA={this.state.GPA} fun={this.state.fun}/>
+				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={clubs[this.state.club].name} health={this.state.health} GPA={this.state.GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={this.state.GPA} fun={this.state.fun}/>
 			</div>
 
@@ -449,7 +405,7 @@ class ChooseClub extends React.Component {
 	render() {
 		const buttons = Object.keys(clubs).map((club, i) => {
 			if (club != "none") {
-				return <button key={i} onClick={this.handleChooseClubClick} name={club}>{clubs[club].getName()}</button>
+				return <button key={i} onClick={this.handleChooseClubClick} name={club}>{clubs[club].name}</button>
 			}
 		})
 		if (this.props.displayChooseClub) {
