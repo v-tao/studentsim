@@ -106,6 +106,7 @@ class PlayerState extends React.Component {
 			displayEndScreen: false,
 			displayHoursForm: false,
 			displayChooseClub: false,
+			displayEventBox: true,
 			messageType: "",
 			hoursFormActivity: "",
 			numClasses: 4,
@@ -131,6 +132,7 @@ class PlayerState extends React.Component {
 			healthValue: 10,
 			dailyHealthInc: 0,
 			club: "none",
+			event: "popQuiz",
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);
@@ -315,6 +317,7 @@ class PlayerState extends React.Component {
 				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + clubs[this.state.club].getHours()}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
+				<EventBox displayEventBox={this.state.displayEventBox} eventText={events[this.state.event].getText()}/>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={clubs[this.state.club].getName()} health={this.state.health} GPA={this.state.GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={this.state.GPA} fun={this.state.fun}/>
 			</div>
@@ -528,6 +531,24 @@ class DangerMessage extends React.Component {
 				<button onClick={this.props.onConfirmLeaveClubClick}>I am sure I want to leave the club</button>
 			</div>
 		)
+	}
+}
+
+class EventBox extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		if (this.props.displayEventBox) {
+			return (
+				<div>
+					<p>{this.props.eventText}</p>
+				</div>
+			)
+		} else {
+			return null;
+		}
 	}
 }
 

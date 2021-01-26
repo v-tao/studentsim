@@ -123,9 +123,13 @@ var clubs = {
 	comedyClub: new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70)
 	//have events for a club
 
-	//name, text, hours, healthInc, funInc, GPAInc, substitute, slept through alarm, pizza for lunch, meme
-	//popQuiz, hangout, bullies
-};var events = {};
+	//name, text, hours, healthInc, funInc, GPAInc, 
+	//popQuiz, hangout, bullies, substitute, slept through alarm, pizza for lunch, meme
+};var events = {
+	popQuiz: new Event("popQuiz", "You had a pop quiz today", 0, 0, 10),
+	pizzaLunch: new Event("pizzaLunch", "You had pizza for lunch", 10, 10, 0),
+	meme: new Event("meme", "Your friend showed you a funny meme", 0, 20, 0)
+};
 
 var PlayerState = function (_React$Component) {
 	_inherits(PlayerState, _React$Component);
@@ -142,6 +146,7 @@ var PlayerState = function (_React$Component) {
 			displayEndScreen: false,
 			displayHoursForm: false,
 			displayChooseClub: false,
+			displayEventBox: true,
 			messageType: "",
 			hoursFormActivity: "",
 			numClasses: 4,
@@ -167,6 +172,7 @@ var PlayerState = function (_React$Component) {
 			healthValue: 10,
 			dailyHealthInc: 0,
 			club: "none",
+			event: "popQuiz",
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
@@ -386,6 +392,7 @@ var PlayerState = function (_React$Component) {
 				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + clubs[this.state.club].getHours() }),
 				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
+				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventText: events[this.state.event].getText() }),
 				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: clubs[this.state.club].getName(), health: this.state.health, GPA: this.state.GPA, fun: this.state.fun }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: this.state.GPA, fun: this.state.fun })
 			);
@@ -768,8 +775,39 @@ var DangerMessage = function (_React$Component9) {
 	return DangerMessage;
 }(React.Component);
 
-var DisplayStats = function (_React$Component10) {
-	_inherits(DisplayStats, _React$Component10);
+var EventBox = function (_React$Component10) {
+	_inherits(EventBox, _React$Component10);
+
+	function EventBox(props) {
+		_classCallCheck(this, EventBox);
+
+		return _possibleConstructorReturn(this, (EventBox.__proto__ || Object.getPrototypeOf(EventBox)).call(this, props));
+	}
+
+	_createClass(EventBox, [{
+		key: "render",
+		value: function render() {
+			if (this.props.displayEventBox) {
+				return React.createElement(
+					"div",
+					null,
+					React.createElement(
+						"p",
+						null,
+						this.props.eventText
+					)
+				);
+			} else {
+				return null;
+			}
+		}
+	}]);
+
+	return EventBox;
+}(React.Component);
+
+var DisplayStats = function (_React$Component11) {
+	_inherits(DisplayStats, _React$Component11);
 
 	function DisplayStats(props) {
 		_classCallCheck(this, DisplayStats);
@@ -841,8 +879,8 @@ var DisplayStats = function (_React$Component10) {
 	return DisplayStats;
 }(React.Component);
 
-var EndScreen = function (_React$Component11) {
-	_inherits(EndScreen, _React$Component11);
+var EndScreen = function (_React$Component12) {
+	_inherits(EndScreen, _React$Component12);
 
 	function EndScreen(props) {
 		_classCallCheck(this, EndScreen);
