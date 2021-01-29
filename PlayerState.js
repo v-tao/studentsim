@@ -88,7 +88,7 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleClassChange",
 		value: function handleClassChange(e) {
-			this.setState({ numClasses: e.target.value });
+			this.setState({ numClasses: parseInt(e.target.value) });
 		}
 	}, {
 		key: "handleClassSubmit",
@@ -196,7 +196,7 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "boundStats",
 		value: function boundStats(stat) {
-			if (stat < 100 && stat > 0) {
+			if (stat <= 100 && stat >= 0) {
 				return stat;
 			} else {
 				return stat > 100 ? 100 : 0;
@@ -217,6 +217,7 @@ var PlayerState = function (_React$Component) {
 		key: "calculateGPA",
 		value: function calculateGPA() {
 			var GPA = Math.round(100 * (this.state.academics.total / this.state.day / 20 - 1)) / 100;
+			console.log(this.state.numClasses);
 			if (this.state.numClasses == 5) {
 				GPA += 0.5;
 			} else if (this.state.numClasses == 6) {
@@ -318,7 +319,7 @@ var StartScreen = function (_React$Component2) {
 					),
 					React.createElement(
 						"form",
-						{ onSubmit: this.handleStart, onChange: this.props.handleClassChange },
+						{ onSubmit: this.handleStart, onChange: this.props.onClassChange },
 						React.createElement(
 							"div",
 							null,

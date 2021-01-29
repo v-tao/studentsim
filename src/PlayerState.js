@@ -71,7 +71,7 @@ class PlayerState extends React.Component {
 	}
 
 	handleClassChange(e) {
-		this.setState({numClasses:e.target.value});
+		this.setState({numClasses:parseInt(e.target.value)});
 	}
 
 	handleClassSubmit(e) {
@@ -162,7 +162,7 @@ class PlayerState extends React.Component {
 	}
 
 	boundStats(stat) {
-		if (stat < 100 && stat > 0) {
+		if (stat <= 100 && stat >= 0) {
 			return stat;
 		} else {
 			return stat > 100 ? 100 : 0;
@@ -181,6 +181,7 @@ class PlayerState extends React.Component {
 
 	calculateGPA() {
 		let GPA  = Math.round(100*((this.state.academics.total/this.state.day)/20 - 1))/100;
+		console.log(this.state.numClasses)
 		if (this.state.numClasses == 5){
 			GPA += 0.5;
 		} else if (this.state.numClasses == 6){
@@ -248,7 +249,7 @@ class StartScreen extends React.Component {
 				<div>
 					<h1>The Funnest Bestest Game Ever</h1>
 					<h3>How many classes will you be taking</h3>
-					<form onSubmit={this.handleStart} onChange={this.props.handleClassChange}>
+					<form onSubmit={this.handleStart} onChange={this.props.onClassChange}>
 						<div>
 							<input type="radio" name="numClasses" value="4" defaultChecked/>
 							<label htmlFor="4">4</label>
