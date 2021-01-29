@@ -217,7 +217,6 @@ var PlayerState = function (_React$Component) {
 		key: "calculateGPA",
 		value: function calculateGPA() {
 			var GPA = Math.round(100 * (this.state.academics.total / this.state.day / 20 - 1)) / 100;
-			console.log(this.state.numClasses);
 			if (this.state.numClasses == 5) {
 				GPA += 0.5;
 			} else if (this.state.numClasses == 6) {
