@@ -52,10 +52,10 @@ var PlayerState = function (_React$Component) {
 			wakeUpTime: 6,
 			time: 15,
 			timeInc: 0,
-			// name, maxPoints, currentPoints, totalPoints, inputHolder, activityValue, dailyInc, dailyDec
-			academics: new Stat("academics", 100, 0, 0, 0, 10, 0, 0),
-			fun: new Stat("fun", 100, 0, 0, 0, 10, 0, 10),
-			health: new Stat("health", 100, 0, 0, 0, 10, 0, 10),
+			// name, currentPoints, totalPoints, inputHolder, activityValue, dailyInc, dailyDec
+			academics: new Stat("academics", 0, 0, 0, 10, 0, 0),
+			fun: new Stat("fun", 0, 0, 0, 10, 0, 10),
+			health: new Stat("health", 0, 0, 0, 10, 0, 10),
 			GPA: 0.0,
 			sleepValue: 10,
 			club: clubs.none,
@@ -75,6 +75,7 @@ var PlayerState = function (_React$Component) {
 		_this.handleConfirmLeaveClubClick = _this.handleConfirmLeaveClubClick.bind(_this);
 		_this.chooseEvent = _this.chooseEvent.bind(_this);
 		_this.calculateSleepDecay = _this.calculateSleepDecay.bind(_this);
+		_this.calculateGPA = _this.calculateGPA.bind(_this);
 		_this.nextDay = _this.nextDay.bind(_this);
 		return _this;
 	}
@@ -97,8 +98,7 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleActivityClick",
 		value: function handleActivityClick(activity) {
-			this.setState({ displayHoursForm: true, displayChooseActivity: false, messageType: "" });
-			this.setState({ hoursFormActivity: activity });
+			this.setState({ displayHoursForm: true, displayChooseActivity: false, messageType: "", hoursFormActivity: activity });
 		}
 	}, {
 		key: "handleHoursChange",
@@ -215,35 +215,44 @@ var PlayerState = function (_React$Component) {
 			return sleepDecay >= 0 ? sleepDecay : 0;
 		}
 	}, {
+		key: "calculateGPA",
+		value: function calculateGPA() {
+			var GPA = Math.round(100 * (this.state.academics.total / this.state.day / 20 - 1)) / 100;
+			if (this.state.numClasses == 5) {
+				GPA += 0.5;
+			} else if (this.state.numClasses == 6) {
+				GPA += 1;
+			}
+			return GPA >= 0 ? GPA : 0;
+		}
+	}, {
 		key: "nextDay",
 		value: function nextDay(e) {
+			var _this2 = this;
+
 			e.preventDefault();
 			if (this.state.day == this.state.lastDay) {
 				this.setState({ displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true });
 			} else {
-				var percentage = this.state.dailyGPAInc + this.state.club.GPAInc / this.state.numClasses;
-				if (percentage > 1) {
-					percentage = 1;
-				}
-				var sleepDecay = this.calculateSleepDecay();
-				this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyInc * this.state.fun.activityValue + this.state.club.funInc);
-				this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyInc * this.state.health.activityValue - this.state.health.decay - sleepDecay + this.state.club.healthInc);
-				var GPAAmount = Math.round((this.state.totalGP + percentage * this.state.maxGPA) / this.state.day * 100) / 100;
+				this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec);
+				this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc);
+				this.state.academics.current = this.boundStats(Math.round(100 * (this.state.academics.dailyInc + this.state.club.academicsInc) / this.state.numClasses));
+				this.state.academics.total += this.state.academics.current;
 				var _ref3 = [0, 0, 0];
 				this.state.fun.dailyInc = _ref3[0];
 				this.state.health.dailyInc = _ref3[1];
 				this.state.academics.dailyInc = _ref3[2];
+				var _ref4 = [0, 0, 0];
+				this.state.fun.inputHolder = _ref4[0];
+				this.state.health.inputHolder = _ref4[1];
+				this.state.academics.inputHolder = _ref4[2];
 
 				this.setState(function (state) {
 					return {
 						messageType: "",
 						day: state.day + 1,
 						time: state.club.name == "none" ? state.startTime : state.startTime + state.club.hours,
-						totalGP: state.totalGP + percentage * state.maxGPA,
-						GPA: GPAAmount,
-						healthInc: 0,
-						funInc: 0,
-						GPAInc: 0
+						GPA: _this2.calculateGPA()
 					};
 				});
 				this.chooseEvent();
@@ -279,10 +288,10 @@ var StartScreen = function (_React$Component2) {
 	function StartScreen(props) {
 		_classCallCheck(this, StartScreen);
 
-		var _this2 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
+		var _this3 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
 
-		_this2.handleStart = _this2.handleStart.bind(_this2);
-		return _this2;
+		_this3.handleStart = _this3.handleStart.bind(_this3);
+		return _this3;
 	}
 
 	_createClass(StartScreen, [{
@@ -394,10 +403,10 @@ var ChooseActivity = function (_React$Component4) {
 	function ChooseActivity(props) {
 		_classCallCheck(this, ChooseActivity);
 
-		var _this4 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
+		var _this5 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
 
-		_this4.handleActivityClick = _this4.handleActivityClick.bind(_this4);
-		return _this4;
+		_this5.handleActivityClick = _this5.handleActivityClick.bind(_this5);
+		return _this5;
 	}
 
 	_createClass(ChooseActivity, [{
@@ -449,13 +458,13 @@ var ChooseClub = function (_React$Component5) {
 	_createClass(ChooseClub, [{
 		key: "render",
 		value: function render() {
-			var _this6 = this;
+			var _this7 = this;
 
 			var buttons = Object.keys(clubs).map(function (club, i) {
 				if (club != "none") {
 					return React.createElement(
 						"button",
-						{ key: i, onClick: _this6.props.onChooseClubClick, name: club },
+						{ key: i, onClick: _this7.props.onChooseClubClick, name: club },
 						clubs[club].name
 					);
 				}
@@ -486,11 +495,11 @@ var HoursForm = function (_React$Component6) {
 	function HoursForm(props) {
 		_classCallCheck(this, HoursForm);
 
-		var _this7 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
+		var _this8 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
 
-		_this7.handleHoursChange = _this7.handleHoursChange.bind(_this7);
-		_this7.handleHoursSubmit = _this7.handleHoursSubmit.bind(_this7);
-		return _this7;
+		_this8.handleHoursChange = _this8.handleHoursChange.bind(_this8);
+		_this8.handleHoursSubmit = _this8.handleHoursSubmit.bind(_this8);
+		return _this8;
 	}
 
 	_createClass(HoursForm, [{
@@ -543,13 +552,13 @@ var Message = function (_React$Component7) {
 	function Message(props) {
 		_classCallCheck(this, Message);
 
-		var _this8 = _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
+		var _this9 = _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
 
-		_this8.messages = {
+		_this9.messages = {
 			"warning": React.createElement(WarningMessage, null),
-			"danger": React.createElement(DangerMessage, { onConfirmLeaveClubClick: _this8.props.onConfirmLeaveClubClick })
+			"danger": React.createElement(DangerMessage, { onConfirmLeaveClubClick: _this9.props.onConfirmLeaveClubClick })
 		};
-		return _this8;
+		return _this9;
 	}
 
 	_createClass(Message, [{

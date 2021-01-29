@@ -39,10 +39,10 @@ class PlayerState extends React.Component {
 			wakeUpTime: 6,
 			time: 15,
 			timeInc: 0,
-			// name, maxPoints, currentPoints, totalPoints, inputHolder, activityValue, dailyInc, dailyDec
-			academics: new Stat("academics", 100, 0, 0, 0, 10, 0, 0),
-			fun: new Stat("fun", 100, 0, 0, 0, 10, 0, 10),
-			health: new Stat("health", 100, 0, 0, 0, 10, 0, 10),
+			// name, currentPoints, totalPoints, inputHolder, activityValue, dailyInc, dailyDec
+			academics: new Stat("academics", 0, 0, 0, 10, 0, 0),
+			fun: new Stat("fun", 0, 0, 0, 10, 0, 10),
+			health: new Stat("health", 0, 0, 0, 10, 0, 10),
 			GPA: 0.0,
 			sleepValue: 10,
 			club: clubs.none,
@@ -62,6 +62,7 @@ class PlayerState extends React.Component {
 		this.handleConfirmLeaveClubClick = this.handleConfirmLeaveClubClick.bind(this);
 		this.chooseEvent = this.chooseEvent.bind(this);
 		this.calculateSleepDecay = this.calculateSleepDecay.bind(this);
+		this.calculateGPA = this.calculateGPA.bind(this);
 		this.nextDay = this.nextDay.bind(this);
 	}
 
@@ -78,8 +79,7 @@ class PlayerState extends React.Component {
 	}
 
 	handleActivityClick(activity) {
-		this.setState({displayHoursForm: true, displayChooseActivity: false, messageType: ""});
-		this.setState({hoursFormActivity: activity});
+		this.setState({displayHoursForm: true, displayChooseActivity: false, messageType: "", hoursFormActivity: activity});
 	}
 
 	handleHoursChange(e, activity) {
@@ -180,29 +180,32 @@ class PlayerState extends React.Component {
 		return sleepDecay >= 0 ? sleepDecay : 0;
 	}
 
+	calculateGPA() {
+		let GPA  = Math.round(100*((this.state.academics.total/this.state.day)/20 - 1))/100;
+		if (this.state.numClasses == 5){
+			GPA += 0.5;
+		} else if (this.state.numClasses == 6){
+			GPA += 1;
+		}
+		return GPA >= 0 ? GPA : 0;
+	}
+
 	nextDay(e) {
 		e.preventDefault();
 		if (this.state.day == this.state.lastDay) {
 			this.setState({displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true});
 		} else {
-			let percentage = (this.state.dailyGPAInc + this.state.club.GPAInc/this.state.numClasses);
-			if (percentage > 1) {
-				percentage = 1;
-			}
-			let sleepDecay = this.calculateSleepDecay();
-			this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyInc * this.state.fun.activityValue + this.state.club.funInc);
-			this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyInc * this.state.health.activityValue - this.state.health.decay - sleepDecay + this.state.club.healthInc);
-			let GPAAmount = Math.round((this.state.totalGP + percentage * this.state.maxGPA)/(this.state.day) * 100)/100;
-			[this.state.fun.dailyInc, this.state.health.dailyInc, this.state.academics.dailyInc] = [0, 0, 0]
+			this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec);
+			this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc);
+			this.state.academics.current = this.boundStats(Math.round((100 * (this.state.academics.dailyInc + this.state.club.academicsInc)/this.state.numClasses)));
+			this.state.academics.total += this.state.academics.current;
+			[this.state.fun.dailyInc, this.state.health.dailyInc, this.state.academics.dailyInc] = [0, 0, 0];
+			[this.state.fun.inputHolder, this.state.health.inputHolder, this.state.academics.inputHolder] = [0, 0, 0];
 			this.setState((state) => ({
 				messageType: "",
 				day: state.day + 1,
 				time: state.club.name == "none" ? state.startTime : state.startTime + state.club.hours,
-				totalGP: state.totalGP + percentage * state.maxGPA,
-				GPA: GPAAmount,
-				healthInc: 0,
-				funInc: 0,
-				GPAInc: 0,
+				GPA: this.calculateGPA(),
 			}));
 			this.chooseEvent();
 			if (!this.state.club.isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {

@@ -1,7 +1,6 @@
 class Stat {
-    constructor(name, max, current, total, inputHolder, activityValue, dailyInc, dailyDec) {
+    constructor(name, current, total, inputHolder, activityValue, dailyInc, dailyDec) {
         this._name = name;
-        this._max = max;
         this._current = current;
         this._total = total;
         this._inputHolder = inputHolder;
@@ -12,10 +11,6 @@ class Stat {
 
     get name() {
         return this._name;
-    }
-
-    get max() {
-        return this._max;
     }
 
     get current() {
@@ -44,6 +39,10 @@ class Stat {
 
     set current(points) {
         this._current = points;
+    }
+
+    set total(points) {
+        this._total = points;
     }
 
     set inputHolder(inputValue) {
