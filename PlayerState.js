@@ -25,7 +25,7 @@ var clubs = {
 	meme: new Event("meme", "Your friend showed you a funny meme", 0, 20, 0)
 };
 
-var eventPool = [events.none, events.popQuiz, events.pizzaLunch, events.meme];
+var eventPool = [events.popQuiz, events.pizzaLunch, events.meme];
 
 var PlayerState = function (_React$Component) {
 	_inherits(PlayerState, _React$Component);
@@ -59,8 +59,8 @@ var PlayerState = function (_React$Component) {
 			GPA: 0.0,
 			sleepValue: 10,
 			club: clubs.none,
-			event: "none",
-			eventProb: 1,
+			event: events.none,
+			eventProb: 0.5,
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
@@ -184,15 +184,13 @@ var PlayerState = function (_React$Component) {
 		key: "chooseEvent",
 		value: function chooseEvent() {
 			if (Math.random() <= this.state.eventProb) {
-				var eventIndex = Math.floor(Math.random() * Object.keys(events).length);
-				var eventArray = Object.values(events);
-				var event = eventArray[eventIndex];
-				this.setState({ displayEventBox: true, event: event.name });
+				var event = eventPool[Math.floor(Math.random() * eventPool.length)];
+				this.setState({ displayEventBox: true, event: event });
 				this.state.health.current += event.healthInc;
 				this.state.academics.current += event.academicsInc;
 				this.state.fun.current += event.funInc;
 			} else {
-				this.setState({ displayEventBox: false, event: "none" });
+				this.setState({ displayEventBox: false, event: events.none });
 			}
 		}
 	}, {
@@ -273,7 +271,7 @@ var PlayerState = function (_React$Component) {
 				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + this.state.club.hours }),
 				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
-				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventText: events[this.state.event].text }),
+				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventText: this.state.event.text }),
 				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: this.state.club.name, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current })
 			);

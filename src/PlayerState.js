@@ -17,7 +17,7 @@ const events = {
 	meme: new Event("meme","Your friend showed you a funny meme", 0, 20, 0),
 }
 
-const eventPool = [events.none, events.popQuiz, events.pizzaLunch, events.meme];
+const eventPool = [events.popQuiz, events.pizzaLunch, events.meme];
 
 class PlayerState extends React.Component {
 	constructor(props) {
@@ -46,8 +46,8 @@ class PlayerState extends React.Component {
 			GPA: 0.0,
 			sleepValue: 10,
 			club: clubs.none,
-			event: "none",
-			eventProb: 1,
+			event: events.none,
+			eventProb: 0.5,
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);
@@ -151,15 +151,13 @@ class PlayerState extends React.Component {
 
 	chooseEvent() {
 		if (Math.random() <= this.state.eventProb) {
-			let eventIndex = Math.floor(Math.random() * (Object.keys(events).length));
-			let eventArray = Object.values(events)
-			let event = eventArray[eventIndex]
-			this.setState({displayEventBox: true, event: event.name});
+			let event = eventPool[Math.floor(Math.random() * eventPool.length)];
+			this.setState({displayEventBox: true, event: event});
 			this.state.health.current += event.healthInc;
 			this.state.academics.current += event.academicsInc;
 			this.state.fun.current += event.funInc;
 		} else {
-			this.setState({displayEventBox: false, event: "none"});
+			this.setState({displayEventBox: false, event: events.none});
 		}
 	}
 
@@ -224,7 +222,7 @@ class PlayerState extends React.Component {
 				}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
-				<EventBox displayEventBox={this.state.displayEventBox} eventText={events[this.state.event].text}/>
+				<EventBox displayEventBox={this.state.displayEventBox} eventText={this.state.event.text}/>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 			</div>
