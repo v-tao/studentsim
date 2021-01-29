@@ -1,51 +1,23 @@
 "use strict";
-class Event {
-	constructor(name, text, healthInc, funInc, GPAInc) {
-		this.name = name;
-		this.text = text;
-		this.healthInc = healthInc;
-		this.funInc = funInc;
-		this.GPAInc = GPAInc;
-	}
-
-	getName() {
-		return this.name;
-	}
-
-	getText() {
-		return this.text;
-	}
-
-	getHealthInc() {
-		return this.healthInc;
-	}
-
-	getFunInc() {
-		return this.funInc;
-	}
-
-	getGPAInc() {
-		return this.GPAInc;
-	}
-}
-
 //name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq
 const clubs = {
-	none: new Club("none", 0, 0, 0, 0, 0, 0, 0),
-	soccerClub: new Club("Soccer Team", 2, 2, 0, 2, 70, 2.0, 0),
-	quizClub: new Club("Quiz Bowl", 2, 0, 2, 2, 0, 3.5, 0),
-	comedyClub: new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70),
+	"none": new Club("none", 0, 0, 0, 0, 0, 0, 0),
+	"Soccer Team": new Club("Soccer Team", 2, 2, 0, 2, 70, 2.0, 0),
+	"Quiz Bowl": new Club("Quiz Bowl", 2, 0, 2, 2, 0, 3.5, 0),
+	"Comedy Club": new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70),
 }
 //have events for a club
 
-//name, text, hours, healthInc, funInc, GPAInc, 
+//name, text, healthInc, funInc, GPAInc, 
 //popQuiz, hangout, bullies, substitute, slept through alarm, pizza for lunch, meme
 const events = {
 	none: new Event("none", "", 0, 0, 0),
-	popQuiz: new Event("popQuiz", "You had a pop quiz today", 0, 0, 10),
+	popQuiz: new Event("popQuiz", "You had a pop quiz today", 0, 0, 0),
 	pizzaLunch: new Event("pizzaLunch", "You had pizza for lunch", 10, 10, 0),
 	meme: new Event("meme","Your friend showed you a funny meme", 0, 20, 0),
 }
+
+const eventPool = [events.none, events.popQuiz, events.pizzaLunch, events.meme];
 
 class PlayerState extends React.Component {
 	constructor(props) {
@@ -82,9 +54,9 @@ class PlayerState extends React.Component {
 			healthInc: 0,
 			healthValue: 10,
 			dailyHealthInc: 0,
-			club: "none",
+			club: clubs.none,
 			event: "none",
-			eventProb: 0.5,
+			eventProb: 1,
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);
@@ -186,7 +158,7 @@ class PlayerState extends React.Component {
 
 	handleChooseClubClick(e) {
 		if (clubs[e.target.name].isEligible(this.state.health, this.state.GPA, this.state.fun)) {
-			this.setState({club: e.target.name});
+			this.setState({club: clubs[e.target.name]});
 		} else {
 			this.setState({messageType: "warning"});
 		}
@@ -201,11 +173,11 @@ class PlayerState extends React.Component {
 	}
 
 	handleConfirmLeaveClubClick() {
-		delete clubs[this.state.club];
+		delete clubs[this.state.club.name];
 		this.setState({
 			displayChooseActivity: true,
 			messageType: "",
-			club: "none",
+			club: clubs.none,
 		})
 	}
 
@@ -226,10 +198,10 @@ class PlayerState extends React.Component {
 			let event = eventArray[eventIndex]
 			this.setState((state) => ({
 				displayEventBox: true,
-				event: event.getName(),
-				health: state.health + event.getHealthInc(),
-				GPA: state.health + event.getGPAInc(),
-				fun: state.fun + event.getFunInc(),
+				event: event.name,
+				health: state.health + event.healthInc,
+				GPA: state.health + event.GPAInc,
+				fun: state.fun + event.funInc,
 			}));
 		} else {
 			this.setState({displayEventBox: false, event: "none"});
@@ -241,7 +213,7 @@ class PlayerState extends React.Component {
 		if (this.state.day == this.state.lastDay) {
 			this.setState({displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true});
 		} else {
-			let percentage = (this.state.dailyGPAInc + clubs[this.state.club].GPAInc/this.state.numClasses);
+			let percentage = (this.state.dailyGPAInc + this.state.club.GPAInc/this.state.numClasses);
 			if (percentage > 1) {
 				percentage = 1;
 			}
@@ -252,13 +224,13 @@ class PlayerState extends React.Component {
 				sleepDecay = this.state.healthValue*(this.state.necessarySleepHours-(24 - this.state.time + this.state.wakeUpTime));
 			}
 			
-			let funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].funInc * this.state.funValue);
-			let healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].healthInc * this.state.healthValue);
+			let funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + this.state.club.funInc * this.state.funValue);
+			let healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + this.state.club.healthInc * this.state.healthValue);
 			let GPAAmount = Math.round((this.state.totalGP + percentage * this.state.maxGPA)/(this.state.day) * 100)/100;
 			this.setState((state) => ({
 				messageType: "",
 				day: state.day + 1,
-				time: state.club=="none" ? state.startTime : state.startTime + clubs[state.club].hours,
+				time: state.club.name=="none" ? state.startTime : state.startTime + state.club.hours,
 				health: healthAmount,
 				fun: funAmount,
 				totalGP: state.totalGP + percentage * state.maxGPA,
@@ -271,10 +243,10 @@ class PlayerState extends React.Component {
 				dailyGPAInc: 0,
 			}));
 			this.chooseEvent();
-			if (!clubs[this.state.club].isEligible(healthAmount, GPAAmount, funAmount)) {
+			if (!this.state.club.isEligible(healthAmount, GPAAmount, funAmount)) {
 				this.setState({
 					messageType: "warning",
-					club: "none",
+					club: clubs.none,
 				});
 			}
 		}
@@ -285,12 +257,12 @@ class PlayerState extends React.Component {
 			<div>
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 				<Message type={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}></Message>
-				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + clubs[this.state.club].hours
+				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + this.state.club.hours
 				}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
-				<EventBox displayEventBox={this.state.displayEventBox} eventText={events[this.state.event].getText()}/>
-				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={clubs[this.state.club].name} health={this.state.health} GPA={this.state.GPA} fun={this.state.fun}/>
+				<EventBox displayEventBox={this.state.displayEventBox} eventText={events[this.state.event].text}/>
+				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health} GPA={this.state.GPA} fun={this.state.fun}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={this.state.GPA} fun={this.state.fun}/>
 			</div>
 
@@ -302,16 +274,11 @@ class StartScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleStart = this.handleStart.bind(this);
-		this.handleClassChange = this.handleClassChange.bind(this);
 	}
 
 	handleStart(e) {
 		this.props.onStart();
 		this.props.onClassSubmit(e);
-	}
-
-	handleClassChange(e) {
-		this.props.onClassChange(e);
 	}
 
 	render() {
@@ -320,7 +287,7 @@ class StartScreen extends React.Component {
 				<div>
 					<h1>The Funnest Bestest Game Ever</h1>
 					<h3>How many classes will you be taking</h3>
-					<form onSubmit={this.handleStart} onChange={this.handleClassChange}>
+					<form onSubmit={this.handleStart} onChange={this.props.handleClassChange}>
 						<div>
 							<input type="radio" name="numClasses" value="4" defaultChecked/>
 							<label htmlFor="4">4</label>
@@ -348,7 +315,7 @@ class ClubButton extends React.Component {
 
 	render() {
 		if (this.props.time == this.props.startTime) {
-			if (this.props.club == "none") {
+			if (this.props.club == clubs.none) {
 				return (
 					<button onClick={this.props.onJoinClubClick}>Join Club</button>
 				);
@@ -395,17 +362,12 @@ class ChooseActivity extends React.Component {
 class ChooseClub extends React.Component {
 	constructor(props) {
 		super(props);
-		this.handleChooseClubClick = this.handleChooseClubClick.bind(this);
-	}
-
-	handleChooseClubClick(e) {
-		this.props.onChooseClubClick(e);
 	}
 
 	render() {
 		const buttons = Object.keys(clubs).map((club, i) => {
 			if (club != "none") {
-				return <button key={i} onClick={this.handleChooseClubClick} name={club}>{clubs[club].name}</button>
+				return <button key={i} onClick={this.props.onChooseClubClick} name={club}>{clubs[club].name}</button>
 			}
 		})
 		if (this.props.displayChooseClub) {
@@ -476,10 +438,6 @@ class Message extends React.Component {
 //the names of these classes are based off of the bootstrap colors
 
 class WarningMessage extends React.Component {
-	constructor(props) {
-		super(props);
-	}
-
 	render() {
 		return (
 			<div>
