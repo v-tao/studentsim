@@ -39,21 +39,12 @@ class PlayerState extends React.Component {
 			wakeUpTime: 6,
 			time: 15,
 			timeInc: 0,
-			maxGPA: 4.00,
-			totalGP: 0.00,
-			GPAInc: 0,
-			dailyGPAInc: 0,
-			GPA: 0,
-			fun: 50,
-			funDecay: 10,
-			funInc: 0,
-			funValue: 10,
-			dailyFunInc: 0,
-			health: 50,
-			healthDecay: 10,
-			healthInc: 0,
-			healthValue: 10,
-			dailyHealthInc: 0,
+			// name, maxPoints, currentPoints, totalPoints, inputHolder, activityValue, dailyInc, dailyDec
+			academics: new Stat("academics", 100, 0, 0, 0, 10, 0, 0),
+			fun: new Stat("fun", 100, 0, 0, 0, 10, 0, 10),
+			health: new Stat("health", 100, 0, 0, 0, 10, 0, 10),
+			GPA: 0.0,
+			sleepValue: 10,
 			club: clubs.none,
 			event: "none",
 			eventProb: 1,
@@ -70,6 +61,7 @@ class PlayerState extends React.Component {
 		this.handleLeaveClubClick = this.handleLeaveClubClick.bind(this);
 		this.handleConfirmLeaveClubClick = this.handleConfirmLeaveClubClick.bind(this);
 		this.chooseEvent = this.chooseEvent.bind(this);
+		this.calculateSleepDecay = this.calculateSleepDecay.bind(this);
 		this.nextDay = this.nextDay.bind(this);
 	}
 
@@ -79,13 +71,6 @@ class PlayerState extends React.Component {
 
 	handleClassChange(e) {
 		this.setState({numClasses:e.target.value});
-		if (e.target.value == 4) {
-			this.setState({maxGPA: 4.00});
-		} else if (e.target.value == 5) {
-			this.setState({maxGPA: 4.50});
-		} else if (e.target.value == 6) {
-			this.setState({maxGPA: 5.00});
-		}
 	}
 
 	handleClassSubmit(e) {
@@ -99,21 +84,17 @@ class PlayerState extends React.Component {
 
 	handleHoursChange(e, activity) {
 		if (e.target.value) {
-			this.setState((state) => ({timeInc: parseInt(e.target.value)}));
+			this.setState({timeInc: parseInt(e.target.value)});
 			if (activity == "exercise") {
-				this.setState((state) => ({healthInc: parseInt(e.target.value)}));
+				this.state.health.inputHolder = parseInt(e.target.value);
 			} else if (activity == "study") {
-				this.setState((state) => ({GPAInc: parseInt(e.target.value)}));
+				this.state.academics.inputHolder = parseInt(e.target.value);
 			} else if (activity == "playGames") {
-				this.setState((state) => ({funInc: parseInt(e.target.value)}))
+				this.state.fun.inputHolder = parseInt(e.target.value);
 			}
 		} else {
-			this.setState({
-				timeInc: 0,
-				healthInc: 0,
-				GPAInc: 0,
-				funInc: 0,
-			});
+			this.setState({timeInc: 0,});
+			[this.state.health.inputHolder, this.state.academics.inputHolder, this.state.fun.inputHolder] = [0, 0, 0];
 		}
 	}
 
@@ -131,21 +112,19 @@ class PlayerState extends React.Component {
 			currentTime -= 24;
 		}
 		if (activity == "exercise") {
-			this.setState((state) => ({dailyHealthInc: state.dailyHealthInc + state.healthInc}));
+			this.state.health.dailyInc += this.state.health.inputHolder;
 		} else if (activity == "study") {
-			this.setState((state) => ({dailyGPAInc: state.dailyGPAInc + state.GPAInc}));
+			this.state.academics.dailyInc += this.state.academics.inputHolder;
 		} else if (activity == "playGames") {
-			this.setState((state) => ({dailyFunInc: state.dailyFunInc + state.funInc}));
+			this.state.fun.dailyInc += this.state.fun.inputHolder;
 		}
 		this.setState((state) => ({
 			displayHoursForm: false, 
 			displayChooseActivity: true,
 			time: currentTime,
 			timeInc: 0,
-			healthInc: 0,
-			GPAInc: 0,
-			funInc: 0,
 		}));
+		[this.state.health.inputHolder, this.state.academics.inputHolder, this.state.fun.inputHolder] = [0, 0, 0];
 	}
 
 	handleJoinClubClick() {
@@ -157,15 +136,12 @@ class PlayerState extends React.Component {
 	}
 
 	handleChooseClubClick(e) {
-		if (clubs[e.target.name].isEligible(this.state.health, this.state.GPA, this.state.fun)) {
+		if (clubs[e.target.name].isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
 			this.setState({club: clubs[e.target.name]});
 		} else {
 			this.setState({messageType: "warning"});
 		}
-		this.setState({
-			displayChooseClub: false,
-			displayChooseActivity: true,
-		})
+		this.setState({displayChooseClub: false, displayChooseActivity: true,});
 	}
 
 	handleLeaveClubClick() {
@@ -174,11 +150,21 @@ class PlayerState extends React.Component {
 
 	handleConfirmLeaveClubClick() {
 		delete clubs[this.state.club.name];
-		this.setState({
-			displayChooseActivity: true,
-			messageType: "",
-			club: clubs.none,
-		})
+		this.setState({displayChooseActivity: true, messageType: "", club: clubs.none, });
+	}
+
+	chooseEvent() {
+		if (Math.random() <= this.state.eventProb) {
+			let eventIndex = Math.floor(Math.random() * (Object.keys(events).length));
+			let eventArray = Object.values(events)
+			let event = eventArray[eventIndex]
+			this.setState((state) => ({displayEventBox: true,event: event.name}));
+			this.state.health.current += event.healthInc;
+			this.state.academics += event.academicsInc;
+			this.state.fun += event.funInc;
+		} else {
+			this.setState({displayEventBox: false, event: "none"});
+		}
 	}
 
 	boundStats(stat) {
@@ -191,21 +177,14 @@ class PlayerState extends React.Component {
 		}
 	}
 
-	chooseEvent() {
-		if (Math.random() <= this.state.eventProb) {
-			let eventIndex = Math.floor(Math.random() * (Object.keys(events).length));
-			let eventArray = Object.values(events)
-			let event = eventArray[eventIndex]
-			this.setState((state) => ({
-				displayEventBox: true,
-				event: event.name,
-				health: state.health + event.healthInc,
-				GPA: state.health + event.GPAInc,
-				fun: state.fun + event.funInc,
-			}));
-		} else {
-			this.setState({displayEventBox: false, event: "none"});
+	calculateSleepDecay() {
+		let sleepDecay = 0;
+		if (this.state.time < this.state.wakeUpTime && (this.state.wakeUpTime - this.state.time) < this.state.necessarySleepHours) {
+			sleepDecay = this.state.sleepValue*(this.state.necessarySleepHours-(this.state.wakeUpTime - this.state.time));
+		} else if (this.state.time > this.state.wakeUpTime && ((24 - this.state.time + this.state.wakeUpTime) < this.state.necessarySleepHours)) {
+			sleepDecay = this.state.sleepValue*(this.state.necessarySleepHours-(24 - this.state.time + this.state.wakeUpTime));
 		}
+		return sleepDecay >= 0 ? sleepDecay : 0;
 	}
 
 	nextDay(e) {
@@ -217,37 +196,24 @@ class PlayerState extends React.Component {
 			if (percentage > 1) {
 				percentage = 1;
 			}
-			let sleepDecay = 0;
-			if (this.state.time < this.state.wakeUpTime && (this.state.wakeUpTime - this.state.time) < this.state.necessarySleepHours) {
-				sleepDecay = this.state.healthValue*(this.state.necessarySleepHours-(this.state.wakeUpTime - this.state.time));
-			} else if (this.state.time > this.state.wakeUpTime && ((24 - this.state.time + this.state.wakeUpTime) < this.state.necessarySleepHours)) {
-				sleepDecay = this.state.healthValue*(this.state.necessarySleepHours-(24 - this.state.time + this.state.wakeUpTime));
-			}
-			
-			let funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + this.state.club.funInc * this.state.funValue);
-			let healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + this.state.club.healthInc * this.state.healthValue);
+			let sleepDecay = this.calculateSleepDecay();
+			this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyInc * this.state.fun.activityValue + this.state.club.funInc);
+			this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyInc * this.state.health.activityValue - this.state.health.decay - sleepDecay + this.state.club.healthInc);
 			let GPAAmount = Math.round((this.state.totalGP + percentage * this.state.maxGPA)/(this.state.day) * 100)/100;
+			[this.state.fun.dailyInc, this.state.health.dailyInc, this.state.academics.dailyInc] = [0, 0, 0]
 			this.setState((state) => ({
 				messageType: "",
 				day: state.day + 1,
-				time: state.club.name=="none" ? state.startTime : state.startTime + state.club.hours,
-				health: healthAmount,
-				fun: funAmount,
+				time: state.club.name == "none" ? state.startTime : state.startTime + state.club.hours,
 				totalGP: state.totalGP + percentage * state.maxGPA,
 				GPA: GPAAmount,
 				healthInc: 0,
 				funInc: 0,
 				GPAInc: 0,
-				dailyHealthInc: 0,
-				dailyFunInc: 0,
-				dailyGPAInc: 0,
 			}));
 			this.chooseEvent();
-			if (!this.state.club.isEligible(healthAmount, GPAAmount, funAmount)) {
-				this.setState({
-					messageType: "warning",
-					club: clubs.none,
-				});
+			if (!this.state.club.isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
+				this.setState({ messageType: "warning", club: clubs.none, });
 			}
 		}
 	}
@@ -262,8 +228,8 @@ class PlayerState extends React.Component {
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
 				<EventBox displayEventBox={this.state.displayEventBox} eventText={events[this.state.event].text}/>
-				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health} GPA={this.state.GPA} fun={this.state.fun}/>
-				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health} GPA={this.state.GPA} fun={this.state.fun}/>
+				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
+				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 			</div>
 
 		);

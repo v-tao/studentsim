@@ -1,19 +1,29 @@
 class Stat {
-    constructor(name, currentPoints, inputHolder, activityValue, dailyIncrease, dailyDecay) {
+    constructor(name, max, current, total, inputHolder, activityValue, dailyInc, dailyDec) {
         this._name = name;
-        this._currentPoints = currentPoints;
+        this._max = max;
+        this._current = current;
+        this._total = total;
         this._inputHolder = inputHolder;
         this._activityValue = activityValue;
-        this._dailyIncrease = dailyIncrease;
-        this._dailyDecay = dailyDecay;
+        this._dailyInc = dailyInc;
+        this._dailyDec = dailyDec;
     }
 
     get name() {
         return this._name;
     }
 
-    get currentPoints() {
-        return this._currentPoints;
+    get max() {
+        return this._max;
+    }
+
+    get current() {
+        return this._current;
+    }
+
+    get total() {
+        return this._total
     }
 
     get inputHolder() {
@@ -24,23 +34,23 @@ class Stat {
         return this._activityValue;
     }
 
-    get dailyIncrease() {
-        return this._dailyIncrease;
+    get dailyInc() {
+        return this._dailyInc;
     }
 
-    get dailyDecay() {
-        return this._dailyDecay;
+    get dailyDec() {
+        return this._dailyDec;
     }
 
-    set currentPoints(points) {
-        this._currentPoints = points;
+    set current(points) {
+        this._current = points;
     }
 
     set inputHolder(inputValue) {
         this._inputHolder = inputValue;
     }
 
-    set dailyIncrease(points) {
-        this._dailyIncrease = points;
+    set dailyInc(points) {
+        this._dailyInc = points;
     }
 }

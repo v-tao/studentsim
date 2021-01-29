@@ -1,72 +1,31 @@
 "use strict";
+//name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Event = function () {
-	function Event(name, text, healthInc, funInc, GPAInc) {
-		_classCallCheck(this, Event);
-
-		this.name = name;
-		this.text = text;
-		this.healthInc = healthInc;
-		this.funInc = funInc;
-		this.GPAInc = GPAInc;
-	}
-
-	_createClass(Event, [{
-		key: "getName",
-		value: function getName() {
-			return this.name;
-		}
-	}, {
-		key: "getText",
-		value: function getText() {
-			return this.text;
-		}
-	}, {
-		key: "getHealthInc",
-		value: function getHealthInc() {
-			return this.healthInc;
-		}
-	}, {
-		key: "getFunInc",
-		value: function getFunInc() {
-			return this.funInc;
-		}
-	}, {
-		key: "getGPAInc",
-		value: function getGPAInc() {
-			return this.GPAInc;
-		}
-	}]);
-
-	return Event;
-}();
-
-//name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq
-
-
 var clubs = {
-	none: new Club("none", 0, 0, 0, 0, 0, 0, 0),
-	soccerClub: new Club("Soccer Team", 2, 2, 0, 2, 70, 2.0, 0),
-	quizClub: new Club("Quiz Bowl", 2, 0, 2, 2, 0, 3.5, 0),
-	comedyClub: new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70)
+	"none": new Club("none", 0, 0, 0, 0, 0, 0, 0),
+	"Soccer Team": new Club("Soccer Team", 2, 2, 0, 2, 70, 2.0, 0),
+	"Quiz Bowl": new Club("Quiz Bowl", 2, 0, 2, 2, 0, 3.5, 0),
+	"Comedy Club": new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70)
 	//have events for a club
 
-	//name, text, hours, healthInc, funInc, GPAInc, 
+	//name, text, healthInc, funInc, GPAInc, 
 	//popQuiz, hangout, bullies, substitute, slept through alarm, pizza for lunch, meme
 };var events = {
 	none: new Event("none", "", 0, 0, 0),
-	popQuiz: new Event("popQuiz", "You had a pop quiz today", 0, 0, 10),
+	popQuiz: new Event("popQuiz", "You had a pop quiz today", 0, 0, 0),
 	pizzaLunch: new Event("pizzaLunch", "You had pizza for lunch", 10, 10, 0),
 	meme: new Event("meme", "Your friend showed you a funny meme", 0, 20, 0)
 };
+
+var eventPool = [events.none, events.popQuiz, events.pizzaLunch, events.meme];
 
 var PlayerState = function (_React$Component) {
 	_inherits(PlayerState, _React$Component);
@@ -93,24 +52,15 @@ var PlayerState = function (_React$Component) {
 			wakeUpTime: 6,
 			time: 15,
 			timeInc: 0,
-			maxGPA: 4.00,
-			totalGP: 0.00,
-			GPAInc: 0,
-			dailyGPAInc: 0,
-			GPA: 0,
-			fun: 50,
-			funDecay: 10,
-			funInc: 0,
-			funValue: 10,
-			dailyFunInc: 0,
-			health: 50,
-			healthDecay: 10,
-			healthInc: 0,
-			healthValue: 10,
-			dailyHealthInc: 0,
-			club: "none",
+			// name, maxPoints, currentPoints, totalPoints, inputHolder, activityValue, dailyInc, dailyDec
+			academics: new Stat("academics", 100, 0, 0, 0, 10, 0, 0),
+			fun: new Stat("fun", 100, 0, 0, 0, 10, 0, 10),
+			health: new Stat("health", 100, 0, 0, 0, 10, 0, 10),
+			GPA: 0.0,
+			sleepValue: 10,
+			club: clubs.none,
 			event: "none",
-			eventProb: 0.5,
+			eventProb: 1,
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
@@ -124,6 +74,7 @@ var PlayerState = function (_React$Component) {
 		_this.handleLeaveClubClick = _this.handleLeaveClubClick.bind(_this);
 		_this.handleConfirmLeaveClubClick = _this.handleConfirmLeaveClubClick.bind(_this);
 		_this.chooseEvent = _this.chooseEvent.bind(_this);
+		_this.calculateSleepDecay = _this.calculateSleepDecay.bind(_this);
 		_this.nextDay = _this.nextDay.bind(_this);
 		return _this;
 	}
@@ -137,13 +88,6 @@ var PlayerState = function (_React$Component) {
 		key: "handleClassChange",
 		value: function handleClassChange(e) {
 			this.setState({ numClasses: e.target.value });
-			if (e.target.value == 4) {
-				this.setState({ maxGPA: 4.00 });
-			} else if (e.target.value == 5) {
-				this.setState({ maxGPA: 4.50 });
-			} else if (e.target.value == 6) {
-				this.setState({ maxGPA: 5.00 });
-			}
 		}
 	}, {
 		key: "handleClassSubmit",
@@ -160,29 +104,20 @@ var PlayerState = function (_React$Component) {
 		key: "handleHoursChange",
 		value: function handleHoursChange(e, activity) {
 			if (e.target.value) {
-				this.setState(function (state) {
-					return { timeInc: parseInt(e.target.value) };
-				});
+				this.setState({ timeInc: parseInt(e.target.value) });
 				if (activity == "exercise") {
-					this.setState(function (state) {
-						return { healthInc: parseInt(e.target.value) };
-					});
+					this.state.health.inputHolder = parseInt(e.target.value);
 				} else if (activity == "study") {
-					this.setState(function (state) {
-						return { GPAInc: parseInt(e.target.value) };
-					});
+					this.state.academics.inputHolder = parseInt(e.target.value);
 				} else if (activity == "playGames") {
-					this.setState(function (state) {
-						return { funInc: parseInt(e.target.value) };
-					});
+					this.state.fun.inputHolder = parseInt(e.target.value);
 				}
 			} else {
-				this.setState({
-					timeInc: 0,
-					healthInc: 0,
-					GPAInc: 0,
-					funInc: 0
-				});
+				this.setState({ timeInc: 0 });
+				var _ref = [0, 0, 0];
+				this.state.health.inputHolder = _ref[0];
+				this.state.academics.inputHolder = _ref[1];
+				this.state.fun.inputHolder = _ref[2];
 			}
 		}
 	}, {
@@ -202,29 +137,24 @@ var PlayerState = function (_React$Component) {
 				currentTime -= 24;
 			}
 			if (activity == "exercise") {
-				this.setState(function (state) {
-					return { dailyHealthInc: state.dailyHealthInc + state.healthInc };
-				});
+				this.state.health.dailyInc += this.state.health.inputHolder;
 			} else if (activity == "study") {
-				this.setState(function (state) {
-					return { dailyGPAInc: state.dailyGPAInc + state.GPAInc };
-				});
+				this.state.academics.dailyInc += this.state.academics.inputHolder;
 			} else if (activity == "playGames") {
-				this.setState(function (state) {
-					return { dailyFunInc: state.dailyFunInc + state.funInc };
-				});
+				this.state.fun.dailyInc += this.state.fun.inputHolder;
 			}
 			this.setState(function (state) {
 				return {
 					displayHoursForm: false,
 					displayChooseActivity: true,
 					time: currentTime,
-					timeInc: 0,
-					healthInc: 0,
-					GPAInc: 0,
-					funInc: 0
+					timeInc: 0
 				};
 			});
+			var _ref2 = [0, 0, 0];
+			this.state.health.inputHolder = _ref2[0];
+			this.state.academics.inputHolder = _ref2[1];
+			this.state.fun.inputHolder = _ref2[2];
 		}
 	}, {
 		key: "handleJoinClubClick",
@@ -238,15 +168,12 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleChooseClubClick",
 		value: function handleChooseClubClick(e) {
-			if (clubs[e.target.name].isEligible(this.state.health, this.state.GPA, this.state.fun)) {
-				this.setState({ club: e.target.name });
+			if (clubs[e.target.name].isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
+				this.setState({ club: clubs[e.target.name] });
 			} else {
 				this.setState({ messageType: "warning" });
 			}
-			this.setState({
-				displayChooseClub: false,
-				displayChooseActivity: true
-			});
+			this.setState({ displayChooseClub: false, displayChooseActivity: true });
 		}
 	}, {
 		key: "handleLeaveClubClick",
@@ -256,12 +183,25 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleConfirmLeaveClubClick",
 		value: function handleConfirmLeaveClubClick() {
-			delete clubs[this.state.club];
-			this.setState({
-				displayChooseActivity: true,
-				messageType: "",
-				club: "none"
-			});
+			delete clubs[this.state.club.name];
+			this.setState({ displayChooseActivity: true, messageType: "", club: clubs.none });
+		}
+	}, {
+		key: "chooseEvent",
+		value: function chooseEvent() {
+			if (Math.random() <= this.state.eventProb) {
+				var eventIndex = Math.floor(Math.random() * Object.keys(events).length);
+				var eventArray = Object.values(events);
+				var event = eventArray[eventIndex];
+				this.setState(function (state) {
+					return { displayEventBox: true, event: event.name };
+				});
+				this.state.health.current += event.healthInc;
+				this.state.academics += event.academicsInc;
+				this.state.fun += event.funInc;
+			} else {
+				this.setState({ displayEventBox: false, event: "none" });
+			}
 		}
 	}, {
 		key: "boundStats",
@@ -275,24 +215,15 @@ var PlayerState = function (_React$Component) {
 			}
 		}
 	}, {
-		key: "chooseEvent",
-		value: function chooseEvent() {
-			if (Math.random() <= this.state.eventProb) {
-				var eventIndex = Math.floor(Math.random() * Object.keys(events).length);
-				var eventArray = Object.values(events);
-				var event = eventArray[eventIndex];
-				this.setState(function (state) {
-					return {
-						displayEventBox: true,
-						event: event.getName(),
-						health: state.health + event.getHealthInc(),
-						GPA: state.health + event.getGPAInc(),
-						fun: state.fun + event.getFunInc()
-					};
-				});
-			} else {
-				this.setState({ displayEventBox: false, event: "none" });
+		key: "calculateSleepDecay",
+		value: function calculateSleepDecay() {
+			var sleepDecay = 0;
+			if (this.state.time < this.state.wakeUpTime && this.state.wakeUpTime - this.state.time < this.state.necessarySleepHours) {
+				sleepDecay = this.state.sleepValue * (this.state.necessarySleepHours - (this.state.wakeUpTime - this.state.time));
+			} else if (this.state.time > this.state.wakeUpTime && 24 - this.state.time + this.state.wakeUpTime < this.state.necessarySleepHours) {
+				sleepDecay = this.state.sleepValue * (this.state.necessarySleepHours - (24 - this.state.time + this.state.wakeUpTime));
 			}
+			return sleepDecay >= 0 ? sleepDecay : 0;
 		}
 	}, {
 		key: "nextDay",
@@ -301,43 +232,34 @@ var PlayerState = function (_React$Component) {
 			if (this.state.day == this.state.lastDay) {
 				this.setState({ displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true });
 			} else {
-				var percentage = this.state.dailyGPAInc + clubs[this.state.club].GPAInc / this.state.numClasses;
+				var percentage = this.state.dailyGPAInc + this.state.club.GPAInc / this.state.numClasses;
 				if (percentage > 1) {
 					percentage = 1;
 				}
-				var sleepDecay = 0;
-				if (this.state.time < this.state.wakeUpTime && this.state.wakeUpTime - this.state.time < this.state.necessarySleepHours) {
-					sleepDecay = this.state.healthValue * (this.state.necessarySleepHours - (this.state.wakeUpTime - this.state.time));
-				} else if (this.state.time > this.state.wakeUpTime && 24 - this.state.time + this.state.wakeUpTime < this.state.necessarySleepHours) {
-					sleepDecay = this.state.healthValue * (this.state.necessarySleepHours - (24 - this.state.time + this.state.wakeUpTime));
-				}
-
-				var funAmount = this.boundStats(this.state.fun + this.state.dailyFunInc * this.state.funValue - this.state.funDecay + clubs[this.state.club].funInc * this.state.funValue);
-				var healthAmount = this.boundStats(this.state.health + this.state.dailyHealthInc * this.state.healthValue - this.state.healthDecay - sleepDecay + clubs[this.state.club].healthInc * this.state.healthValue);
+				var sleepDecay = this.calculateSleepDecay();
+				this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyInc * this.state.fun.activityValue + this.state.club.funInc);
+				this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyInc * this.state.health.activityValue - this.state.health.decay - sleepDecay + this.state.club.healthInc);
 				var GPAAmount = Math.round((this.state.totalGP + percentage * this.state.maxGPA) / this.state.day * 100) / 100;
+				var _ref3 = [0, 0, 0];
+				this.state.fun.dailyInc = _ref3[0];
+				this.state.health.dailyInc = _ref3[1];
+				this.state.academics.dailyInc = _ref3[2];
+
 				this.setState(function (state) {
 					return {
 						messageType: "",
 						day: state.day + 1,
-						time: state.club == "none" ? state.startTime : state.startTime + clubs[state.club].hours,
-						health: healthAmount,
-						fun: funAmount,
+						time: state.club.name == "none" ? state.startTime : state.startTime + state.club.hours,
 						totalGP: state.totalGP + percentage * state.maxGPA,
 						GPA: GPAAmount,
 						healthInc: 0,
 						funInc: 0,
-						GPAInc: 0,
-						dailyHealthInc: 0,
-						dailyFunInc: 0,
-						dailyGPAInc: 0
+						GPAInc: 0
 					};
 				});
 				this.chooseEvent();
-				if (!clubs[this.state.club].isEligible(healthAmount, GPAAmount, funAmount)) {
-					this.setState({
-						messageType: "warning",
-						club: "none"
-					});
+				if (!this.state.club.isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
+					this.setState({ messageType: "warning", club: clubs.none });
 				}
 			}
 		}
@@ -349,12 +271,12 @@ var PlayerState = function (_React$Component) {
 				null,
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
 				React.createElement(Message, { type: this.state.messageType, onConfirmLeaveClubClick: this.handleConfirmLeaveClubClick }),
-				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + clubs[this.state.club].hours }),
+				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + this.state.club.hours }),
 				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
-				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventText: events[this.state.event].getText() }),
-				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: clubs[this.state.club].name, health: this.state.health, GPA: this.state.GPA, fun: this.state.fun }),
-				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health, GPA: this.state.GPA, fun: this.state.fun })
+				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventText: events[this.state.event].text }),
+				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: this.state.club.name, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current }),
+				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current })
 			);
 		}
 	}]);
@@ -371,7 +293,6 @@ var StartScreen = function (_React$Component2) {
 		var _this2 = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, props));
 
 		_this2.handleStart = _this2.handleStart.bind(_this2);
-		_this2.handleClassChange = _this2.handleClassChange.bind(_this2);
 		return _this2;
 	}
 
@@ -380,11 +301,6 @@ var StartScreen = function (_React$Component2) {
 		value: function handleStart(e) {
 			this.props.onStart();
 			this.props.onClassSubmit(e);
-		}
-	}, {
-		key: "handleClassChange",
-		value: function handleClassChange(e) {
-			this.props.onClassChange(e);
 		}
 	}, {
 		key: "render",
@@ -405,7 +321,7 @@ var StartScreen = function (_React$Component2) {
 					),
 					React.createElement(
 						"form",
-						{ onSubmit: this.handleStart, onChange: this.handleClassChange },
+						{ onSubmit: this.handleStart, onChange: this.props.handleClassChange },
 						React.createElement(
 							"div",
 							null,
@@ -461,7 +377,7 @@ var ClubButton = function (_React$Component3) {
 		key: "render",
 		value: function render() {
 			if (this.props.time == this.props.startTime) {
-				if (this.props.club == "none") {
+				if (this.props.club == clubs.none) {
 					return React.createElement(
 						"button",
 						{ onClick: this.props.onJoinClubClick },
@@ -538,18 +454,10 @@ var ChooseClub = function (_React$Component5) {
 	function ChooseClub(props) {
 		_classCallCheck(this, ChooseClub);
 
-		var _this5 = _possibleConstructorReturn(this, (ChooseClub.__proto__ || Object.getPrototypeOf(ChooseClub)).call(this, props));
-
-		_this5.handleChooseClubClick = _this5.handleChooseClubClick.bind(_this5);
-		return _this5;
+		return _possibleConstructorReturn(this, (ChooseClub.__proto__ || Object.getPrototypeOf(ChooseClub)).call(this, props));
 	}
 
 	_createClass(ChooseClub, [{
-		key: "handleChooseClubClick",
-		value: function handleChooseClubClick(e) {
-			this.props.onChooseClubClick(e);
-		}
-	}, {
 		key: "render",
 		value: function render() {
 			var _this6 = this;
@@ -558,7 +466,7 @@ var ChooseClub = function (_React$Component5) {
 				if (club != "none") {
 					return React.createElement(
 						"button",
-						{ key: i, onClick: _this6.handleChooseClubClick, name: club },
+						{ key: i, onClick: _this6.props.onChooseClubClick, name: club },
 						clubs[club].name
 					);
 				}
@@ -674,10 +582,10 @@ var Message = function (_React$Component7) {
 var WarningMessage = function (_React$Component8) {
 	_inherits(WarningMessage, _React$Component8);
 
-	function WarningMessage(props) {
+	function WarningMessage() {
 		_classCallCheck(this, WarningMessage);
 
-		return _possibleConstructorReturn(this, (WarningMessage.__proto__ || Object.getPrototypeOf(WarningMessage)).call(this, props));
+		return _possibleConstructorReturn(this, (WarningMessage.__proto__ || Object.getPrototypeOf(WarningMessage)).apply(this, arguments));
 	}
 
 	_createClass(WarningMessage, [{

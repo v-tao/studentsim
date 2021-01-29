@@ -1,9 +1,9 @@
 class Club {
-    constructor(name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq) {
+    constructor(name, hours, healthInc, academicsInc, funInc, healthReq, GPAReq, funReq) {
         this._hours = hours;
         this._name = name;
         this._healthInc = healthInc;
-        this._GPAInc = GPAInc;
+        this._academicsInc = academicsInc;
 		this._funInc = funInc;
 		this._healthReq = healthReq;
 		this._GPAReq = GPAReq;
@@ -22,8 +22,8 @@ class Club {
 		return this._healthInc;
 	}
 
-	get GPAInc() {
-		return this._GPAInc;
+	get academicsInc() {
+		return this._academicsInc;
 	}
 
 	get funInc() {
