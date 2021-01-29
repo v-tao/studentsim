@@ -97,19 +97,21 @@ var PlayerState = function (_React$Component) {
 		}
 	}, {
 		key: "handleActivityClick",
-		value: function handleActivityClick(activity) {
-			this.setState({ displayHoursForm: true, displayChooseActivity: false, messageType: "", hoursFormActivity: activity });
+		value: function handleActivityClick(e) {
+			e.preventDefault();
+			this.setState({ displayHoursForm: true, displayChooseActivity: false, messageType: "", hoursFormActivity: e.target.name });
 		}
 	}, {
 		key: "handleHoursChange",
-		value: function handleHoursChange(e, activity) {
+		value: function handleHoursChange(e) {
+			e.preventDefault();
 			if (e.target.value) {
 				this.setState({ timeInc: parseInt(e.target.value) });
-				if (activity == "exercise") {
+				if (this.state.hoursFormActivity == "exercise") {
 					this.state.health.inputHolder = parseInt(e.target.value);
-				} else if (activity == "study") {
+				} else if (this.state.hoursFormActivity == "study") {
 					this.state.academics.inputHolder = parseInt(e.target.value);
-				} else if (activity == "playGames") {
+				} else if (this.state.hoursFormActivity == "playGames") {
 					this.state.fun.inputHolder = parseInt(e.target.value);
 				}
 			} else {
@@ -131,16 +133,15 @@ var PlayerState = function (_React$Component) {
 		}
 	}, {
 		key: "handleHoursSubmit",
-		value: function handleHoursSubmit(activity) {
+		value: function handleHoursSubmit(e) {
+			e.preventDefault();
 			var currentTime = this.state.time + parseInt(this.state.timeInc);
-			if (currentTime >= 24) {
-				currentTime -= 24;
-			}
-			if (activity == "exercise") {
+			currentTime = currentTime < 24 ? currentTime : currentTime - 24;
+			if (this.state.hoursFormActivity == "exercise") {
 				this.state.health.dailyInc += this.state.health.inputHolder;
-			} else if (activity == "study") {
+			} else if (this.state.hoursFormActivity == "study") {
 				this.state.academics.dailyInc += this.state.academics.inputHolder;
-			} else if (activity == "playGames") {
+			} else if (this.state.hoursFormActivity == "playGames") {
 				this.state.fun.dailyInc += this.state.fun.inputHolder;
 			}
 			this.setState({ displayHoursForm: false, displayChooseActivity: true, time: currentTime, timeInc: 0 });
@@ -403,19 +404,10 @@ var ChooseActivity = function (_React$Component4) {
 	function ChooseActivity(props) {
 		_classCallCheck(this, ChooseActivity);
 
-		var _this5 = _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
-
-		_this5.handleActivityClick = _this5.handleActivityClick.bind(_this5);
-		return _this5;
+		return _possibleConstructorReturn(this, (ChooseActivity.__proto__ || Object.getPrototypeOf(ChooseActivity)).call(this, props));
 	}
 
 	_createClass(ChooseActivity, [{
-		key: "handleActivityClick",
-		value: function handleActivityClick(e) {
-			e.preventDefault();
-			this.props.onActivityClick(e.target.name);
-		}
-	}, {
 		key: "render",
 		value: function render() {
 			if (this.props.displayChooseActivity) {
@@ -427,9 +419,9 @@ var ChooseActivity = function (_React$Component4) {
 						null,
 						"What do you want to do?"
 					),
-					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "exercise", value: "Exercise" }),
-					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "study", value: "Study" }),
-					React.createElement("input", { onClick: this.handleActivityClick, type: "button", name: "playGames", value: "Play Videogames" }),
+					React.createElement("input", { onClick: this.props.onActivityClick, type: "button", name: "exercise", value: "Exercise" }),
+					React.createElement("input", { onClick: this.props.onActivityClick, type: "button", name: "study", value: "Study" }),
+					React.createElement("input", { onClick: this.props.onActivityClick, type: "button", name: "playGames", value: "Play Videogames" }),
 					React.createElement(ClubButton, { club: this.props.club, onJoinClubClick: this.props.onJoinClubClick, onLeaveClubClick: this.props.onLeaveClubClick, time: this.props.time, startTime: this.props.startTime }),
 					React.createElement(
 						"button",
@@ -495,25 +487,10 @@ var HoursForm = function (_React$Component6) {
 	function HoursForm(props) {
 		_classCallCheck(this, HoursForm);
 
-		var _this8 = _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
-
-		_this8.handleHoursChange = _this8.handleHoursChange.bind(_this8);
-		_this8.handleHoursSubmit = _this8.handleHoursSubmit.bind(_this8);
-		return _this8;
+		return _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
 	}
 
 	_createClass(HoursForm, [{
-		key: "handleHoursChange",
-		value: function handleHoursChange(e) {
-			this.props.onHoursChange(e, this.props.hoursFormActivity);
-		}
-	}, {
-		key: "handleHoursSubmit",
-		value: function handleHoursSubmit(e) {
-			e.preventDefault();
-			this.props.onHoursSubmit(this.props.hoursFormActivity);
-		}
-	}, {
 		key: "render",
 		value: function render() {
 			if (this.props.displayHoursForm) {
@@ -528,8 +505,8 @@ var HoursForm = function (_React$Component6) {
 					),
 					React.createElement(
 						"form",
-						{ onSubmit: this.handleHoursSubmit },
-						React.createElement("input", { step: "1", min: "0", max: maxHours, type: "number", onChange: this.handleHoursChange, name: this.props.hoursFormActivity }),
+						{ onSubmit: this.props.onHoursSubmit },
+						React.createElement("input", { step: "1", min: "0", max: maxHours, type: "number", onChange: this.props.onHoursChange, name: this.props.hoursFormActivity }),
 						React.createElement(
 							"button",
 							null,

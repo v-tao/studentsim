@@ -78,18 +78,20 @@ class PlayerState extends React.Component {
 		e.preventDefault();
 	}
 
-	handleActivityClick(activity) {
-		this.setState({displayHoursForm: true, displayChooseActivity: false, messageType: "", hoursFormActivity: activity});
+	handleActivityClick(e) {
+		e.preventDefault();
+		this.setState({displayHoursForm: true, displayChooseActivity: false, messageType: "", hoursFormActivity: e.target.name});
 	}
 
-	handleHoursChange(e, activity) {
+	handleHoursChange(e) {
+		e.preventDefault();
 		if (e.target.value) {
 			this.setState({timeInc: parseInt(e.target.value)});
-			if (activity == "exercise") {
+			if (this.state.hoursFormActivity == "exercise") {
 				this.state.health.inputHolder = parseInt(e.target.value);
-			} else if (activity == "study") {
+			} else if (this.state.hoursFormActivity == "study") {
 				this.state.academics.inputHolder = parseInt(e.target.value);
-			} else if (activity == "playGames") {
+			} else if (this.state.hoursFormActivity == "playGames") {
 				this.state.fun.inputHolder = parseInt(e.target.value);
 			}
 		} else {
@@ -106,16 +108,15 @@ class PlayerState extends React.Component {
 		}
 	}
 
-	handleHoursSubmit(activity) {
+	handleHoursSubmit(e) {
+		e.preventDefault();
 		let currentTime = this.state.time + parseInt(this.state.timeInc);
-		if (currentTime >= 24) {
-			currentTime -= 24;
-		}
-		if (activity == "exercise") {
+		currentTime = currentTime < 24 ? currentTime : currentTime-24;
+		if (this.state.hoursFormActivity == "exercise") {
 			this.state.health.dailyInc += this.state.health.inputHolder;
-		} else if (activity == "study") {
+		} else if (this.state.hoursFormActivity == "study") {
 			this.state.academics.dailyInc += this.state.academics.inputHolder;
-		} else if (activity == "playGames") {
+		} else if (this.state.hoursFormActivity == "playGames") {
 			this.state.fun.dailyInc += this.state.fun.inputHolder;
 		}
 		this.setState({displayHoursForm: false, displayChooseActivity: true, time: currentTime, timeInc: 0});
@@ -295,12 +296,6 @@ class ClubButton extends React.Component {
 class ChooseActivity extends React.Component {
 	constructor(props) {
 		super(props);
-		this.handleActivityClick = this.handleActivityClick.bind(this);
-	}
-
-	handleActivityClick(e) {
-		e.preventDefault();
-		this.props.onActivityClick(e.target.name)
 	}
 
 	render() {
@@ -308,9 +303,9 @@ class ChooseActivity extends React.Component {
 			return (
 				<div>
 					<h2>What do you want to do?</h2>
-					<input onClick={this.handleActivityClick} type="button" name="exercise" value="Exercise"/>
-					<input onClick={this.handleActivityClick} type="button" name="study" value="Study"/>
-					<input onClick={this.handleActivityClick} type="button" name="playGames" value="Play Videogames"/>
+					<input onClick={this.props.onActivityClick} type="button" name="exercise" value="Exercise"/>
+					<input onClick={this.props.onActivityClick} type="button" name="study" value="Study"/>
+					<input onClick={this.props.onActivityClick} type="button" name="playGames" value="Play Videogames"/>
 					<ClubButton club={this.props.club} onJoinClubClick={this.props.onJoinClubClick} onLeaveClubClick={this.props.onLeaveClubClick} time={this.props.time} startTime={this.props.startTime}/>
 					<button onClick={this.props.nextDay}>Sleep</button>
 				</div>
@@ -348,17 +343,6 @@ class ChooseClub extends React.Component {
 class HoursForm extends React.Component {
 	constructor(props) {
 		super(props);
-		this.handleHoursChange = this.handleHoursChange.bind(this);
-		this.handleHoursSubmit = this.handleHoursSubmit.bind(this);
-	}
-
-	handleHoursChange(e) {
-		this.props.onHoursChange(e, this.props.hoursFormActivity);
-	}
-
-	handleHoursSubmit(e) {
-		e.preventDefault();
-		this.props.onHoursSubmit(this.props.hoursFormActivity);
 	}
 
 	render() {
@@ -367,8 +351,8 @@ class HoursForm extends React.Component {
 			return (
 				<div>
 					<h3>How many hours do you want to spend?</h3>
-					<form onSubmit={this.handleHoursSubmit}>
-						<input step="1" min="0" max={maxHours} type="number" onChange={this.handleHoursChange} name={this.props.hoursFormActivity}/>
+					<form onSubmit={this.props.onHoursSubmit}>
+						<input step="1" min="0" max={maxHours} type="number" onChange={this.props.onHoursChange} name={this.props.hoursFormActivity}/>
 						<button>Submit</button>
 					</form>
 				</div>
