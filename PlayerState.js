@@ -143,14 +143,7 @@ var PlayerState = function (_React$Component) {
 			} else if (activity == "playGames") {
 				this.state.fun.dailyInc += this.state.fun.inputHolder;
 			}
-			this.setState(function (state) {
-				return {
-					displayHoursForm: false,
-					displayChooseActivity: true,
-					time: currentTime,
-					timeInc: 0
-				};
-			});
+			this.setState({ displayHoursForm: false, displayChooseActivity: true, time: currentTime, timeInc: 0 });
 			var _ref2 = [0, 0, 0];
 			this.state.health.inputHolder = _ref2[0];
 			this.state.academics.inputHolder = _ref2[1];
@@ -193,12 +186,10 @@ var PlayerState = function (_React$Component) {
 				var eventIndex = Math.floor(Math.random() * Object.keys(events).length);
 				var eventArray = Object.values(events);
 				var event = eventArray[eventIndex];
-				this.setState(function (state) {
-					return { displayEventBox: true, event: event.name };
-				});
+				this.setState({ displayEventBox: true, event: event.name });
 				this.state.health.current += event.healthInc;
-				this.state.academics += event.academicsInc;
-				this.state.fun += event.funInc;
+				this.state.academics.current += event.academicsInc;
+				this.state.fun.current += event.funInc;
 			} else {
 				this.setState({ displayEventBox: false, event: "none" });
 			}
@@ -206,12 +197,10 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "boundStats",
 		value: function boundStats(stat) {
-			if (stat > 100) {
-				return 100;
-			} else if (stat < 0) {
-				return 0;
-			} else {
+			if (stat < 100 && stat > 0) {
 				return stat;
+			} else {
+				return stat > 100 ? 100 : 0;
 			}
 		}
 	}, {
