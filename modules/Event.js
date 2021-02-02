@@ -1,6 +1,7 @@
 class Event {
-	constructor(name, text, healthInc, funInc, academicsInc) {
+	constructor(name, type, text, healthInc, funInc, academicsInc) {
 		this._name = name;
+		this._type = type;
 		this._text = text;
 		this._healthInc = healthInc;
 		this._funInc = funInc;
@@ -9,6 +10,10 @@ class Event {
 
 	get name() {
 		return this._name;
+	}
+
+	get type() {
+		return this._type;
 	}
 
 	get text() {
