@@ -124,11 +124,11 @@ class PlayerState extends React.Component {
 		let currentTime = this.state.time + parseInt(this.state.timeInc);
 		currentTime = currentTime < 24 ? currentTime : currentTime-24;
 		if (this.state.hoursFormActivity == "exercise") {
-			this.state.health.dailyInc += this.state.health.inputHolder;
+			this.state.health.dailyActivityInc += this.state.health.inputHolder;
 		} else if (this.state.hoursFormActivity == "study") {
-			this.state.academics.dailyInc += this.state.academics.inputHolder;
+			this.state.academics.dailyActivityInc += this.state.academics.inputHolder;
 		} else if (this.state.hoursFormActivity == "playGames") {
-			this.state.fun.dailyInc += this.state.fun.inputHolder;
+			this.state.fun.dailyActivityInc += this.state.fun.inputHolder;
 		}
 		this.setState({displayHoursForm: false, displayChooseActivity: true, time: currentTime, timeInc: 0});
 		[this.state.health.inputHolder, this.state.academics.inputHolder, this.state.fun.inputHolder] = [0, 0, 0];
@@ -221,11 +221,12 @@ class PlayerState extends React.Component {
 		if (this.state.day == this.state.lastDay) {
 			this.setState({displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true});
 		} else {
-			this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec);
-			this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc);
-			this.state.academics.current = this.boundStats(Math.round((100 * (this.state.academics.dailyInc + this.state.club.academicsInc)/this.state.numClasses)));
+			this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyActivityInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec + this.state.fun.dailyEventInc);
+			this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyActivityInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc + this.state.health.dailyEventInc);
+			this.state.academics.current = this.boundStats(Math.round((100 * (this.state.academics.dailyActivityInc + this.state.club.academicsInc + this.state.academics.dailyEventInc)/this.state.numClasses)));
 			this.state.academics.total += this.state.academics.current;
-			[this.state.fun.dailyInc, this.state.health.dailyInc, this.state.academics.dailyInc] = [0, 0, 0];
+			[this.state.fun.dailyActivityInc, this.state.health.dailyActivityInc, this.state.academics.dailyActivityInc] = [0, 0, 0];
+			[this.state.fun.dailyEventInc, this.state.health.dailyEventInc, this.state.academics.dailyEventInc] = [0, 0, 0];
 			[this.state.fun.inputHolder, this.state.health.inputHolder, this.state.academics.inputHolder] = [0, 0, 0];
 			this.setState((state) => ({
 				messageType: "",

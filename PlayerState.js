@@ -15,17 +15,24 @@ var clubs = {
 	"Quiz Bowl": new Club("Quiz Bowl", 2, 0, 2, 2, 0, 3.5, 0),
 	"Comedy Club": new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70)
 	//have events for a club
+	/* EVENT
+ name, type, text, healthInc, funInc, GPAInc, 
+ USER INPUT EVENT
+ name, text, healthInc, funInc, academicsInc, maxHours, healthDec, funDec, academicsDec,
+ inc = if yes dec = if no
+ */
 
-	//name, text, healthInc, funInc, GPAInc, 
 	//popQuiz, hangout, bullies, substitute, slept through alarm, pizza for lunch, meme
 };var events = {
-	none: new Event("none", "", 0, 0, 0),
-	popQuiz: new Event("popQuiz", "You had a pop quiz today", 0, 0, 0),
-	pizzaLunch: new Event("pizzaLunch", "You had pizza for lunch", 10, 10, 0),
-	meme: new Event("meme", "Your friend showed you a funny meme", 0, 20, 0)
+	none: new Event("none", "normal", "", 0, 0, 0),
+	popQuiz: new Event("popQuiz", "normal", "You had a pop quiz today", 0, 0, 0),
+	pizzaLunch: new Event("pizzaLunch", "normal", "You had pizza for lunch", 10, 10, 0),
+	meme: new Event("meme", "normal", "Your friend showed you a funny meme", 0, 20, 0),
+	mall: new InputFormEvent("mall", "Your friends want to hang out at the mall with you", 0, 15, 0, 4, 0, 20, 0)
+
 };
 
-var eventPool = [events.popQuiz, events.pizzaLunch, events.meme];
+var eventPool = [events.popQuiz, events.pizzaLunch, events.meme, events.mall];
 
 var PlayerState = function (_React$Component) {
 	_inherits(PlayerState, _React$Component);
@@ -52,14 +59,15 @@ var PlayerState = function (_React$Component) {
 			wakeUpTime: 6,
 			time: 15,
 			timeInc: 0,
-			// name, currentPoints, totalPoints, inputHolder, activityValue, dailyInc, dailyDec
-			academics: new Stat("academics", 0, 0, 0, 10, 0, 0),
-			fun: new Stat("fun", 0, 0, 0, 10, 0, 10),
-			health: new Stat("health", 0, 0, 0, 10, 0, 10),
+			// name, currentPoints, totalPoints, inputHolder, activityValue, dailyActivityInc, dailyEventInc, dailyDec
+			academics: new Stat("academics", 0, 0, 0, 10, 0, 0, 0),
+			fun: new Stat("fun", 0, 0, 0, 10, 0, 0, 10),
+			health: new Stat("health", 0, 0, 0, 10, 0, 0, 10),
 			GPA: 0.0,
 			sleepValue: 10,
 			club: clubs.none,
 			event: events.none,
+			eventHours: 0,
 			eventProb: 0.5,
 			necessarySleepHours: 8
 		};
@@ -73,6 +81,8 @@ var PlayerState = function (_React$Component) {
 		_this.handleChooseClubClick = _this.handleChooseClubClick.bind(_this);
 		_this.handleLeaveClubClick = _this.handleLeaveClubClick.bind(_this);
 		_this.handleConfirmLeaveClubClick = _this.handleConfirmLeaveClubClick.bind(_this);
+		_this.handleEventHoursChange = _this.handleEventHoursChange.bind(_this);
+		_this.handleEventFormSubmit = _this.handleEventFormSubmit.bind(_this);
 		_this.chooseEvent = _this.chooseEvent.bind(_this);
 		_this.calculateSleepDecay = _this.calculateSleepDecay.bind(_this);
 		_this.calculateGPA = _this.calculateGPA.bind(_this);
@@ -138,11 +148,11 @@ var PlayerState = function (_React$Component) {
 			var currentTime = this.state.time + parseInt(this.state.timeInc);
 			currentTime = currentTime < 24 ? currentTime : currentTime - 24;
 			if (this.state.hoursFormActivity == "exercise") {
-				this.state.health.dailyInc += this.state.health.inputHolder;
+				this.state.health.dailyActivityInc += this.state.health.inputHolder;
 			} else if (this.state.hoursFormActivity == "study") {
-				this.state.academics.dailyInc += this.state.academics.inputHolder;
+				this.state.academics.dailyActivityInc += this.state.academics.inputHolder;
 			} else if (this.state.hoursFormActivity == "playGames") {
-				this.state.fun.dailyInc += this.state.fun.inputHolder;
+				this.state.fun.dailyActivityInc += this.state.fun.inputHolder;
 			}
 			this.setState({ displayHoursForm: false, displayChooseActivity: true, time: currentTime, timeInc: 0 });
 			var _ref2 = [0, 0, 0];
@@ -179,6 +189,30 @@ var PlayerState = function (_React$Component) {
 		value: function handleConfirmLeaveClubClick() {
 			delete clubs[this.state.club.name];
 			this.setState({ displayChooseActivity: true, messageType: "", club: clubs.none });
+		}
+	}, {
+		key: "handleEventHoursChange",
+		value: function handleEventHoursChange(e) {
+			e.preventDefault();
+			if (e.target.value) {
+				var _ref3 = [parseInt(e.target.value), parseInt(e.target.value), parseInt(e.target.value)];
+				this.state.health.inputHolder = _ref3[0];
+				this.state.fun.inputHolder = _ref3[1];
+				this.state.academics.inputHolder = _ref3[2];
+			} else {
+				var _ref4 = [0, 0, 0];
+				this.state.health.inputHolder = _ref4[0];
+				this.state.fun.inputHolder = _ref4[1];
+				this.state.academics.inputHolder = _ref4[2];
+			}
+		}
+	}, {
+		key: "handleEventFormSubmit",
+		value: function handleEventFormSubmit(e) {
+			e.preventDefault();
+			this.state.health.inputHolder == 0 ? this.state.health.dailyEventInc -= this.state.event.healthDec : this.state.health.dailyEventInc += this.state.health.inputHolder * this.state.event.healthInc;
+			this.state.fun.inputHolder == 0 ? this.state.fun.dailyEventInc -= this.state.event.funDec : this.state.fun.dailyEventInc += this.state.fun.inputHolder * this.state.event.funInc;
+			this.state.academics.inputHolder == 0 ? this.state.academics.dailyEventInc -= this.state.academics.healthDec : this.state.academics.dailyEventInc += this.state.academics.inputHolder * this.state.academics.healthInc;
 		}
 	}, {
 		key: "chooseEvent",
@@ -233,18 +267,22 @@ var PlayerState = function (_React$Component) {
 			if (this.state.day == this.state.lastDay) {
 				this.setState({ displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true });
 			} else {
-				this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec);
-				this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc);
-				this.state.academics.current = this.boundStats(Math.round(100 * (this.state.academics.dailyInc + this.state.club.academicsInc) / this.state.numClasses));
+				this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyActivityInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec + this.state.fun.dailyEventInc);
+				this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyActivityInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc + this.state.health.dailyEventInc);
+				this.state.academics.current = this.boundStats(Math.round(100 * (this.state.academics.dailyActivityInc + this.state.club.academicsInc + this.state.academics.dailyEventInc) / this.state.numClasses));
 				this.state.academics.total += this.state.academics.current;
-				var _ref3 = [0, 0, 0];
-				this.state.fun.dailyInc = _ref3[0];
-				this.state.health.dailyInc = _ref3[1];
-				this.state.academics.dailyInc = _ref3[2];
-				var _ref4 = [0, 0, 0];
-				this.state.fun.inputHolder = _ref4[0];
-				this.state.health.inputHolder = _ref4[1];
-				this.state.academics.inputHolder = _ref4[2];
+				var _ref5 = [0, 0, 0];
+				this.state.fun.dailyActivityInc = _ref5[0];
+				this.state.health.dailyActivityInc = _ref5[1];
+				this.state.academics.dailyActivityInc = _ref5[2];
+				var _ref6 = [0, 0, 0];
+				this.state.fun.dailyEventInc = _ref6[0];
+				this.state.health.dailyEventInc = _ref6[1];
+				this.state.academics.dailyEventInc = _ref6[2];
+				var _ref7 = [0, 0, 0];
+				this.state.fun.inputHolder = _ref7[0];
+				this.state.health.inputHolder = _ref7[1];
+				this.state.academics.inputHolder = _ref7[2];
 
 				this.setState(function (state) {
 					return {
@@ -271,7 +309,7 @@ var PlayerState = function (_React$Component) {
 				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + this.state.club.hours }),
 				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
-				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventText: this.state.event.text }),
+				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit }),
 				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: this.state.club.name, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current })
 			);
@@ -629,15 +667,19 @@ var EventBox = function (_React$Component10) {
 		key: "render",
 		value: function render() {
 			if (this.props.displayEventBox) {
-				return React.createElement(
-					"div",
-					null,
-					React.createElement(
-						"p",
+				if (this.props.eventType == "inputForm") {
+					return React.createElement(InputFormEventDisplay, { eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit });
+				} else {
+					return React.createElement(
+						"div",
 						null,
-						this.props.eventText
-					)
-				);
+						React.createElement(
+							"h4",
+							null,
+							this.props.eventText
+						)
+					);
+				}
 			} else {
 				return null;
 			}
@@ -647,8 +689,54 @@ var EventBox = function (_React$Component10) {
 	return EventBox;
 }(React.Component);
 
-var DisplayStats = function (_React$Component11) {
-	_inherits(DisplayStats, _React$Component11);
+var InputFormEventDisplay = function (_React$Component11) {
+	_inherits(InputFormEventDisplay, _React$Component11);
+
+	function InputFormEventDisplay(props) {
+		_classCallCheck(this, InputFormEventDisplay);
+
+		return _possibleConstructorReturn(this, (InputFormEventDisplay.__proto__ || Object.getPrototypeOf(InputFormEventDisplay)).call(this, props));
+	}
+
+	_createClass(InputFormEventDisplay, [{
+		key: "render",
+		value: function render() {
+			return React.createElement(
+				"div",
+				null,
+				React.createElement(
+					"form",
+					{ onSubmit: this.props.onEventFormSubmit },
+					React.createElement(
+						"div",
+						null,
+						React.createElement(
+							"h3",
+							null,
+							this.props.eventText
+						),
+						React.createElement(
+							"h5",
+							null,
+							"How many hours will you spend?"
+						),
+						React.createElement("input", { type: "number", min: "0", name: "eventInc", onChange: this.props.onEventHoursChange }),
+						React.createElement(
+							"button",
+							null,
+							"Submit"
+						)
+					)
+				)
+			);
+		}
+	}]);
+
+	return InputFormEventDisplay;
+}(React.Component);
+
+var DisplayStats = function (_React$Component12) {
+	_inherits(DisplayStats, _React$Component12);
 
 	function DisplayStats(props) {
 		_classCallCheck(this, DisplayStats);
@@ -720,8 +808,8 @@ var DisplayStats = function (_React$Component11) {
 	return DisplayStats;
 }(React.Component);
 
-var EndScreen = function (_React$Component12) {
-	_inherits(EndScreen, _React$Component12);
+var EndScreen = function (_React$Component13) {
+	_inherits(EndScreen, _React$Component13);
 
 	function EndScreen(props) {
 		_classCallCheck(this, EndScreen);
