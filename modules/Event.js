@@ -32,3 +32,29 @@ class Event {
 		return this._academicsInc;
 	}
 }
+
+class InputFormEvent extends Event {
+    constructor(name, text, healthInc, funInc, academicsInc, maxHours, healthDec, funDec, academicsDec,) {
+        super(name, "inputForm", text, healthInc, funInc, academicsInc);
+		this._maxHours = maxHours;
+		this._healthDec = healthDec;
+		this._funDec = funDec;
+		this._academicsDec = academicsDec;
+    }
+
+    get maxHours() {
+        return this._maxHours;
+	}
+	
+	get healthDec() {
+		return this._healthDec;
+	}
+
+	get funDec() {
+		return this._funDec;
+	}
+
+	get academicsDec() {
+		return this._academicsDec();
+	}
+}

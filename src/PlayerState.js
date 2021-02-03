@@ -7,17 +7,25 @@ const clubs = {
 	"Comedy Club": new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70),
 }
 //have events for a club
+/* EVENT
+name, type, text, healthInc, funInc, GPAInc, 
+USER INPUT EVENT
+name, text, healthInc, funInc, academicsInc, maxHours, healthDec, funDec, academicsDec,
+inc = if yes dec = if no
+*/
 
-//name, text, healthInc, funInc, GPAInc, 
 //popQuiz, hangout, bullies, substitute, slept through alarm, pizza for lunch, meme
 const events = {
-	none: new Event("none", "", 0, 0, 0),
-	popQuiz: new Event("popQuiz", "You had a pop quiz today", 0, 0, 0),
-	pizzaLunch: new Event("pizzaLunch", "You had pizza for lunch", 10, 10, 0),
-	meme: new Event("meme","Your friend showed you a funny meme", 0, 20, 0),
+	none: new Event("none", "normal", "", 0, 0, 0),
+	popQuiz: new Event("popQuiz", "normal", "You had a pop quiz today", 0, 0, 0),
+	pizzaLunch: new Event("pizzaLunch", "normal", "You had pizza for lunch", 10, 10, 0),
+	meme: new Event("meme", "normal", "Your friend showed you a funny meme", 0, 20, 0),
+	mall: new InputFormEvent("mall", "Your friends want to hang out at the mall with you", 0, 15, 0, 4, 0, 20, 0),
+
+
 }
 
-const eventPool = [events.popQuiz, events.pizzaLunch, events.meme];
+const eventPool = [events.popQuiz, events.pizzaLunch, events.meme, events.mall];
 
 class PlayerState extends React.Component {
 	constructor(props) {
@@ -39,14 +47,15 @@ class PlayerState extends React.Component {
 			wakeUpTime: 6,
 			time: 15,
 			timeInc: 0,
-			// name, currentPoints, totalPoints, inputHolder, activityValue, dailyInc, dailyDec
-			academics: new Stat("academics", 0, 0, 0, 10, 0, 0),
-			fun: new Stat("fun", 0, 0, 0, 10, 0, 10),
-			health: new Stat("health", 0, 0, 0, 10, 0, 10),
+			// name, currentPoints, totalPoints, inputHolder, activityValue, dailyActivityInc, dailyEventInc, dailyDec
+			academics: new Stat("academics", 0, 0, 0, 10, 0, 0, 0),
+			fun: new Stat("fun", 0, 0, 0, 10, 0, 0, 10),
+			health: new Stat("health", 0, 0, 0, 10, 0, 0, 10),
 			GPA: 0.0,
 			sleepValue: 10,
 			club: clubs.none,
 			event: events.none,
+			eventHours: 0,
 			eventProb: 0.5,
 			necessarySleepHours: 8,
 		}
@@ -60,6 +69,8 @@ class PlayerState extends React.Component {
 		this.handleChooseClubClick = this.handleChooseClubClick.bind(this);
 		this.handleLeaveClubClick = this.handleLeaveClubClick.bind(this);
 		this.handleConfirmLeaveClubClick = this.handleConfirmLeaveClubClick.bind(this);
+		this.handleEventHoursChange = this.handleEventHoursChange.bind(this);
+		this.handleEventFormSubmit = this.handleEventFormSubmit.bind(this);
 		this.chooseEvent = this.chooseEvent.bind(this);
 		this.calculateSleepDecay = this.calculateSleepDecay.bind(this);
 		this.calculateGPA = this.calculateGPA.bind(this);
@@ -149,6 +160,22 @@ class PlayerState extends React.Component {
 		this.setState({displayChooseActivity: true, messageType: "", club: clubs.none, });
 	}
 
+	handleEventHoursChange(e) {
+		e.preventDefault();
+		if (e.target.value) {
+			[this.state.health.inputHolder, this.state.fun.inputHolder, this.state.academics.inputHolder] = [parseInt(e.target.value), parseInt(e.target.value), parseInt(e.target.value)];
+		} else {
+			[this.state.health.inputHolder, this.state.fun.inputHolder, this.state.academics.inputHolder] = [0, 0, 0];
+		}
+	}
+
+	handleEventFormSubmit(e) {
+		e.preventDefault();
+		this.state.health.inputHolder == 0 ? this.state.health.dailyEventInc -= this.state.event.healthDec : this.state.health.dailyEventInc += this.state.health.inputHolder * this.state.event.healthInc;
+		this.state.fun.inputHolder == 0 ? this.state.fun.dailyEventInc -= this.state.event.funDec : this.state.fun.dailyEventInc += this.state.fun.inputHolder * this.state.event.funInc;
+		this.state.academics.inputHolder == 0 ? this.state.academics.dailyEventInc -= this.state.academics.healthDec : this.state.academics.dailyEventInc += this.state.academics.inputHolder * this.state.academics.healthInc;
+	}
+
 	chooseEvent() {
 		if (Math.random() <= this.state.eventProb) {
 			let event = eventPool[Math.floor(Math.random() * eventPool.length)];
@@ -222,7 +249,7 @@ class PlayerState extends React.Component {
 				}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
-				<EventBox displayEventBox={this.state.displayEventBox} eventText={this.state.event.text}/>
+				<EventBox displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit}/>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 			</div>
@@ -415,14 +442,41 @@ class EventBox extends React.Component {
 
 	render() {
 		if (this.props.displayEventBox) {
-			return (
-				<div>
-					<p>{this.props.eventText}</p>
-				</div>
-			)
+			if (this.props.eventType == "inputForm") {
+				return (
+					<InputFormEventDisplay eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit}/>
+				)
+			} else {
+				return (
+					<div>
+						<h4>{this.props.eventText}</h4>
+					</div>
+				)
+			}
 		} else {
 			return null;
 		}
+	}
+}
+
+class InputFormEventDisplay extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render(){
+		return (
+			<div>
+				<form onSubmit={this.props.onEventFormSubmit}>
+					<div>
+						<h3>{this.props.eventText}</h3>
+						<h5>How many hours will you spend?</h5>
+						<input type="number" min="0" name="eventInc" onChange={this.props.onEventHoursChange}/>
+						<button>Submit</button>
+					</div>
+				</form>
+			</div>
+		)
 	}
 }
 
