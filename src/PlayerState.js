@@ -25,7 +25,7 @@ const events = {
 
 }
 
-const eventPool = [events.popQuiz, events.pizzaLunch, events.meme, events.mall];
+const eventPool = [events.mall];
 
 class PlayerState extends React.Component {
 	constructor(props) {
@@ -91,7 +91,7 @@ class PlayerState extends React.Component {
 
 	handleActivityClick(e) {
 		e.preventDefault();
-		this.setState({displayHoursForm: true, displayChooseActivity: false, messageType: "", hoursFormActivity: e.target.name});
+		this.setState({displayHoursForm: true, displayChooseActivity: false, displayEventBox: false, messageType: "", hoursFormActivity: e.target.name});
 	}
 
 	handleHoursChange(e) {
@@ -135,11 +135,7 @@ class PlayerState extends React.Component {
 	}
 
 	handleJoinClubClick() {
-		this.setState({
-			displayChooseClub: true,
-			displayChooseActivity: false,
-			messageType: "",
-		});
+		this.setState({displayChooseClub: true, displayChooseActivity: false, displayEventBox: false, messageType: ""});
 	}
 
 	handleChooseClubClick(e) {
@@ -152,7 +148,7 @@ class PlayerState extends React.Component {
 	}
 
 	handleLeaveClubClick() {
-		this.setState({displayChooseActivity: false, messageType: "danger"});
+		this.setState({displayChooseActivity: false, displayEventBox: false, messageType: "danger"});
 	}
 
 	handleConfirmLeaveClubClick() {
@@ -174,15 +170,23 @@ class PlayerState extends React.Component {
 		this.state.health.inputHolder == 0 ? this.state.health.dailyEventInc -= this.state.event.healthDec : this.state.health.dailyEventInc += this.state.health.inputHolder * this.state.event.healthInc;
 		this.state.fun.inputHolder == 0 ? this.state.fun.dailyEventInc -= this.state.event.funDec : this.state.fun.dailyEventInc += this.state.fun.inputHolder * this.state.event.funInc;
 		this.state.academics.inputHolder == 0 ? this.state.academics.dailyEventInc -= this.state.academics.healthDec : this.state.academics.dailyEventInc += this.state.academics.inputHolder * this.state.academics.healthInc;
+		this.setState((state) => ({
+			displayChooseActivity: true,
+			displayEventBox: false,
+			time: state.time + state.health.inputHolder,
+		}))
 	}
 
 	chooseEvent() {
 		if (Math.random() <= this.state.eventProb) {
 			let event = eventPool[Math.floor(Math.random() * eventPool.length)];
 			this.setState({displayEventBox: true, event: event});
-			this.state.health.current += event.healthInc;
-			this.state.academics.current += event.academicsInc;
-			this.state.fun.current += event.funInc;
+			if (event.type == "inputForm") this.setState({displayChooseActivity: false});
+			if (event.type != "inputForm") {
+				this.state.health.current += event.healthInc;
+				this.state.academics.current += event.academicsInc;
+				this.state.fun.current += event.funInc;
+			}
 		} else {
 			this.setState({displayEventBox: false, event: events.none});
 		}
