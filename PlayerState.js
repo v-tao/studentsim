@@ -68,7 +68,7 @@ var PlayerState = function (_React$Component) {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 0.5,
+			eventProb: 1,
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
@@ -208,7 +208,7 @@ var PlayerState = function (_React$Component) {
 			e.preventDefault();
 			this.state.health.inputHolder == 0 ? this.state.health.dailyEventInc -= this.state.event.healthDec : this.state.health.dailyEventInc += this.state.health.inputHolder * this.state.event.healthInc;
 			this.state.fun.inputHolder == 0 ? this.state.fun.dailyEventInc -= this.state.event.funDec : this.state.fun.dailyEventInc += this.state.fun.inputHolder * this.state.event.funInc;
-			this.state.academics.inputHolder == 0 ? this.state.academics.dailyEventInc -= this.state.academics.healthDec : this.state.academics.dailyEventInc += this.state.academics.inputHolder * this.state.academics.healthInc;
+			this.state.academics.inputHolder == 0 ? this.state.academics.dailyEventInc -= this.state.event.academicsDec : this.state.academics.dailyEventInc += this.state.academics.inputHolder * this.state.event.academicsInc;
 			this.setState(function (state) {
 				return {
 					displayChooseActivity: true,
@@ -275,7 +275,7 @@ var PlayerState = function (_React$Component) {
 			} else {
 				this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyActivityInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec + this.state.fun.dailyEventInc);
 				this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyActivityInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc + this.state.health.dailyEventInc);
-				this.state.academics.current = this.boundStats(Math.round(100 * (this.state.academics.dailyActivityInc + this.state.club.academicsInc + this.state.academics.dailyEventInc) / this.state.numClasses));
+				this.state.academics.current = this.boundStats(Math.round(100 * (this.state.academics.dailyActivityInc + this.state.club.academicsInc) / this.state.numClasses));
 				this.state.academics.total += this.state.academics.current;
 				var _ref5 = [0, 0, 0];
 				this.state.fun.dailyActivityInc = _ref5[0];
@@ -315,7 +315,7 @@ var PlayerState = function (_React$Component) {
 				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + this.state.club.hours }),
 				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
-				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit }),
+				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit, maxHours: this.state.event.maxHours }),
 				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: this.state.club.name, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current })
 			);
@@ -674,7 +674,7 @@ var EventBox = function (_React$Component10) {
 		value: function render() {
 			if (this.props.displayEventBox) {
 				if (this.props.eventType == "inputForm") {
-					return React.createElement(InputFormEventDisplay, { eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit });
+					return React.createElement(InputFormEventDisplay, { eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit, maxHours: this.props.maxHours });
 				} else {
 					return React.createElement(
 						"div",
@@ -726,7 +726,7 @@ var InputFormEventDisplay = function (_React$Component11) {
 							null,
 							"How many hours will you spend?"
 						),
-						React.createElement("input", { type: "number", min: "0", name: "eventInc", onChange: this.props.onEventHoursChange }),
+						React.createElement("input", { step: "1", type: "number", min: "0", max: this.props.maxHours, name: "eventInc", onChange: this.props.onEventHoursChange }),
 						React.createElement(
 							"button",
 							null,

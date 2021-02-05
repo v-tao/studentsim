@@ -55,6 +55,6 @@ class InputFormEvent extends Event {
 	}
 
 	get academicsDec() {
-		return this._academicsDec();
+		return this._academicsDec;
 	}
 }

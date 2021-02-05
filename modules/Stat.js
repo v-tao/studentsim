@@ -55,7 +55,7 @@ class Stat {
     }
 
     set dailyActivityInc(points) {
-        this._dailyInc = points;
+        this._dailyActivityInc = points;
     }
 
     set dailyEventInc(points) {

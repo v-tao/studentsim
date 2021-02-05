@@ -56,7 +56,7 @@ class PlayerState extends React.Component {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 0.5,
+			eventProb: 1,
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);
@@ -169,7 +169,7 @@ class PlayerState extends React.Component {
 		e.preventDefault();
 		this.state.health.inputHolder == 0 ? this.state.health.dailyEventInc -= this.state.event.healthDec : this.state.health.dailyEventInc += this.state.health.inputHolder * this.state.event.healthInc;
 		this.state.fun.inputHolder == 0 ? this.state.fun.dailyEventInc -= this.state.event.funDec : this.state.fun.dailyEventInc += this.state.fun.inputHolder * this.state.event.funInc;
-		this.state.academics.inputHolder == 0 ? this.state.academics.dailyEventInc -= this.state.academics.healthDec : this.state.academics.dailyEventInc += this.state.academics.inputHolder * this.state.academics.healthInc;
+		this.state.academics.inputHolder == 0 ? this.state.academics.dailyEventInc -= this.state.event.academicsDec : this.state.academics.dailyEventInc += this.state.academics.inputHolder * this.state.event.academicsInc;
 		this.setState((state) => ({
 			displayChooseActivity: true,
 			displayEventBox: false,
@@ -227,7 +227,7 @@ class PlayerState extends React.Component {
 		} else {
 			this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyActivityInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec + this.state.fun.dailyEventInc);
 			this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyActivityInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc + this.state.health.dailyEventInc);
-			this.state.academics.current = this.boundStats(Math.round((100 * (this.state.academics.dailyActivityInc + this.state.club.academicsInc + this.state.academics.dailyEventInc)/this.state.numClasses)));
+			this.state.academics.current = this.boundStats(Math.round((100 * (this.state.academics.dailyActivityInc + this.state.club.academicsInc)/this.state.numClasses)));
 			this.state.academics.total += this.state.academics.current;
 			[this.state.fun.dailyActivityInc, this.state.health.dailyActivityInc, this.state.academics.dailyActivityInc] = [0, 0, 0];
 			[this.state.fun.dailyEventInc, this.state.health.dailyEventInc, this.state.academics.dailyEventInc] = [0, 0, 0];
@@ -254,7 +254,7 @@ class PlayerState extends React.Component {
 				}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
-				<EventBox displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit}/>
+				<EventBox displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}/>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 			</div>
@@ -449,7 +449,7 @@ class EventBox extends React.Component {
 		if (this.props.displayEventBox) {
 			if (this.props.eventType == "inputForm") {
 				return (
-					<InputFormEventDisplay eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit}/>
+					<InputFormEventDisplay eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit} maxHours={this.props.maxHours}/>
 				)
 			} else {
 				return (
@@ -476,7 +476,7 @@ class InputFormEventDisplay extends React.Component {
 					<div>
 						<h3>{this.props.eventText}</h3>
 						<h5>How many hours will you spend?</h5>
-						<input type="number" min="0" name="eventInc" onChange={this.props.onEventHoursChange}/>
+						<input step="1" type="number" min="0" max={this.props.maxHours} name="eventInc" onChange={this.props.onEventHoursChange}/>
 						<button>Submit</button>
 					</div>
 				</form>
