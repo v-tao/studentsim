@@ -2,9 +2,9 @@
 //name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq
 const clubs = {
 	"none": new Club("none", 0, 0, 0, 0, 0, 0, 0),
-	"Soccer Team": new Club("Soccer Team", 2, 2, 0, 2, 70, 2.0, 0),
-	"Quiz Bowl": new Club("Quiz Bowl", 2, 0, 2, 2, 0, 3.5, 0),
-	"Comedy Club": new Club("Comedy Club", 2, 0, 0, 4, 0, 2.0, 70),
+	"Soccer Team": new Club("Soccer Team", 2, 20, 0, 20, 70, 2.0, 0),
+	"Quiz Bowl": new Club("Quiz Bowl", 2, 0, 3, 10, 0, 3.5, 0),
+	"Comedy Club": new Club("Comedy Club", 2, 0, 0, 40, 0, 2.0, 70),
 }
 //have events for a club
 /* EVENT
@@ -25,7 +25,7 @@ const events = {
 
 }
 
-const eventPool = [events.mall];
+const eventPool = [events.mall, events.popQuiz, events.pizzaLunch, events.meme];
 
 class PlayerState extends React.Component {
 	constructor(props) {
@@ -47,16 +47,16 @@ class PlayerState extends React.Component {
 			wakeUpTime: 6,
 			time: 15,
 			timeInc: 0,
-			// name, currentPoints, totalPoints, inputHolder, activityValue, dailyActivityInc, dailyEventInc, dailyDec
+			// name, currentPoints, totalPoints, inputHolder, defaultActivityValue, dailyActivityInc, dailyEventInc, dailyDec
 			academics: new Stat("academics", 0, 0, 0, 10, 0, 0, 0),
-			fun: new Stat("fun", 0, 0, 0, 10, 0, 0, 10),
-			health: new Stat("health", 0, 0, 0, 10, 0, 0, 10),
+			fun: new Stat("fun", 50, 0, 0, 10, 0, 0, 10),
+			health: new Stat("health", 50, 0, 0, 10, 0, 0, 10),
 			GPA: 0.0,
 			sleepValue: 10,
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 1,
+			eventProb: 0.3,
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);
@@ -72,6 +72,8 @@ class PlayerState extends React.Component {
 		this.handleEventHoursChange = this.handleEventHoursChange.bind(this);
 		this.handleEventFormSubmit = this.handleEventFormSubmit.bind(this);
 		this.chooseEvent = this.chooseEvent.bind(this);
+		this.updateCurrent = this.updateCurrent.bind(this);
+		this.updateValues - this.updateValues.bind(this);
 		this.calculateSleepDecay = this.calculateSleepDecay.bind(this);
 		this.calculateGPA = this.calculateGPA.bind(this);
 		this.nextDay = this.nextDay.bind(this);
@@ -200,6 +202,25 @@ class PlayerState extends React.Component {
 		}
 	}
 
+	updateCurrent() {
+		this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyActivityInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc + this.state.health.dailyEventInc);
+		this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyActivityInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec + this.state.fun.dailyEventInc);
+		let multiplier = 0.17071 * Math.sqrt(this.state.health.current) - 1.20711;
+		let dailyAcademicsInc = (this.state.academics.dailyActivityInc + this.state.club.academicsInc)/this.state.numClasses;
+		dailyAcademicsInc += multiplier * dailyAcademicsInc;
+		this.state.academics.current = this.boundStats(Math.round(100 * dailyAcademicsInc));
+		this.state.academics.total += this.state.academics.current;
+	}
+
+	updateValues() {
+		//square root function that is 0 at x = 50 and 0.5 at x = 100
+		let multiplier = 0.17071 * Math.sqrt(this.state.health.current) - 1.20711;
+		this.state.fun.activityValue = Math.round(this.state.fun.defaultActivityValue + this.state.fun.defaultActivityValue * multiplier);
+		this.state.academics.activityValue = this.state.academics.defaultActivityValue + this.state.academics.defaultActivityValue * multiplier;		
+		if (this.state.fun.activityValue < 0 ) this.state.fun.activityValue = 0;
+
+	}
+
 	calculateSleepDecay() {
 		let sleepDecay = 0;
 		if (this.state.time < this.state.wakeUpTime && (this.state.wakeUpTime - this.state.time) < this.state.necessarySleepHours) {
@@ -225,10 +246,8 @@ class PlayerState extends React.Component {
 		if (this.state.day == this.state.lastDay) {
 			this.setState({displayChooseActivity: false, displayStats: false, displayEventBox: false, displayEndScreen: true});
 		} else {
-			this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyActivityInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec + this.state.fun.dailyEventInc);
-			this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyActivityInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc + this.state.health.dailyEventInc);
-			this.state.academics.current = this.boundStats(Math.round((100 * (this.state.academics.dailyActivityInc + this.state.club.academicsInc)/this.state.numClasses)));
-			this.state.academics.total += this.state.academics.current;
+			this.updateCurrent();
+			this.updateValues();
 			[this.state.fun.dailyActivityInc, this.state.health.dailyActivityInc, this.state.academics.dailyActivityInc] = [0, 0, 0];
 			[this.state.fun.dailyEventInc, this.state.health.dailyEventInc, this.state.academics.dailyEventInc] = [0, 0, 0];
 			[this.state.fun.inputHolder, this.state.health.inputHolder, this.state.academics.inputHolder] = [0, 0, 0];
