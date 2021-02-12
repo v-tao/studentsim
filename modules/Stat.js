@@ -75,4 +75,8 @@ class Stat {
     set dailyEventInc(points) {
         this._dailyEventInc = points;
     }
+    
+    set dailyDec(points) {
+        this._dailyDec = points;
+    }
 }
