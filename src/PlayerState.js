@@ -73,7 +73,8 @@ class PlayerState extends React.Component {
 		this.handleEventFormSubmit = this.handleEventFormSubmit.bind(this);
 		this.chooseEvent = this.chooseEvent.bind(this);
 		this.updateCurrent = this.updateCurrent.bind(this);
-		this.updateValues - this.updateValues.bind(this);
+		this.updateValues = this.updateValues.bind(this);
+		this.updateDecay = this.updateDecay.bind(this);
 		this.calculateSleepDecay = this.calculateSleepDecay.bind(this);
 		this.calculateGPA = this.calculateGPA.bind(this);
 		this.nextDay = this.nextDay.bind(this);
@@ -216,9 +217,18 @@ class PlayerState extends React.Component {
 		//square root function that is 0 at x = 50 and 0.5 at x = 100
 		let multiplier = 0.17071 * Math.sqrt(this.state.health.current) - 1.20711;
 		this.state.fun.activityValue = Math.round(this.state.fun.defaultActivityValue + this.state.fun.defaultActivityValue * multiplier);
-		this.state.academics.activityValue = this.state.academics.defaultActivityValue + this.state.academics.defaultActivityValue * multiplier;		
+		this.state.academics.activityValue = Math.round(this.state.academics.defaultActivityValue + this.state.academics.defaultActivityValue * multiplier);		
 		if (this.state.fun.activityValue < 0 ) this.state.fun.activityValue = 0;
 
+	}
+
+	updateDecay() {
+		if (this.state.health.current < 50) {
+			//upside down square root function that is 2 at x = 0 and 0 at x = 50
+			let multiplier = -0.28284 * Math.sqrt(this.state.health.current) + 2;
+			this.state.fun.dailyDec = Math.round(this.state.fun.defaultDailyDec + this.state.fun.defaultDailyDec * multiplier);
+			this.state.health.dailyDec = Math.round(this.state.health.defaultDailyDec + this.state.health.defaultDailyDec * multiplier);
+		}
 	}
 
 	calculateSleepDecay() {
@@ -248,6 +258,7 @@ class PlayerState extends React.Component {
 		} else {
 			this.updateCurrent();
 			this.updateValues();
+			this.updateDecay();
 			[this.state.fun.dailyActivityInc, this.state.health.dailyActivityInc, this.state.academics.dailyActivityInc] = [0, 0, 0];
 			[this.state.fun.dailyEventInc, this.state.health.dailyEventInc, this.state.academics.dailyEventInc] = [0, 0, 0];
 			[this.state.fun.inputHolder, this.state.health.inputHolder, this.state.academics.inputHolder] = [0, 0, 0];

@@ -1,5 +1,5 @@
 class Stat {
-    constructor(name, current, total, inputHolder, defaultActivityValue, dailyActivityInc, dailyEventInc, dailyDec) {
+    constructor(name, current, total, inputHolder, defaultActivityValue, dailyActivityInc, dailyEventInc, defaultDailyDec) {
         this._name = name;
         this._current = current;
         this._total = total;
@@ -8,7 +8,8 @@ class Stat {
         this._activityValue = defaultActivityValue;
         this._dailyActivityInc = dailyActivityInc;
         this._dailyEventInc = dailyEventInc;
-        this._dailyDec = dailyDec;
+        this._defaultDailyDec = defaultDailyDec;
+        this._dailyDec = defaultDailyDec;
     }
 
     get name() {
@@ -41,6 +42,10 @@ class Stat {
 
     get dailyEventInc() {
         return this._dailyEventInc;
+    }
+
+    get defaultDailyDec() {
+        return this._defaultDailyDec;
     }
 
     get dailyDec() {

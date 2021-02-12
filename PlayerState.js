@@ -85,7 +85,8 @@ var PlayerState = function (_React$Component) {
 		_this.handleEventFormSubmit = _this.handleEventFormSubmit.bind(_this);
 		_this.chooseEvent = _this.chooseEvent.bind(_this);
 		_this.updateCurrent = _this.updateCurrent.bind(_this);
-		_this.updateValues - _this.updateValues.bind(_this);
+		_this.updateValues = _this.updateValues.bind(_this);
+		_this.updateDecay = _this.updateDecay.bind(_this);
 		_this.calculateSleepDecay = _this.calculateSleepDecay.bind(_this);
 		_this.calculateGPA = _this.calculateGPA.bind(_this);
 		_this.nextDay = _this.nextDay.bind(_this);
@@ -261,8 +262,18 @@ var PlayerState = function (_React$Component) {
 			//square root function that is 0 at x = 50 and 0.5 at x = 100
 			var multiplier = 0.17071 * Math.sqrt(this.state.health.current) - 1.20711;
 			this.state.fun.activityValue = Math.round(this.state.fun.defaultActivityValue + this.state.fun.defaultActivityValue * multiplier);
-			this.state.academics.activityValue = this.state.academics.defaultActivityValue + this.state.academics.defaultActivityValue * multiplier;
+			this.state.academics.activityValue = Math.round(this.state.academics.defaultActivityValue + this.state.academics.defaultActivityValue * multiplier);
 			if (this.state.fun.activityValue < 0) this.state.fun.activityValue = 0;
+		}
+	}, {
+		key: "updateDecay",
+		value: function updateDecay() {
+			if (this.state.health.current < 50) {
+				//upside down square root function that is 2 at x = 0 and 0 at x = 50
+				var multiplier = -0.28284 * Math.sqrt(this.state.health.current) + 2;
+				this.state.fun.dailyDec = Math.round(this.state.fun.defaultDailyDec + this.state.fun.defaultDailyDec * multiplier);
+				this.state.health.dailyDec = Math.round(this.state.health.defaultDailyDec + this.state.health.defaultDailyDec * multiplier);
+			}
 		}
 	}, {
 		key: "calculateSleepDecay",
@@ -297,6 +308,7 @@ var PlayerState = function (_React$Component) {
 			} else {
 				this.updateCurrent();
 				this.updateValues();
+				this.updateDecay();
 				var _ref5 = [0, 0, 0];
 				this.state.fun.dailyActivityInc = _ref5[0];
 				this.state.health.dailyActivityInc = _ref5[1];
