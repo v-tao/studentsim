@@ -1,5 +1,5 @@
 "use strict";
-//name, hours, healthInc, GPAInc, funInc, healthReq, GPAReq, funReq
+//name, hours, healthInc, academicsInc, funInc, healthReq, GPAReq, funReq
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -11,9 +11,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var clubs = {
 	"none": new Club("none", 0, 0, 0, 0, 0, 0, 0),
-	"Soccer Team": new Club("Soccer Team", 2, 20, 0, 20, 70, 2.0, 0),
-	"Quiz Bowl": new Club("Quiz Bowl", 2, 0, 3, 10, 0, 3.5, 0),
-	"Comedy Club": new Club("Comedy Club", 2, 0, 0, 40, 0, 2.0, 70)
+	"Soccer Team": new Club("Soccer Team", 2, 20, 0, 0, 70, 2.0, 0),
+	"Quiz Bowl": new Club("Quiz Bowl", 2, 0, 3, 0, 0, 3.5, 0),
+	"Comedy Club": new Club("Comedy Club", 2, 0, 0, 20, 0, 2.0, 70)
 	//have events for a club
 	/* EVENT
  name, type, text, healthInc, funInc, GPAInc, 
@@ -26,9 +26,9 @@ var clubs = {
 };var events = {
 	none: new Event("none", "normal", "", 0, 0, 0),
 	popQuiz: new Event("popQuiz", "normal", "You had a pop quiz today", 0, 0, 0),
-	pizzaLunch: new Event("pizzaLunch", "normal", "You had pizza for lunch", 10, 10, 0),
-	meme: new Event("meme", "normal", "Your friend showed you a funny meme", 0, 20, 0),
-	mall: new InputFormEvent("mall", "Your friends want to hang out at the mall with you", 0, 15, 0, 4, 0, 20, 0)
+	pizzaLunch: new Event("pizzaLunch", "normal", "You had pizza for lunch", 5, 0, 0),
+	meme: new Event("meme", "normal", "Your friend showed you a funny meme", 0, 5, 0),
+	mall: new InputFormEvent("mall", "Your friends want to hang out at the mall with you", 0, 7, 0, 4, 0, 20, 0)
 
 };
 
@@ -60,9 +60,9 @@ var PlayerState = function (_React$Component) {
 			time: 15,
 			timeInc: 0,
 			// name, currentPoints, totalPoints, inputHolder, defaultActivityValue, dailyActivityInc, dailyEventInc, dailyDec
-			academics: new Stat("academics", 0, 0, 0, 10, 0, 0, 0),
-			fun: new Stat("fun", 50, 0, 0, 10, 0, 0, 10),
-			health: new Stat("health", 50, 0, 0, 10, 0, 0, 10),
+			academics: new Stat("academics", 0, 0, 0, 7, 0, 0, 0),
+			fun: new Stat("fun", 50, 0, 0, 7, 0, 0, 10),
+			health: new Stat("health", 50, 0, 0, 7, 0, 0, 10),
 			GPA: 0.0,
 			sleepValue: 10,
 			club: clubs.none,
@@ -250,8 +250,9 @@ var PlayerState = function (_React$Component) {
 		value: function updateCurrent() {
 			this.state.health.current = this.boundStats(this.state.health.current + this.state.health.dailyActivityInc * this.state.health.activityValue - this.state.health.dailyDec - this.calculateSleepDecay() + this.state.club.healthInc + this.state.health.dailyEventInc);
 			this.state.fun.current = this.boundStats(this.state.fun.current + this.state.fun.dailyActivityInc * this.state.fun.activityValue + this.state.club.funInc - this.state.fun.dailyDec + this.state.fun.dailyEventInc);
+			//square root function that is 0 at x = 50 and 0.5 at x = 100
 			var multiplier = 0.17071 * Math.sqrt(this.state.health.current) - 1.20711;
-			var dailyAcademicsInc = (this.state.academics.dailyActivityInc + this.state.club.academicsInc) / this.state.numClasses;
+			var dailyAcademicsInc = (this.state.academics.dailyActivityInc + this.state.club.academicsInc) / (this.state.numClasses - 1);
 			dailyAcademicsInc += multiplier * dailyAcademicsInc;
 			this.state.academics.current = this.boundStats(Math.round(100 * dailyAcademicsInc));
 			this.state.academics.total += this.state.academics.current;
@@ -259,20 +260,30 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "updateValues",
 		value: function updateValues() {
-			//square root function that is 0 at x = 50 and 0.5 at x = 100
-			var multiplier = 0.17071 * Math.sqrt(this.state.health.current) - 1.20711;
-			this.state.fun.activityValue = Math.round(this.state.fun.defaultActivityValue + this.state.fun.defaultActivityValue * multiplier);
-			this.state.academics.activityValue = Math.round(this.state.academics.defaultActivityValue + this.state.academics.defaultActivityValue * multiplier);
+			//square root function that is -1.5 at x = 0 and 0 at x = 50
+			if (this.state.health.current < 50) {
+				var multiplier = 0.21213 * Math.sqrt(this.state.health.current) - 1.5;
+				this.state.fun.activityValue = Math.round(this.state.fun.defaultActivityValue * (1 + multiplier));
+			}
 			if (this.state.fun.activityValue < 0) this.state.fun.activityValue = 0;
 		}
 	}, {
 		key: "updateDecay",
 		value: function updateDecay() {
+			var healthMultiplier = 0;
+			var funMultiplier = 0;
 			if (this.state.health.current < 50) {
-				//upside down square root function that is 2 at x = 0 and 0 at x = 50
-				var multiplier = -0.28284 * Math.sqrt(this.state.health.current) + 2;
-				this.state.fun.dailyDec = Math.round(this.state.fun.defaultDailyDec + this.state.fun.defaultDailyDec * multiplier);
-				this.state.health.dailyDec = Math.round(this.state.health.defaultDailyDec + this.state.health.defaultDailyDec * multiplier);
+				//upside down square root function that is 1.5 at x = 0 and 0 at x = 50
+				healthMultiplier = -0.21213 * Math.sqrt(this.state.health.current) + 1.5;
+				this.state.health.dailyDec = Math.round(this.state.health.defaultDailyDec * (1 + healthMultiplier));
+			}
+			if (this.state.fun.current < 50) {
+				funMultiplier = -0.21213 * Math.sqrt(this.state.fun.current) + 1.5;
+			}
+			if (healthMultiplier >= funMultiplier) {
+				this.state.fun.dailyDec = Math.round(this.state.fun.defaultDailyDec * (1 + healthMultiplier));
+			} else {
+				this.state.fun.dailyDec = Math.round(this.state.fun.defaultDailyDec * (1 + funMultiplier));
 			}
 		}
 	}, {
