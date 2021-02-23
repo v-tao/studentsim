@@ -26,13 +26,46 @@ var clubs = {
 };var events = {
 	none: new Event("none", "normal", "", 0, 0, 0),
 	popQuiz: new Event("popQuiz", "normal", "You had a pop quiz today", 0, 0, 0),
-	pizzaLunch: new Event("pizzaLunch", "normal", "You had pizza for lunch", 5, 0, 0),
-	meme: new Event("meme", "normal", "Your friend showed you a funny meme", 0, 5, 0),
-	mall: new InputFormEvent("mall", "Your friends want to hang out at the mall with you", 0, 7, 0, 4, 0, 20, 0)
-
+	pizzaLunch: new Event("pizzaLunch", "normal", "You had pizza for lunch", 2, 0, 0),
+	meme: new Event("meme", "normal", "Your friend showed you a funny meme", 0, 2, 0),
+	rock: new Event("rock", "normal", "You tripped on a rock at school", -3, 0, 0),
+	friendlessLunch: new Event("friendlessLunch", "normal", "Your friends went to lunch without you today", 0, -5, 0),
+	absentTeacher: new Event("absentTeacher", "normal", "Your teacher was absent from school today", 0, 0, -5),
+	mall: new InputFormEvent("mall", "Your friends want to hang out at the mall with you", 0, 8, 0, 4, 0, 12, 0),
+	dinner: new InputFormEvent("dinner", "Your family wants you to help them make dinner", 3, 5, 0, 2, 3, 3, 0),
+	study: new InputFormEvent("study", "Your friend wants to study for a test together", 0, 3, 6, 4, 0, 0, 0),
+	album: new InputFormEvent("album", "Your favorite musician's new album just came out", 0, 9, 0, 2, 0, 6, 0)
 };
 
-var eventPool = [events.mall, events.popQuiz, events.pizzaLunch, events.meme];
+var eventPool = [];
+
+//adds one of every event
+var _iteratorNormalCompletion = true;
+var _didIteratorError = false;
+var _iteratorError = undefined;
+
+try {
+	for (var _iterator = Object.keys(events)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+		var key = _step.value;
+
+		if (key != "none") {
+			eventPool.push(events[key]);
+		}
+	}
+} catch (err) {
+	_didIteratorError = true;
+	_iteratorError = err;
+} finally {
+	try {
+		if (!_iteratorNormalCompletion && _iterator.return) {
+			_iterator.return();
+		}
+	} finally {
+		if (_didIteratorError) {
+			throw _iteratorError;
+		}
+	}
+}
 
 var PlayerState = function (_React$Component) {
 	_inherits(PlayerState, _React$Component);
@@ -68,7 +101,7 @@ var PlayerState = function (_React$Component) {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 0.3,
+			eventProb: 0.5,
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
