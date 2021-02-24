@@ -385,14 +385,14 @@ var PlayerState = function (_React$Component) {
 		value: function render() {
 			return React.createElement(
 				"div",
-				null,
+				{ className: "grid-container" },
 				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
 				React.createElement(Message, { type: this.state.messageType, onConfirmLeaveClubClick: this.handleConfirmLeaveClubClick }),
+				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: this.state.club.name, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current }),
 				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + this.state.club.hours }),
 				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
 				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
 				React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit, maxHours: this.state.event.maxHours }),
-				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: this.state.club.name, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current }),
 				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current })
 			);
 		}
@@ -425,7 +425,7 @@ var StartScreen = function (_React$Component2) {
 			if (this.props.displayStartScreen) {
 				return React.createElement(
 					"div",
-					null,
+					{ className: "grid-item screen" },
 					React.createElement(
 						"h1",
 						null,
@@ -466,7 +466,7 @@ var StartScreen = function (_React$Component2) {
 							null,
 							React.createElement(
 								"button",
-								null,
+								{ className: "form-button" },
 								"Start"
 							)
 						)
@@ -497,13 +497,13 @@ var ClubButton = function (_React$Component3) {
 				if (this.props.club == clubs.none) {
 					return React.createElement(
 						"button",
-						{ onClick: this.props.onJoinClubClick },
+						{ className: "form-button", onClick: this.props.onJoinClubClick },
 						"Join Club"
 					);
 				} else {
 					return React.createElement(
 						"button",
-						{ onClick: this.props.onLeaveClubClick },
+						{ className: "form-button", onClick: this.props.onLeaveClubClick },
 						"Leave Club"
 					);
 				}
@@ -531,19 +531,19 @@ var ChooseActivity = function (_React$Component4) {
 			if (this.props.displayChooseActivity) {
 				return React.createElement(
 					"div",
-					null,
+					{ className: "grid-item right-bar" },
 					React.createElement(
 						"h2",
 						null,
 						"What do you want to do?"
 					),
-					React.createElement("input", { onClick: this.props.onActivityClick, type: "button", name: "exercise", value: "Exercise" }),
-					React.createElement("input", { onClick: this.props.onActivityClick, type: "button", name: "study", value: "Study" }),
-					React.createElement("input", { onClick: this.props.onActivityClick, type: "button", name: "playGames", value: "Play Videogames" }),
+					React.createElement("input", { className: "form-button", onClick: this.props.onActivityClick, type: "button", name: "exercise", value: "Exercise" }),
+					React.createElement("input", { className: "form-button", onClick: this.props.onActivityClick, type: "button", name: "study", value: "Study" }),
+					React.createElement("input", { className: "form-button", onClick: this.props.onActivityClick, type: "button", name: "playGames", value: "Play Videogames" }),
 					React.createElement(ClubButton, { club: this.props.club, onJoinClubClick: this.props.onJoinClubClick, onLeaveClubClick: this.props.onLeaveClubClick, time: this.props.time, startTime: this.props.startTime }),
 					React.createElement(
 						"button",
-						{ onClick: this.props.nextDay },
+						{ className: "form-button", onClick: this.props.nextDay },
 						"Sleep"
 					)
 				);
@@ -582,7 +582,7 @@ var ChooseClub = function (_React$Component5) {
 			if (this.props.displayChooseClub) {
 				return React.createElement(
 					"div",
-					null,
+					{ className: "grid-item" },
 					React.createElement(
 						"h2",
 						null,
@@ -615,7 +615,7 @@ var HoursForm = function (_React$Component6) {
 				var maxHours = this.props.calculateMaxHours();
 				return React.createElement(
 					"div",
-					null,
+					{ className: "grid-item" },
 					React.createElement(
 						"h3",
 						null,
@@ -686,7 +686,7 @@ var WarningMessage = function (_React$Component8) {
 		value: function render() {
 			return React.createElement(
 				"div",
-				null,
+				{ className: "grid-item" },
 				React.createElement(
 					"h4",
 					null,
@@ -713,7 +713,7 @@ var DangerMessage = function (_React$Component9) {
 		value: function render() {
 			return React.createElement(
 				"div",
-				null,
+				{ className: "grid-item" },
 				React.createElement(
 					"h1",
 					null,
@@ -754,7 +754,7 @@ var EventBox = function (_React$Component10) {
 				} else {
 					return React.createElement(
 						"div",
-						null,
+						{ className: "grid-item" },
 						React.createElement(
 							"h4",
 							null,
@@ -785,7 +785,7 @@ var InputFormEventDisplay = function (_React$Component11) {
 		value: function render() {
 			return React.createElement(
 				"div",
-				null,
+				{ className: "grid-item" },
 				React.createElement(
 					"form",
 					{ onSubmit: this.props.onEventFormSubmit },
@@ -842,7 +842,7 @@ var DisplayStats = function (_React$Component12) {
 				}
 				return React.createElement(
 					"div",
-					null,
+					{ className: "grid-item left-bar" },
 					React.createElement(
 						"h1",
 						null,
@@ -905,7 +905,7 @@ var EndScreen = function (_React$Component13) {
 			if (this.props.displayEndScreen) {
 				return React.createElement(
 					"div",
-					null,
+					{ className: "grid-item screen" },
 					React.createElement(
 						"h1",
 						null,
