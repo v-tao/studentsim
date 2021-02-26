@@ -301,13 +301,17 @@ class PlayerState extends React.Component {
 		return (
 			<div className="grid-container">
 				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
-				<Message type={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}></Message>
+				<div className="modal">
+					<div className="modal-content">
+						<Message type={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}></Message>
+						<EventBox displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}/>
+					</div>
+				</div>
 				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + this.state.club.hours
 				}/>
 				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
 				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
-				<EventBox displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}/>
 				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 			</div>
 
@@ -342,7 +346,7 @@ class StartScreen extends React.Component {
 							<label htmlFor="6">6</label>
 						</div>
 						<div>
-							<button className="form-button">Start</button>
+							<button className="form-button" id="start-button">Start</button>
 						</div>
 					</form>
 				</div>
@@ -389,7 +393,7 @@ class ChooseActivity extends React.Component {
 					<input className="form-button" onClick={this.props.onActivityClick} type="button" name="study" value="Study"/>
 					<input className="form-button" onClick={this.props.onActivityClick} type="button" name="playGames" value="Play Videogames"/>
 					<ClubButton club={this.props.club} onJoinClubClick={this.props.onJoinClubClick} onLeaveClubClick={this.props.onLeaveClubClick} time={this.props.time} startTime={this.props.startTime}/>
-					<button className="form-button" onClick={this.props.nextDay}>Sleep</button>
+					<button className="form-button" id="sleep-button" onClick={this.props.nextDay}>Sleep</button>
 				</div>
 			)
 		} else {

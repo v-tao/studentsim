@@ -4,6 +4,10 @@ body {
     background-repeat: no-repeat;
 }
 
+.form-button {
+    margin: 0.5rem;
+}
+
 .grid-container {
     display: grid;
     grid-template-columns: auto auto auto auto;
@@ -14,14 +18,20 @@ body {
     background-color:red;
   }
 
-.screen {
-    grid-column: 1/5;
-    text-align: center;
+.left-bar {
+    grid-column: 1/2;
     padding: 0.8rem;
 }
 
-.left-bar {
-    grid-column: 1/2;
+.modal {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.7);
+    align-items: center;
+}
+
+.modal-contents {
+    background-color: white;
+    
 }
 
 .right-bar {
@@ -29,6 +39,8 @@ body {
     text-align: center;
 }
 
-.form-button {
-    margin: 0.5rem;
+.screen {
+    grid-column: 1/5;
+    text-align: center;
+    padding: 0.8rem;
 }
