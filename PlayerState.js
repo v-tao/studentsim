@@ -83,6 +83,7 @@ var PlayerState = function (_React$Component) {
 			displayHoursForm: false,
 			displayChooseClub: false,
 			displayEventBox: false,
+			displayModal: false,
 			messageType: "",
 			hoursFormActivity: "",
 			numClasses: 4,
@@ -101,7 +102,7 @@ var PlayerState = function (_React$Component) {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 0.5,
+			eventProb: 1,
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
@@ -259,7 +260,6 @@ var PlayerState = function (_React$Component) {
 			if (Math.random() <= this.state.eventProb) {
 				var event = eventPool[Math.floor(Math.random() * eventPool.length)];
 				this.setState({ displayEventBox: true, event: event });
-				if (event.type == "inputForm") this.setState({ displayChooseActivity: false });
 				if (event.type != "inputForm") {
 					this.state.health.current += event.healthInc;
 					this.state.academics.current += event.academicsInc;
@@ -375,6 +375,10 @@ var PlayerState = function (_React$Component) {
 					};
 				});
 				this.chooseEvent();
+				if (this.state.event != events.none) {
+					console.log(this.state.event);
+					test();
+				}
 				if (!this.state.club.isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
 					this.setState({ messageType: "warning", club: clubs.none });
 				}
@@ -385,23 +389,17 @@ var PlayerState = function (_React$Component) {
 		value: function render() {
 			return React.createElement(
 				"div",
-				{ className: "grid-container" },
-				React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
+				null,
 				React.createElement(
 					"div",
-					{ className: "modal" },
-					React.createElement(
-						"div",
-						{ className: "modal-content" },
-						React.createElement(Message, { type: this.state.messageType, onConfirmLeaveClubClick: this.handleConfirmLeaveClubClick }),
-						React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit, maxHours: this.state.event.maxHours })
-					)
-				),
-				React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: this.state.club.name, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current }),
-				React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + this.state.club.hours }),
-				React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
-				React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
-				React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current })
+					{ className: "grid-container" },
+					React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
+					React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: this.state.club.name, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current }),
+					React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + this.state.club.hours }),
+					React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
+					React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
+					React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current })
+				)
 			);
 		}
 	}]);
@@ -649,19 +647,51 @@ var HoursForm = function (_React$Component6) {
 	return HoursForm;
 }(React.Component);
 
-var Message = function (_React$Component7) {
-	_inherits(Message, _React$Component7);
+var Modal = function (_React$Component7) {
+	_inherits(Modal, _React$Component7);
+
+	function Modal(props) {
+		_classCallCheck(this, Modal);
+
+		return _possibleConstructorReturn(this, (Modal.__proto__ || Object.getPrototypeOf(Modal)).call(this, props));
+	}
+
+	_createClass(Modal, [{
+		key: "render",
+		value: function render() {
+			if (this.props.displayModal) {
+				return React.createElement(
+					"div",
+					{ className: "modal" },
+					React.createElement(
+						"div",
+						{ className: "modal-content" },
+						React.createElement(Message, { type: this.state.messageType, onConfirmLeaveClubClick: this.handleConfirmLeaveClubClick }),
+						React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit, maxHours: this.state.event.maxHours })
+					)
+				);
+			} else {
+				return null;
+			}
+		}
+	}]);
+
+	return Modal;
+}(React.Component);
+
+var Message = function (_React$Component8) {
+	_inherits(Message, _React$Component8);
 
 	function Message(props) {
 		_classCallCheck(this, Message);
 
-		var _this9 = _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
+		var _this10 = _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
 
-		_this9.messages = {
+		_this10.messages = {
 			"warning": React.createElement(WarningMessage, null),
-			"danger": React.createElement(DangerMessage, { onConfirmLeaveClubClick: _this9.props.onConfirmLeaveClubClick })
+			"danger": React.createElement(DangerMessage, { onConfirmLeaveClubClick: _this10.props.onConfirmLeaveClubClick })
 		};
-		return _this9;
+		return _this10;
 	}
 
 	_createClass(Message, [{
@@ -680,8 +710,8 @@ var Message = function (_React$Component7) {
 
 //the names of these classes are based off of the bootstrap colors
 
-var WarningMessage = function (_React$Component8) {
-	_inherits(WarningMessage, _React$Component8);
+var WarningMessage = function (_React$Component9) {
+	_inherits(WarningMessage, _React$Component9);
 
 	function WarningMessage() {
 		_classCallCheck(this, WarningMessage);
@@ -707,8 +737,8 @@ var WarningMessage = function (_React$Component8) {
 	return WarningMessage;
 }(React.Component);
 
-var DangerMessage = function (_React$Component9) {
-	_inherits(DangerMessage, _React$Component9);
+var DangerMessage = function (_React$Component10) {
+	_inherits(DangerMessage, _React$Component10);
 
 	function DangerMessage(props) {
 		_classCallCheck(this, DangerMessage);
@@ -744,8 +774,8 @@ var DangerMessage = function (_React$Component9) {
 	return DangerMessage;
 }(React.Component);
 
-var EventBox = function (_React$Component10) {
-	_inherits(EventBox, _React$Component10);
+var EventBox = function (_React$Component11) {
+	_inherits(EventBox, _React$Component11);
 
 	function EventBox(props) {
 		_classCallCheck(this, EventBox);
@@ -779,8 +809,8 @@ var EventBox = function (_React$Component10) {
 	return EventBox;
 }(React.Component);
 
-var InputFormEventDisplay = function (_React$Component11) {
-	_inherits(InputFormEventDisplay, _React$Component11);
+var InputFormEventDisplay = function (_React$Component12) {
+	_inherits(InputFormEventDisplay, _React$Component12);
 
 	function InputFormEventDisplay(props) {
 		_classCallCheck(this, InputFormEventDisplay);
@@ -825,8 +855,8 @@ var InputFormEventDisplay = function (_React$Component11) {
 	return InputFormEventDisplay;
 }(React.Component);
 
-var DisplayStats = function (_React$Component12) {
-	_inherits(DisplayStats, _React$Component12);
+var DisplayStats = function (_React$Component13) {
+	_inherits(DisplayStats, _React$Component13);
 
 	function DisplayStats(props) {
 		_classCallCheck(this, DisplayStats);
@@ -898,8 +928,8 @@ var DisplayStats = function (_React$Component12) {
 	return DisplayStats;
 }(React.Component);
 
-var EndScreen = function (_React$Component13) {
-	_inherits(EndScreen, _React$Component13);
+var EndScreen = function (_React$Component14) {
+	_inherits(EndScreen, _React$Component14);
 
 	function EndScreen(props) {
 		_classCallCheck(this, EndScreen);

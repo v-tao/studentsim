@@ -49,6 +49,7 @@ class PlayerState extends React.Component {
 			displayHoursForm: false,
 			displayChooseClub: false,
 			displayEventBox: false,
+			displayModal: false,
 			messageType: "",
 			hoursFormActivity: "",
 			numClasses: 4,
@@ -67,7 +68,7 @@ class PlayerState extends React.Component {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 0.5,
+			eventProb: 1,
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);
@@ -195,7 +196,6 @@ class PlayerState extends React.Component {
 		if (Math.random() <= this.state.eventProb) {
 			let event = eventPool[Math.floor(Math.random() * eventPool.length)];
 			this.setState({displayEventBox: true, event: event});
-			if (event.type == "inputForm") this.setState({displayChooseActivity: false});
 			if (event.type != "inputForm") {
 				this.state.health.current += event.healthInc;
 				this.state.academics.current += event.academicsInc;
@@ -291,6 +291,10 @@ class PlayerState extends React.Component {
 				GPA: this.calculateGPA(),
 			}));
 			this.chooseEvent();
+			if (this.state.event != events.none) {
+				console.log(this.state.event);
+				test();
+			}
 			if (!this.state.club.isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
 				this.setState({ messageType: "warning", club: clubs.none, });
 			}
@@ -299,20 +303,16 @@ class PlayerState extends React.Component {
 
 	render() {
 		return (
-			<div className="grid-container">
-				<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
-				<div className="modal">
-					<div className="modal-content">
-						<Message type={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}></Message>
-						<EventBox displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}/>
-					</div>
+			<div> 
+				<div className="grid-container">
+					<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
+					<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
+					<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + this.state.club.hours
+					}/>
+					<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
+					<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
+					<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 				</div>
-				<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
-				<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + this.state.club.hours
-				}/>
-				<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
-				<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
-				<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 			</div>
 
 		);
@@ -441,6 +441,27 @@ class HoursForm extends React.Component {
 						<input step="1" min="0" max={maxHours} type="number" onChange={this.props.onHoursChange} name={this.props.hoursFormActivity}/>
 						<button>Submit</button>
 					</form>
+				</div>
+			)
+		} else {
+			return null;
+		}
+	}
+}
+
+class Modal extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		if (this.props.displayModal) {
+			return (
+				<div className="modal">
+					<div className="modal-content">
+						<Message type={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}></Message>
+						<EventBox displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}/>
+					</div>
 				</div>
 			)
 		} else {
