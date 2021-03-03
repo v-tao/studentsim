@@ -102,7 +102,7 @@ var PlayerState = function (_React$Component) {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 1,
+			eventProb: 0.5,
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
@@ -147,7 +147,7 @@ var PlayerState = function (_React$Component) {
 		key: "handleActivityClick",
 		value: function handleActivityClick(e) {
 			e.preventDefault();
-			this.setState({ displayHoursForm: true, displayChooseActivity: false, displayEventBox: false, messageType: "", hoursFormActivity: e.target.name });
+			this.setState({ displayModal: true, displayHoursForm: true, displayEventBox: false, messageType: "", hoursFormActivity: e.target.name });
 		}
 	}, {
 		key: "handleHoursChange",
@@ -192,7 +192,7 @@ var PlayerState = function (_React$Component) {
 			} else if (this.state.hoursFormActivity == "playGames") {
 				this.state.fun.dailyActivityInc += this.state.fun.inputHolder;
 			}
-			this.setState({ displayHoursForm: false, displayChooseActivity: true, time: currentTime, timeInc: 0 });
+			this.setState({ displayModal: false, displayHoursForm: false, time: currentTime, timeInc: 0 });
 			var _ref2 = [0, 0, 0];
 			this.state.health.inputHolder = _ref2[0];
 			this.state.academics.inputHolder = _ref2[1];
@@ -201,7 +201,7 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleJoinClubClick",
 		value: function handleJoinClubClick() {
-			this.setState({ displayChooseClub: true, displayChooseActivity: false, displayEventBox: false, messageType: "" });
+			this.setState({ displayModal: true, displayChooseClub: true, displayEventBox: false, messageType: "" });
 		}
 	}, {
 		key: "handleChooseClubClick",
@@ -398,15 +398,15 @@ var PlayerState = function (_React$Component) {
 				null,
 				React.createElement(Modal, { displayModal: this.state.displayModal, onCloseModal: this.handleCloseModal,
 					messageType: this.state.messageType, onConfirmLeaveClubClick: this.handleConfirmLeaveClubClick,
-					displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit, maxHours: this.state.event.maxHours }),
+					displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit, maxHours: this.state.event.maxHours,
+					displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick,
+					displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
 				React.createElement(
 					"div",
 					{ className: "grid-container" },
 					React.createElement(StartScreen, { displayStartScreen: this.state.displayStartScreen, onStart: this.handleStart, onClassSubmit: this.handleClassSubmit, onClassChange: this.handleClassChange }),
 					React.createElement(DisplayStats, { displayStats: this.state.displayStats, day: this.state.day, time: this.state.time, clubName: this.state.club.name, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current }),
 					React.createElement(ChooseActivity, { displayChooseActivity: this.state.displayChooseActivity, onActivityClick: this.handleActivityClick, club: this.state.club, onJoinClubClick: this.handleJoinClubClick, onLeaveClubClick: this.handleLeaveClubClick, nextDay: this.nextDay, time: this.state.time, startTime: this.state.startTime + this.state.club.hours }),
-					React.createElement(ChooseClub, { displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick }),
-					React.createElement(HoursForm, { displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
 					React.createElement(EndScreen, { displayEndScreen: this.state.displayEndScreen, health: this.state.health.current, GPA: this.state.GPA, fun: this.state.fun.current })
 				)
 			);
@@ -571,93 +571,8 @@ var ChooseActivity = function (_React$Component4) {
 	return ChooseActivity;
 }(React.Component);
 
-var ChooseClub = function (_React$Component5) {
-	_inherits(ChooseClub, _React$Component5);
-
-	function ChooseClub(props) {
-		_classCallCheck(this, ChooseClub);
-
-		return _possibleConstructorReturn(this, (ChooseClub.__proto__ || Object.getPrototypeOf(ChooseClub)).call(this, props));
-	}
-
-	_createClass(ChooseClub, [{
-		key: "render",
-		value: function render() {
-			var _this7 = this;
-
-			var buttons = Object.keys(clubs).map(function (club, i) {
-				if (club != "none") {
-					return React.createElement(
-						"button",
-						{ key: i, onClick: _this7.props.onChooseClubClick, name: club },
-						clubs[club].name
-					);
-				}
-			});
-			if (this.props.displayChooseClub) {
-				return React.createElement(
-					"div",
-					{ className: "grid-item" },
-					React.createElement(
-						"h2",
-						null,
-						"What club do you want to try out for?"
-					),
-					buttons
-				);
-			} else {
-				return null;
-			}
-		}
-	}]);
-
-	return ChooseClub;
-}(React.Component);
-
-var HoursForm = function (_React$Component6) {
-	_inherits(HoursForm, _React$Component6);
-
-	function HoursForm(props) {
-		_classCallCheck(this, HoursForm);
-
-		return _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
-	}
-
-	_createClass(HoursForm, [{
-		key: "render",
-		value: function render() {
-			if (this.props.displayHoursForm) {
-				var maxHours = this.props.calculateMaxHours();
-				return React.createElement(
-					"div",
-					{ className: "grid-item" },
-					React.createElement(
-						"h3",
-						null,
-						"How many hours do you want to spend?"
-					),
-					React.createElement(
-						"form",
-						{ onSubmit: this.props.onHoursSubmit },
-						React.createElement("input", { step: "1", min: "0", max: maxHours, type: "number", onChange: this.props.onHoursChange, name: this.props.hoursFormActivity }),
-						React.createElement(
-							"button",
-							null,
-							"Submit"
-						)
-					)
-				);
-			} else {
-				return null;
-			}
-		}
-	}]);
-
-	return HoursForm;
-}(React.Component);
-
-var Modal = function (_React$Component7) {
-	_inherits(Modal, _React$Component7);
+var Modal = function (_React$Component5) {
+	_inherits(Modal, _React$Component5);
 
 	function Modal(props) {
 		_classCallCheck(this, Modal);
@@ -681,7 +596,9 @@ var Modal = function (_React$Component7) {
 							"x"
 						),
 						React.createElement(Message, { type: this.props.messageType, onConfirmLeaveClubClick: this.props.onConfirmLeaveClubClick }),
-						React.createElement(EventBox, { displayEventBox: this.props.displayEventBox, eventType: this.props.eventType, eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit, maxHours: this.props.maxHours })
+						React.createElement(EventBox, { displayEventBox: this.props.displayEventBox, eventType: this.props.eventType, eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit, maxHours: this.props.maxHours }),
+						React.createElement(ChooseClub, { displayChooseClub: this.props.displayChooseClub, onChooseClubClick: this.props.onChooseClubClick }),
+						React.createElement(HoursForm, { displayHoursForm: this.props.displayHoursForm, hoursFormActivity: this.props.hoursFormActivity, onHoursSubmit: this.props.onHoursSubmit, onHoursChange: this.props.onHoursChange, calculateMaxHours: this.props.calculateMaxHours })
 					)
 				);
 			} else {
@@ -691,6 +608,91 @@ var Modal = function (_React$Component7) {
 	}]);
 
 	return Modal;
+}(React.Component);
+
+var ChooseClub = function (_React$Component6) {
+	_inherits(ChooseClub, _React$Component6);
+
+	function ChooseClub(props) {
+		_classCallCheck(this, ChooseClub);
+
+		return _possibleConstructorReturn(this, (ChooseClub.__proto__ || Object.getPrototypeOf(ChooseClub)).call(this, props));
+	}
+
+	_createClass(ChooseClub, [{
+		key: "render",
+		value: function render() {
+			var _this8 = this;
+
+			var buttons = Object.keys(clubs).map(function (club, i) {
+				if (club != "none") {
+					return React.createElement(
+						"button",
+						{ key: i, onClick: _this8.props.onChooseClubClick, name: club },
+						clubs[club].name
+					);
+				}
+			});
+			if (this.props.displayChooseClub) {
+				return React.createElement(
+					"div",
+					null,
+					React.createElement(
+						"h2",
+						null,
+						"What club do you want to try out for?"
+					),
+					buttons
+				);
+			} else {
+				return null;
+			}
+		}
+	}]);
+
+	return ChooseClub;
+}(React.Component);
+
+var HoursForm = function (_React$Component7) {
+	_inherits(HoursForm, _React$Component7);
+
+	function HoursForm(props) {
+		_classCallCheck(this, HoursForm);
+
+		return _possibleConstructorReturn(this, (HoursForm.__proto__ || Object.getPrototypeOf(HoursForm)).call(this, props));
+	}
+
+	_createClass(HoursForm, [{
+		key: "render",
+		value: function render() {
+			if (this.props.displayHoursForm) {
+				var maxHours = this.props.calculateMaxHours();
+				return React.createElement(
+					"div",
+					null,
+					React.createElement(
+						"h3",
+						null,
+						"How many hours do you want to spend?"
+					),
+					React.createElement(
+						"form",
+						{ onSubmit: this.props.onHoursSubmit },
+						React.createElement("input", { step: "1", min: "0", max: maxHours, type: "number", onChange: this.props.onHoursChange, name: this.props.hoursFormActivity }),
+						React.createElement(
+							"button",
+							null,
+							"Submit"
+						)
+					)
+				);
+			} else {
+				return null;
+			}
+		}
+	}]);
+
+	return HoursForm;
 }(React.Component);
 
 var Message = function (_React$Component8) {

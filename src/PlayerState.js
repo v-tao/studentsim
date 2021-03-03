@@ -68,7 +68,7 @@ class PlayerState extends React.Component {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 1,
+			eventProb: 0.5,
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);
@@ -107,7 +107,7 @@ class PlayerState extends React.Component {
 
 	handleActivityClick(e) {
 		e.preventDefault();
-		this.setState({displayHoursForm: true, displayChooseActivity: false, displayEventBox: false, messageType: "", hoursFormActivity: e.target.name});
+		this.setState({displayModal: true, displayHoursForm: true, displayEventBox: false, messageType: "", hoursFormActivity: e.target.name});
 	}
 
 	handleHoursChange(e) {
@@ -146,12 +146,12 @@ class PlayerState extends React.Component {
 		} else if (this.state.hoursFormActivity == "playGames") {
 			this.state.fun.dailyActivityInc += this.state.fun.inputHolder;
 		}
-		this.setState({displayHoursForm: false, displayChooseActivity: true, time: currentTime, timeInc: 0});
+		this.setState({displayModal: false, displayHoursForm: false, time: currentTime, timeInc: 0});
 		[this.state.health.inputHolder, this.state.academics.inputHolder, this.state.fun.inputHolder] = [0, 0, 0];
 	}
 
 	handleJoinClubClick() {
-		this.setState({displayChooseClub: true, displayChooseActivity: false, displayEventBox: false, messageType: ""});
+		this.setState({displayModal: true, displayChooseClub: true, displayEventBox: false, messageType: ""});
 	}
 
 	handleChooseClubClick(e) {
@@ -311,14 +311,14 @@ class PlayerState extends React.Component {
 			<div> 
 				<Modal displayModal={this.state.displayModal} onCloseModal={this.handleCloseModal}
 					messageType={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}
-					displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}></Modal>
+					displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}
+					displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick} 
+					displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}>
+				</Modal>
 				<div className="grid-container">
 					<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 					<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
-					<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + this.state.club.hours
-					}/>
-					<ChooseClub displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick}/>
-					<HoursForm displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}/>
+					<ChooseActivity displayChooseActivity={this.state.displayChooseActivity} onActivityClick={this.handleActivityClick} club={this.state.club} onJoinClubClick={this.handleJoinClubClick} onLeaveClubClick={this.handleLeaveClubClick} nextDay={this.nextDay} time={this.state.time} startTime={this.state.startTime + this.state.club.hours}/>
 					<EndScreen displayEndScreen={this.state.displayEndScreen} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
 				</div>
 			</div>
@@ -410,6 +410,30 @@ class ChooseActivity extends React.Component {
 	}
 }
 
+class Modal extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		if (this.props.displayModal) {
+			return (
+				<div className="modal">
+					<div className="modal-content">
+						<span id="close-modal" onClick={this.props.onCloseModal}>x</span>
+						<Message type={this.props.messageType} onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></Message>
+						<EventBox displayEventBox={this.props.displayEventBox} eventType={this.props.eventType} eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit} maxHours={this.props.maxHours}/>
+						<ChooseClub displayChooseClub={this.props.displayChooseClub} onChooseClubClick={this.props.onChooseClubClick}></ChooseClub>
+						<HoursForm displayHoursForm={this.props.displayHoursForm} hoursFormActivity={this.props.hoursFormActivity} onHoursSubmit={this.props.onHoursSubmit} onHoursChange={this.props.onHoursChange} calculateMaxHours={this.props.calculateMaxHours}/>
+					</div>
+				</div>
+			)
+		} else {
+			return null;
+		}
+	}
+}
+
 class ChooseClub extends React.Component {
 	constructor(props) {
 		super(props);
@@ -423,7 +447,7 @@ class ChooseClub extends React.Component {
 		})
 		if (this.props.displayChooseClub) {
 			return (
-				<div className="grid-item">
+				<div>
 					<h2>What club do you want to try out for?</h2>
 					{buttons}
 				</div>
@@ -443,34 +467,12 @@ class HoursForm extends React.Component {
 		if (this.props.displayHoursForm) {
 			let maxHours = this.props.calculateMaxHours();
 			return (
-				<div className="grid-item">
+				<div>
 					<h3>How many hours do you want to spend?</h3>
 					<form onSubmit={this.props.onHoursSubmit}>
 						<input step="1" min="0" max={maxHours} type="number" onChange={this.props.onHoursChange} name={this.props.hoursFormActivity}/>
 						<button>Submit</button>
 					</form>
-				</div>
-			)
-		} else {
-			return null;
-		}
-	}
-}
-
-class Modal extends React.Component {
-	constructor(props) {
-		super(props);
-	}
-
-	render() {
-		if (this.props.displayModal) {
-			return (
-				<div className="modal">
-					<div className="modal-content">
-						<span id="close-modal" onClick={this.props.onCloseModal}>x</span>
-						<Message type={this.props.messageType} onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></Message>
-						<EventBox displayEventBox={this.props.displayEventBox} eventType={this.props.eventType} eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit} maxHours={this.props.maxHours}/>
-					</div>
 				</div>
 			)
 		} else {
