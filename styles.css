@@ -29,14 +29,20 @@ body {
     height: 100vh;
     width: 100vw;
     z-index: 1;
-    align-items: center;
     margin: 0;
     top: 0;
     left: 0;
 }
 
-.modal-contents {
+.modal-content {
     background-color: white;
+    width: 50%;
+    padding: 1.5rem;
+    top: 20%;
+    margin-right: auto;
+    margin-left: auto;
+    position: relative;
+    border-radius: 10px;
 }
 
 .right-bar {
@@ -48,4 +54,8 @@ body {
     grid-column: 1/5;
     text-align: center;
     padding: 0.8rem;
+}
+
+#close-modal {
+    margin-left: 99%;
 }

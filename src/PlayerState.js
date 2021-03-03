@@ -90,6 +90,7 @@ class PlayerState extends React.Component {
 		this.calculateSleepDecay = this.calculateSleepDecay.bind(this);
 		this.calculateGPA = this.calculateGPA.bind(this);
 		this.nextDay = this.nextDay.bind(this);
+		this.handleCloseModal = this.handleCloseModal.bind(this);
 	}
 
 	handleStart() {
@@ -195,14 +196,14 @@ class PlayerState extends React.Component {
 	chooseEvent() {
 		if (Math.random() <= this.state.eventProb) {
 			let event = eventPool[Math.floor(Math.random() * eventPool.length)];
-			this.setState({displayEventBox: true, event: event});
+			this.setState({displayModal: true, displayEventBox: true, event: event});
 			if (event.type != "inputForm") {
 				this.state.health.current += event.healthInc;
 				this.state.academics.current += event.academicsInc;
 				this.state.fun.current += event.funInc;
 			}
 		} else {
-			this.setState({displayEventBox: false, event: events.none});
+			this.setState({displayModal: false, displayEventBox: false, event: events.none});
 		}
 	}
 
@@ -301,9 +302,16 @@ class PlayerState extends React.Component {
 		}
 	}
 
+	handleCloseModal() {
+		this.setState({displayModal: false});
+	}
+
 	render() {
 		return (
 			<div> 
+				<Modal displayModal={this.state.displayModal} onCloseModal={this.handleCloseModal}
+					messageType={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}
+					displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}></Modal>
 				<div className="grid-container">
 					<StartScreen displayStartScreen={this.state.displayStartScreen} onStart={this.handleStart} onClassSubmit={this.handleClassSubmit} onClassChange={this.handleClassChange}/>
 					<DisplayStats displayStats={this.state.displayStats} day={this.state.day} time={this.state.time} clubName={this.state.club.name} health={this.state.health.current} GPA={this.state.GPA} fun={this.state.fun.current}/>
@@ -459,8 +467,9 @@ class Modal extends React.Component {
 			return (
 				<div className="modal">
 					<div className="modal-content">
-						<Message type={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}></Message>
-						<EventBox displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}/>
+						<span id="close-modal" onClick={this.props.onCloseModal}>x</span>
+						<Message type={this.props.messageType} onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></Message>
+						<EventBox displayEventBox={this.props.displayEventBox} eventType={this.props.eventType} eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit} maxHours={this.props.maxHours}/>
 					</div>
 				</div>
 			)
@@ -493,7 +502,7 @@ class Message extends React.Component {
 class WarningMessage extends React.Component {
 	render() {
 		return (
-			<div className="grid-item">
+			<div>
 				<h4>You did not meet the requirements for this club</h4>
 			</div>
 		)
@@ -508,7 +517,7 @@ class DangerMessage extends React.Component {
 
 	render() {
 		return (
-			<div className="grid-item">
+			<div>
 				<h1>ARE YOU SURE YOU WANT TO LEAVE THIS CLUB?</h1>
 				<h1>IF YOU LEAVE THE CLUB YOU CANNOT REJOIN BECAUSE YOUR CLUB MEMBERS NEED COMMITMENT</h1>
 				<button onClick={this.props.onConfirmLeaveClubClick}>I am sure I want to leave the club</button>
@@ -530,7 +539,7 @@ class EventBox extends React.Component {
 				)
 			} else {
 				return (
-					<div className="grid-item">
+					<div>
 						<h4>{this.props.eventText}</h4>
 					</div>
 				)
@@ -548,7 +557,7 @@ class InputFormEventDisplay extends React.Component {
 
 	render(){
 		return (
-			<div className="grid-item">
+			<div>
 				<form onSubmit={this.props.onEventFormSubmit}>
 					<div>
 						<h3>{this.props.eventText}</h3>

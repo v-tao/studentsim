@@ -124,6 +124,7 @@ var PlayerState = function (_React$Component) {
 		_this.calculateSleepDecay = _this.calculateSleepDecay.bind(_this);
 		_this.calculateGPA = _this.calculateGPA.bind(_this);
 		_this.nextDay = _this.nextDay.bind(_this);
+		_this.handleCloseModal = _this.handleCloseModal.bind(_this);
 		return _this;
 	}
 
@@ -259,14 +260,14 @@ var PlayerState = function (_React$Component) {
 		value: function chooseEvent() {
 			if (Math.random() <= this.state.eventProb) {
 				var event = eventPool[Math.floor(Math.random() * eventPool.length)];
-				this.setState({ displayEventBox: true, event: event });
+				this.setState({ displayModal: true, displayEventBox: true, event: event });
 				if (event.type != "inputForm") {
 					this.state.health.current += event.healthInc;
 					this.state.academics.current += event.academicsInc;
 					this.state.fun.current += event.funInc;
 				}
 			} else {
-				this.setState({ displayEventBox: false, event: events.none });
+				this.setState({ displayModal: false, displayEventBox: false, event: events.none });
 			}
 		}
 	}, {
@@ -385,11 +386,19 @@ var PlayerState = function (_React$Component) {
 			}
 		}
 	}, {
+		key: "handleCloseModal",
+		value: function handleCloseModal() {
+			this.setState({ displayModal: false });
+		}
+	}, {
 		key: "render",
 		value: function render() {
 			return React.createElement(
 				"div",
 				null,
+				React.createElement(Modal, { displayModal: this.state.displayModal, onCloseModal: this.handleCloseModal,
+					messageType: this.state.messageType, onConfirmLeaveClubClick: this.handleConfirmLeaveClubClick,
+					displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit, maxHours: this.state.event.maxHours }),
 				React.createElement(
 					"div",
 					{ className: "grid-container" },
@@ -666,8 +675,13 @@ var Modal = function (_React$Component7) {
 					React.createElement(
 						"div",
 						{ className: "modal-content" },
-						React.createElement(Message, { type: this.state.messageType, onConfirmLeaveClubClick: this.handleConfirmLeaveClubClick }),
-						React.createElement(EventBox, { displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit, maxHours: this.state.event.maxHours })
+						React.createElement(
+							"span",
+							{ id: "close-modal", onClick: this.props.onCloseModal },
+							"x"
+						),
+						React.createElement(Message, { type: this.props.messageType, onConfirmLeaveClubClick: this.props.onConfirmLeaveClubClick }),
+						React.createElement(EventBox, { displayEventBox: this.props.displayEventBox, eventType: this.props.eventType, eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit, maxHours: this.props.maxHours })
 					)
 				);
 			} else {
@@ -724,7 +738,7 @@ var WarningMessage = function (_React$Component9) {
 		value: function render() {
 			return React.createElement(
 				"div",
-				{ className: "grid-item" },
+				null,
 				React.createElement(
 					"h4",
 					null,
@@ -751,7 +765,7 @@ var DangerMessage = function (_React$Component10) {
 		value: function render() {
 			return React.createElement(
 				"div",
-				{ className: "grid-item" },
+				null,
 				React.createElement(
 					"h1",
 					null,
@@ -792,7 +806,7 @@ var EventBox = function (_React$Component11) {
 				} else {
 					return React.createElement(
 						"div",
-						{ className: "grid-item" },
+						null,
 						React.createElement(
 							"h4",
 							null,
@@ -823,7 +837,7 @@ var InputFormEventDisplay = function (_React$Component12) {
 		value: function render() {
 			return React.createElement(
 				"div",
-				{ className: "grid-item" },
+				null,
 				React.createElement(
 					"form",
 					{ onSubmit: this.props.onEventFormSubmit },
