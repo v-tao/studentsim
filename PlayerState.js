@@ -481,7 +481,7 @@ var StartScreen = function (_React$Component2) {
 							null,
 							React.createElement(
 								"button",
-								{ className: "form-button", id: "start-button" },
+								{ className: "button form-button", id: "start-button" },
 								"Start"
 							)
 						)
@@ -512,13 +512,13 @@ var ClubButton = function (_React$Component3) {
 				if (this.props.club == clubs.none) {
 					return React.createElement(
 						"button",
-						{ className: "form-button", onClick: this.props.onJoinClubClick },
+						{ className: "button form-button", onClick: this.props.onJoinClubClick },
 						"Join Club"
 					);
 				} else {
 					return React.createElement(
 						"button",
-						{ className: "form-button", onClick: this.props.onLeaveClubClick },
+						{ className: "button form-button", onClick: this.props.onLeaveClubClick },
 						"Leave Club"
 					);
 				}
@@ -552,13 +552,13 @@ var ChooseActivity = function (_React$Component4) {
 						null,
 						"What do you want to do?"
 					),
-					React.createElement("input", { className: "form-button", onClick: this.props.onActivityClick, type: "button", name: "exercise", value: "Exercise" }),
-					React.createElement("input", { className: "form-button", onClick: this.props.onActivityClick, type: "button", name: "study", value: "Study" }),
-					React.createElement("input", { className: "form-button", onClick: this.props.onActivityClick, type: "button", name: "playGames", value: "Play Videogames" }),
+					React.createElement("input", { className: "button form-button", onClick: this.props.onActivityClick, type: "button", name: "exercise", value: "Exercise" }),
+					React.createElement("input", { className: "button form-button", onClick: this.props.onActivityClick, type: "button", name: "study", value: "Study" }),
+					React.createElement("input", { className: "button form-button", onClick: this.props.onActivityClick, type: "button", name: "playGames", value: "Play Videogames" }),
 					React.createElement(ClubButton, { club: this.props.club, onJoinClubClick: this.props.onJoinClubClick, onLeaveClubClick: this.props.onLeaveClubClick, time: this.props.time, startTime: this.props.startTime }),
 					React.createElement(
 						"button",
-						{ className: "form-button", id: "sleep-button", onClick: this.props.nextDay },
+						{ className: " button form-button", id: "sleep-button", onClick: this.props.nextDay },
 						"Sleep"
 					)
 				);
@@ -590,11 +590,6 @@ var Modal = function (_React$Component5) {
 					React.createElement(
 						"div",
 						{ className: "modal-content" },
-						React.createElement(
-							"span",
-							{ id: "close-modal", onClick: this.props.onCloseModal },
-							"x"
-						),
 						React.createElement(Message, { type: this.props.messageType, onConfirmLeaveClubClick: this.props.onConfirmLeaveClubClick }),
 						React.createElement(EventBox, { displayEventBox: this.props.displayEventBox, eventType: this.props.eventType, eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit, maxHours: this.props.maxHours }),
 						React.createElement(ChooseClub, { displayChooseClub: this.props.displayChooseClub, onChooseClubClick: this.props.onChooseClubClick }),
@@ -628,7 +623,7 @@ var ChooseClub = function (_React$Component6) {
 				if (club != "none") {
 					return React.createElement(
 						"button",
-						{ key: i, onClick: _this8.props.onChooseClubClick, name: club },
+						{ className: "button", key: i, onClick: _this8.props.onChooseClubClick, name: club },
 						clubs[club].name
 					);
 				}
@@ -681,7 +676,7 @@ var HoursForm = function (_React$Component7) {
 						React.createElement("input", { step: "1", min: "0", max: maxHours, type: "number", onChange: this.props.onHoursChange, name: this.props.hoursFormActivity }),
 						React.createElement(
 							"button",
-							null,
+							{ className: "button" },
 							"Submit"
 						)
 					)
@@ -780,7 +775,7 @@ var DangerMessage = function (_React$Component10) {
 				),
 				React.createElement(
 					"button",
-					{ onClick: this.props.onConfirmLeaveClubClick },
+					{ className: "button", onClick: this.props.onConfirmLeaveClubClick },
 					"I am sure I want to leave the club"
 				)
 			);
@@ -859,7 +854,7 @@ var InputFormEventDisplay = function (_React$Component12) {
 						React.createElement("input", { step: "1", type: "number", min: "0", max: this.props.maxHours, name: "eventInc", onChange: this.props.onEventHoursChange }),
 						React.createElement(
 							"button",
-							null,
+							{ className: "button" },
 							"Submit"
 						)
 					)

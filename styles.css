@@ -2,21 +2,36 @@ body {
     background-image: url("desk.jpg");
     background-size: cover;
     background-repeat: no-repeat;
+    font-family: Roboto, sans-serif
+}
+
+.button {
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: rgb(52, 208, 255);
+    outline: none;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color:rgb(35, 144, 177)
 }
 
 .form-button {
-    margin: 0.5rem;
+    margin: 0rem 0.5rem;
 }
 
 .grid-container {
     display: grid;
     grid-template-columns: auto auto auto auto;
-    background-color: blue;
+    align-items: start;
 }
 
 .grid-item {
-    background-color:red;
-  }
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+}
 
 .left-bar {
     grid-column: 1/2;
@@ -48,10 +63,12 @@ body {
 .right-bar {
     grid-column: 4/5;
     text-align: center;
+    display: inline-block;
+    padding: 1rem;
 }
 
 .screen {
-    grid-column: 1/5;
+    grid-column: 2/4;
     text-align: center;
     padding: 0.8rem;
 }

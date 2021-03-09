@@ -354,7 +354,7 @@ class StartScreen extends React.Component {
 							<label htmlFor="6">6</label>
 						</div>
 						<div>
-							<button className="form-button" id="start-button">Start</button>
+							<button className="button form-button" id="start-button">Start</button>
 						</div>
 					</form>
 				</div>
@@ -374,11 +374,11 @@ class ClubButton extends React.Component {
 		if (this.props.time == this.props.startTime) {
 			if (this.props.club == clubs.none) {
 				return (
-					<button className="form-button" onClick={this.props.onJoinClubClick}>Join Club</button>
+					<button className="button form-button" onClick={this.props.onJoinClubClick}>Join Club</button>
 				);
 			} else {
 				return (
-					<button className="form-button" onClick={this.props.onLeaveClubClick}>Leave Club</button>
+					<button className="button form-button" onClick={this.props.onLeaveClubClick}>Leave Club</button>
 				);
 			}
 		} else {
@@ -397,11 +397,11 @@ class ChooseActivity extends React.Component {
 			return (
 				<div className="grid-item right-bar">
 					<h2>What do you want to do?</h2>
-					<input className="form-button" onClick={this.props.onActivityClick} type="button" name="exercise" value="Exercise"/>
-					<input className="form-button" onClick={this.props.onActivityClick} type="button" name="study" value="Study"/>
-					<input className="form-button" onClick={this.props.onActivityClick} type="button" name="playGames" value="Play Videogames"/>
+					<input className="button form-button" onClick={this.props.onActivityClick} type="button" name="exercise" value="Exercise"/>
+					<input className="button form-button" onClick={this.props.onActivityClick} type="button" name="study" value="Study"/>
+					<input className="button form-button" onClick={this.props.onActivityClick} type="button" name="playGames" value="Play Videogames"/>
 					<ClubButton club={this.props.club} onJoinClubClick={this.props.onJoinClubClick} onLeaveClubClick={this.props.onLeaveClubClick} time={this.props.time} startTime={this.props.startTime}/>
-					<button className="form-button" id="sleep-button" onClick={this.props.nextDay}>Sleep</button>
+					<button className=" button form-button" id="sleep-button" onClick={this.props.nextDay}>Sleep</button>
 				</div>
 			)
 		} else {
@@ -420,7 +420,6 @@ class Modal extends React.Component {
 			return (
 				<div className="modal">
 					<div className="modal-content">
-						<span id="close-modal" onClick={this.props.onCloseModal}>x</span>
 						<Message type={this.props.messageType} onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></Message>
 						<EventBox displayEventBox={this.props.displayEventBox} eventType={this.props.eventType} eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit} maxHours={this.props.maxHours}/>
 						<ChooseClub displayChooseClub={this.props.displayChooseClub} onChooseClubClick={this.props.onChooseClubClick}></ChooseClub>
@@ -442,7 +441,7 @@ class ChooseClub extends React.Component {
 	render() {
 		const buttons = Object.keys(clubs).map((club, i) => {
 			if (club != "none") {
-				return <button key={i} onClick={this.props.onChooseClubClick} name={club}>{clubs[club].name}</button>
+				return <button className="button" key={i} onClick={this.props.onChooseClubClick} name={club}>{clubs[club].name}</button>
 			}
 		})
 		if (this.props.displayChooseClub) {
@@ -471,7 +470,7 @@ class HoursForm extends React.Component {
 					<h3>How many hours do you want to spend?</h3>
 					<form onSubmit={this.props.onHoursSubmit}>
 						<input step="1" min="0" max={maxHours} type="number" onChange={this.props.onHoursChange} name={this.props.hoursFormActivity}/>
-						<button>Submit</button>
+						<button className="button">Submit</button>
 					</form>
 				</div>
 			)
@@ -522,7 +521,7 @@ class DangerMessage extends React.Component {
 			<div>
 				<h1>ARE YOU SURE YOU WANT TO LEAVE THIS CLUB?</h1>
 				<h1>IF YOU LEAVE THE CLUB YOU CANNOT REJOIN BECAUSE YOUR CLUB MEMBERS NEED COMMITMENT</h1>
-				<button onClick={this.props.onConfirmLeaveClubClick}>I am sure I want to leave the club</button>
+				<button className="button" onClick={this.props.onConfirmLeaveClubClick}>I am sure I want to leave the club</button>
 			</div>
 		)
 	}
@@ -565,7 +564,7 @@ class InputFormEventDisplay extends React.Component {
 						<h3>{this.props.eventText}</h3>
 						<h5>How many hours will you spend?</h5>
 						<input step="1" type="number" min="0" max={this.props.maxHours} name="eventInc" onChange={this.props.onEventHoursChange}/>
-						<button>Submit</button>
+						<button className="button">Submit</button>
 					</div>
 				</form>
 			</div>
