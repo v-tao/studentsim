@@ -84,6 +84,8 @@ var PlayerState = function (_React$Component) {
 			displayChooseClub: false,
 			displayEventBox: false,
 			displayModal: false,
+			modalType: "close",
+			modalHeader: "",
 			messageType: "",
 			hoursFormActivity: "",
 			numClasses: 4,
@@ -147,7 +149,15 @@ var PlayerState = function (_React$Component) {
 		key: "handleActivityClick",
 		value: function handleActivityClick(e) {
 			e.preventDefault();
-			this.setState({ displayModal: true, displayHoursForm: true, displayEventBox: false, messageType: "", hoursFormActivity: e.target.name });
+			this.setState({
+				displayModal: true,
+				modalType: "close",
+				modalHeader: "How many hours do you want to spend?",
+				displayHoursForm: true,
+				displayEventBox: false,
+				messageType: "",
+				hoursFormActivity: e.target.name
+			});
 		}
 	}, {
 		key: "handleHoursChange",
@@ -201,7 +211,14 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleJoinClubClick",
 		value: function handleJoinClubClick() {
-			this.setState({ displayModal: true, displayChooseClub: true, displayEventBox: false, messageType: "" });
+			this.setState({
+				displayModal: true,
+				modalType: "close",
+				modalHeader: "What club do you want to try out for?",
+				displayChooseClub: true,
+				displayEventBox: false,
+				messageType: ""
+			});
 		}
 	}, {
 		key: "handleChooseClubClick",
@@ -209,7 +226,11 @@ var PlayerState = function (_React$Component) {
 			if (clubs[e.target.name].isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
 				this.setState({ club: clubs[e.target.name] });
 			} else {
-				this.setState({ messageType: "warning" });
+				this.setState({
+					modalType: "close",
+					modalHeader: "You did not meet the requirements for this club",
+					messageType: "warning"
+				});
 			}
 			this.setState({ displayChooseClub: false, displayChooseActivity: true });
 		}
@@ -249,6 +270,7 @@ var PlayerState = function (_React$Component) {
 			this.state.academics.inputHolder == 0 ? this.state.academics.dailyEventInc -= this.state.event.academicsDec : this.state.academics.dailyEventInc += this.state.academics.inputHolder * this.state.event.academicsInc;
 			this.setState(function (state) {
 				return {
+					displayModal: false,
 					displayChooseActivity: true,
 					displayEventBox: false,
 					time: state.time + state.health.inputHolder
@@ -260,14 +282,25 @@ var PlayerState = function (_React$Component) {
 		value: function chooseEvent() {
 			if (Math.random() <= this.state.eventProb) {
 				var event = eventPool[Math.floor(Math.random() * eventPool.length)];
-				this.setState({ displayModal: true, displayEventBox: true, event: event });
-				if (event.type != "inputForm") {
+				this.setState({
+					displayModal: true,
+					modalHeader: event.text,
+					displayEventBox: true,
+					event: event
+				});
+				if (event.type == "inputForm") {
+					this.setState({ modalType: "unclosable" });
+				} else {
+					this.setState({ modalType: "close" });
 					this.state.health.current += event.healthInc;
 					this.state.academics.current += event.academicsInc;
 					this.state.fun.current += event.funInc;
 				}
 			} else {
-				this.setState({ displayModal: false, displayEventBox: false, event: events.none });
+				this.setState({
+					displayModal: false,
+					displayEventBox: false,
+					event: events.none });
 			}
 		}
 	}, {
@@ -396,7 +429,7 @@ var PlayerState = function (_React$Component) {
 			return React.createElement(
 				"div",
 				null,
-				React.createElement(Modal, { displayModal: this.state.displayModal, onCloseModal: this.handleCloseModal,
+				React.createElement(Modal, { displayModal: this.state.displayModal, onCloseModal: this.handleCloseModal, type: this.state.modalType, header: this.state.modalHeader,
 					messageType: this.state.messageType, onConfirmLeaveClubClick: this.handleConfirmLeaveClubClick,
 					displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit, maxHours: this.state.event.maxHours,
 					displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick,
@@ -583,6 +616,11 @@ var Modal = function (_React$Component5) {
 	_createClass(Modal, [{
 		key: "render",
 		value: function render() {
+			var close = this.props.type == "close" ? React.createElement(
+				"span",
+				{ onClick: this.props.onCloseModal, id: "close-modal" },
+				"x"
+			) : null;
 			if (this.props.displayModal) {
 				return React.createElement(
 					"div",
@@ -590,10 +628,24 @@ var Modal = function (_React$Component5) {
 					React.createElement(
 						"div",
 						{ className: "modal-content" },
-						React.createElement(Message, { type: this.props.messageType, onConfirmLeaveClubClick: this.props.onConfirmLeaveClubClick }),
-						React.createElement(EventBox, { displayEventBox: this.props.displayEventBox, eventType: this.props.eventType, eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit, maxHours: this.props.maxHours }),
-						React.createElement(ChooseClub, { displayChooseClub: this.props.displayChooseClub, onChooseClubClick: this.props.onChooseClubClick }),
-						React.createElement(HoursForm, { displayHoursForm: this.props.displayHoursForm, hoursFormActivity: this.props.hoursFormActivity, onHoursSubmit: this.props.onHoursSubmit, onHoursChange: this.props.onHoursChange, calculateMaxHours: this.props.calculateMaxHours })
+						close,
+						React.createElement(
+							"div",
+							{ className: "modal-header" },
+							React.createElement(
+								"h2",
+								null,
+								this.props.header
+							)
+						),
+						React.createElement(
+							"div",
+							{ className: "modal-body" },
+							React.createElement(Message, { type: this.props.messageType, onConfirmLeaveClubClick: this.props.onConfirmLeaveClubClick }),
+							React.createElement(EventBox, { displayEventBox: this.props.displayEventBox, eventType: this.props.eventType, eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit, maxHours: this.props.maxHours }),
+							React.createElement(ChooseClub, { displayChooseClub: this.props.displayChooseClub, onChooseClubClick: this.props.onChooseClubClick }),
+							React.createElement(HoursForm, { displayHoursForm: this.props.displayHoursForm, hoursFormActivity: this.props.hoursFormActivity, onHoursSubmit: this.props.onHoursSubmit, onHoursChange: this.props.onHoursChange, calculateMaxHours: this.props.calculateMaxHours })
+						)
 					)
 				);
 			} else {
@@ -632,11 +684,6 @@ var ChooseClub = function (_React$Component6) {
 				return React.createElement(
 					"div",
 					null,
-					React.createElement(
-						"h2",
-						null,
-						"What club do you want to try out for?"
-					),
 					buttons
 				);
 			} else {
@@ -665,11 +712,6 @@ var HoursForm = function (_React$Component7) {
 				return React.createElement(
 					"div",
 					null,
-					React.createElement(
-						"h3",
-						null,
-						"How many hours do you want to spend?"
-					),
 					React.createElement(
 						"form",
 						{ onSubmit: this.props.onHoursSubmit },
@@ -734,13 +776,9 @@ var WarningMessage = function (_React$Component9) {
 		key: "render",
 		value: function render() {
 			return React.createElement(
-				"div",
+				"p",
 				null,
-				React.createElement(
-					"h4",
-					null,
-					"You did not meet the requirements for this club"
-				)
+				"If you wish to try out for this club at another time, you may do so."
 			);
 		}
 	}]);
@@ -801,15 +839,7 @@ var EventBox = function (_React$Component11) {
 				if (this.props.eventType == "inputForm") {
 					return React.createElement(InputFormEventDisplay, { eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit, maxHours: this.props.maxHours });
 				} else {
-					return React.createElement(
-						"div",
-						null,
-						React.createElement(
-							"h4",
-							null,
-							this.props.eventText
-						)
-					);
+					return null;
 				}
 			} else {
 				return null;
@@ -842,12 +872,7 @@ var InputFormEventDisplay = function (_React$Component12) {
 						"div",
 						null,
 						React.createElement(
-							"h3",
-							null,
-							this.props.eventText
-						),
-						React.createElement(
-							"h5",
+							"h4",
 							null,
 							"How many hours will you spend?"
 						),
@@ -876,6 +901,21 @@ var DisplayStats = function (_React$Component13) {
 	}
 
 	_createClass(DisplayStats, [{
+		key: "fogStats",
+		value: function fogStats(stat) {
+			if (stat <= 20) {
+				return "awful";
+			} else if (stat <= 40) {
+				return "bad";
+			} else if (stat <= 60) {
+				return "okay";
+			} else if (stat <= 80) {
+				return "good";
+			} else {
+				return "great";
+			}
+		}
+	}, {
 		key: "render",
 		value: function render() {
 			if (this.props.displayStats) {
@@ -915,7 +955,7 @@ var DisplayStats = function (_React$Component13) {
 						"h3",
 						null,
 						"HEALTH: ",
-						this.props.health
+						this.fogStats(this.props.health)
 					),
 					React.createElement(
 						"h3",
@@ -927,7 +967,7 @@ var DisplayStats = function (_React$Component13) {
 						"h3",
 						null,
 						"FUN: ",
-						this.props.fun
+						this.fogStats(this.props.fun)
 					)
 				);
 			} else {

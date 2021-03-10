@@ -50,6 +50,8 @@ class PlayerState extends React.Component {
 			displayChooseClub: false,
 			displayEventBox: false,
 			displayModal: false,
+			modalType: "close",
+			modalHeader: "",
 			messageType: "",
 			hoursFormActivity: "",
 			numClasses: 4,
@@ -107,7 +109,15 @@ class PlayerState extends React.Component {
 
 	handleActivityClick(e) {
 		e.preventDefault();
-		this.setState({displayModal: true, displayHoursForm: true, displayEventBox: false, messageType: "", hoursFormActivity: e.target.name});
+		this.setState({
+			displayModal: true, 
+			modalType: "close",
+			modalHeader: "How many hours do you want to spend?",
+			displayHoursForm: true, 
+			displayEventBox: false, 
+			messageType: "", 
+			hoursFormActivity: e.target.name,
+		});
 	}
 
 	handleHoursChange(e) {
@@ -151,14 +161,25 @@ class PlayerState extends React.Component {
 	}
 
 	handleJoinClubClick() {
-		this.setState({displayModal: true, displayChooseClub: true, displayEventBox: false, messageType: ""});
+		this.setState({
+			displayModal: true, 
+			modalType: "close",
+			modalHeader: "What club do you want to try out for?",
+			displayChooseClub: true, 
+			displayEventBox: false, 
+			messageType: ""
+		});
 	}
 
 	handleChooseClubClick(e) {
 		if (clubs[e.target.name].isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
 			this.setState({club: clubs[e.target.name]});
 		} else {
-			this.setState({messageType: "warning"});
+			this.setState({
+				modalType: "close",
+				modalHeader: "You did not meet the requirements for this club",
+				messageType: "warning"
+			});
 		}
 		this.setState({displayChooseClub: false, displayChooseActivity: true,});
 	}
@@ -187,6 +208,7 @@ class PlayerState extends React.Component {
 		this.state.fun.inputHolder == 0 ? this.state.fun.dailyEventInc -= this.state.event.funDec : this.state.fun.dailyEventInc += this.state.fun.inputHolder * this.state.event.funInc;
 		this.state.academics.inputHolder == 0 ? this.state.academics.dailyEventInc -= this.state.event.academicsDec : this.state.academics.dailyEventInc += this.state.academics.inputHolder * this.state.event.academicsInc;
 		this.setState((state) => ({
+			displayModal: false,
 			displayChooseActivity: true,
 			displayEventBox: false,
 			time: state.time + state.health.inputHolder,
@@ -196,14 +218,25 @@ class PlayerState extends React.Component {
 	chooseEvent() {
 		if (Math.random() <= this.state.eventProb) {
 			let event = eventPool[Math.floor(Math.random() * eventPool.length)];
-			this.setState({displayModal: true, displayEventBox: true, event: event});
-			if (event.type != "inputForm") {
+			this.setState({
+				displayModal: true, 
+				modalHeader: event.text,
+				displayEventBox: true, 
+				event: event
+			});
+			if (event.type == "inputForm") {
+				this.setState({modalType: "unclosable"});
+			} else {
+				this.setState({modalType: "close"});
 				this.state.health.current += event.healthInc;
 				this.state.academics.current += event.academicsInc;
 				this.state.fun.current += event.funInc;
 			}
 		} else {
-			this.setState({displayModal: false, displayEventBox: false, event: events.none});
+			this.setState({
+				displayModal: false, 
+				displayEventBox: false, 
+				event: events.none});
 		}
 	}
 
@@ -309,7 +342,7 @@ class PlayerState extends React.Component {
 	render() {
 		return (
 			<div> 
-				<Modal displayModal={this.state.displayModal} onCloseModal={this.handleCloseModal}
+				<Modal displayModal={this.state.displayModal} onCloseModal={this.handleCloseModal} type={this.state.modalType} header={this.state.modalHeader}
 					messageType={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}
 					displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}
 					displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick} 
@@ -416,14 +449,23 @@ class Modal extends React.Component {
 	}
 
 	render() {
+		let close = this.props.type == "close" ? <span onClick={this.props.onCloseModal} id="close-modal">x</span> : null
 		if (this.props.displayModal) {
 			return (
 				<div className="modal">
 					<div className="modal-content">
-						<Message type={this.props.messageType} onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></Message>
-						<EventBox displayEventBox={this.props.displayEventBox} eventType={this.props.eventType} eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit} maxHours={this.props.maxHours}/>
-						<ChooseClub displayChooseClub={this.props.displayChooseClub} onChooseClubClick={this.props.onChooseClubClick}></ChooseClub>
-						<HoursForm displayHoursForm={this.props.displayHoursForm} hoursFormActivity={this.props.hoursFormActivity} onHoursSubmit={this.props.onHoursSubmit} onHoursChange={this.props.onHoursChange} calculateMaxHours={this.props.calculateMaxHours}/>
+						{close}
+						<div className="modal-header">
+							<h2>
+								{this.props.header}
+							</h2>
+						</div>
+						<div className="modal-body">
+							<Message type={this.props.messageType} onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></Message>
+							<EventBox displayEventBox={this.props.displayEventBox} eventType={this.props.eventType} eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit} maxHours={this.props.maxHours}/>
+							<ChooseClub displayChooseClub={this.props.displayChooseClub} onChooseClubClick={this.props.onChooseClubClick}></ChooseClub>
+							<HoursForm displayHoursForm={this.props.displayHoursForm} hoursFormActivity={this.props.hoursFormActivity} onHoursSubmit={this.props.onHoursSubmit} onHoursChange={this.props.onHoursChange} calculateMaxHours={this.props.calculateMaxHours}/>
+						</div>
 					</div>
 				</div>
 			)
@@ -447,7 +489,6 @@ class ChooseClub extends React.Component {
 		if (this.props.displayChooseClub) {
 			return (
 				<div>
-					<h2>What club do you want to try out for?</h2>
 					{buttons}
 				</div>
 			)
@@ -467,7 +508,6 @@ class HoursForm extends React.Component {
 			let maxHours = this.props.calculateMaxHours();
 			return (
 				<div>
-					<h3>How many hours do you want to spend?</h3>
 					<form onSubmit={this.props.onHoursSubmit}>
 						<input step="1" min="0" max={maxHours} type="number" onChange={this.props.onHoursChange} name={this.props.hoursFormActivity}/>
 						<button className="button">Submit</button>
@@ -503,9 +543,7 @@ class Message extends React.Component {
 class WarningMessage extends React.Component {
 	render() {
 		return (
-			<div>
-				<h4>You did not meet the requirements for this club</h4>
-			</div>
+			<p>If you wish to try out for this club at another time, you may do so.</p>
 		)
 
 	}
@@ -539,11 +577,7 @@ class EventBox extends React.Component {
 					<InputFormEventDisplay eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit} maxHours={this.props.maxHours}/>
 				)
 			} else {
-				return (
-					<div>
-						<h4>{this.props.eventText}</h4>
-					</div>
-				)
+				return null;
 			}
 		} else {
 			return null;
@@ -561,8 +595,7 @@ class InputFormEventDisplay extends React.Component {
 			<div>
 				<form onSubmit={this.props.onEventFormSubmit}>
 					<div>
-						<h3>{this.props.eventText}</h3>
-						<h5>How many hours will you spend?</h5>
+						<h4>How many hours will you spend?</h4>
 						<input step="1" type="number" min="0" max={this.props.maxHours} name="eventInc" onChange={this.props.onEventHoursChange}/>
 						<button className="button">Submit</button>
 					</div>
@@ -575,6 +608,20 @@ class InputFormEventDisplay extends React.Component {
 class DisplayStats extends React.Component {
 	constructor(props) {
 		super(props);
+	}
+
+	fogStats(stat) {
+		if (stat <= 20) {
+			return "awful"
+		} else if (stat <= 40) {
+			return "bad"
+		} else if (stat <= 60) {
+			return "okay"
+		} else if (stat <= 80) {
+			return "good"
+		} else {
+			return "great"
+		}
 	}
 
 	render() {
@@ -594,9 +641,9 @@ class DisplayStats extends React.Component {
 					<h1>GAME STATE</h1>
 					<h2>DAY {this.props.day} TIME {timeDisplay}</h2>
 					<h3>CLUB: {this.props.clubName}</h3>
-					<h3>HEALTH: {this.props.health}</h3>
+					<h3>HEALTH: {this.fogStats(this.props.health)}</h3>
 					<h3>GPA: {this.props.GPA}</h3>
-					<h3>FUN: {this.props.fun}</h3>
+					<h3>FUN: {this.fogStats(this.props.fun)}</h3>
 				</div>
 			)
 		} else {
