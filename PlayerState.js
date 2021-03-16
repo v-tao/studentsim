@@ -3,6 +3,8 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -152,7 +154,7 @@ var PlayerState = function (_React$Component) {
 			this.setState({
 				displayModal: true,
 				modalType: "close",
-				modalHeader: "How many hours do you want to spend?",
+				modalHeader: "How many hours do you want to spend to " + e.target.value.toLowerCase() + "?",
 				displayHoursForm: true,
 				displayEventBox: false,
 				displayChooseClub: false,
@@ -227,7 +229,7 @@ var PlayerState = function (_React$Component) {
 			if (clubs[e.target.name].isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
 				this.setState({
 					modalType: "close",
-					modalHeader: "You have successfully joined this club!",
+					modalHeader: "You have successfully joined the " + clubs[e.target.name].name,
 					messageType: "success",
 					displayChooseClub: false,
 					club: clubs[e.target.name]
@@ -235,7 +237,7 @@ var PlayerState = function (_React$Component) {
 			} else {
 				this.setState({
 					modalType: "close",
-					modalHeader: "You did not meet the requirements for this club",
+					modalHeader: "You did not meet the requirements for the " + clubs[e.target.name].name,
 					messageType: "warning"
 				});
 			}
@@ -244,13 +246,24 @@ var PlayerState = function (_React$Component) {
 	}, {
 		key: "handleLeaveClubClick",
 		value: function handleLeaveClubClick() {
-			this.setState({ displayChooseActivity: false, displayEventBox: false, messageType: "danger" });
+			this.setState({
+				displayModal: true,
+				modalHeader: "Are you sure you want to leave the " + this.state.club.name + "?",
+				displayEventBox: false,
+				messageType: "danger"
+			});
 		}
 	}, {
 		key: "handleConfirmLeaveClubClick",
 		value: function handleConfirmLeaveClubClick() {
+			var _setState;
+
 			delete clubs[this.state.club.name];
-			this.setState({ displayChooseActivity: true, messageType: "", club: clubs.none });
+			this.setState((_setState = {
+				displayModal: false,
+				messageType: "",
+				displayChooseActivity: true
+			}, _defineProperty(_setState, "messageType", ""), _defineProperty(_setState, "club", clubs.none), _setState));
 		}
 	}, {
 		key: "handleEventHoursChange",
@@ -416,11 +429,12 @@ var PlayerState = function (_React$Component) {
 					};
 				});
 				if (!this.state.club.isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
+					var clubName = this.state.club.name;
 					this.setState({
 						club: clubs.none,
 						displayModal: true,
 						modalType: "close",
-						modalHeader: "You did not meet the requirements for this club",
+						modalHeader: "You did not meet the requirements for the " + clubName,
 						messageType: "warning"
 					});
 				} else {
@@ -447,6 +461,7 @@ var PlayerState = function (_React$Component) {
 				null,
 				React.createElement(Modal, { displayModal: this.state.displayModal, onCloseModal: this.handleCloseModal, type: this.state.modalType, header: this.state.modalHeader,
 					messageType: this.state.messageType, onConfirmLeaveClubClick: this.handleConfirmLeaveClubClick,
+					clubName: this.state.club.name,
 					displayEventBox: this.state.displayEventBox, eventType: this.state.event.type, eventText: this.state.event.text, onEventHoursChange: this.handleEventHoursChange, onEventFormSubmit: this.handleEventFormSubmit, maxHours: this.state.event.maxHours,
 					displayChooseClub: this.state.displayChooseClub, onChooseClubClick: this.handleChooseClubClick,
 					displayHoursForm: this.state.displayHoursForm, hoursFormActivity: this.state.hoursFormActivity, onHoursSubmit: this.handleHoursSubmit, onHoursChange: this.handleHoursChange, calculateMaxHours: this.calculateMaxHours }),
@@ -567,7 +582,7 @@ var ClubButton = function (_React$Component3) {
 				} else {
 					return React.createElement(
 						"button",
-						{ className: "btn btn-form", onClick: this.props.onLeaveClubClick },
+						{ className: "btn btn-form btn-red", onClick: this.props.onLeaveClubClick },
 						"Leave Club"
 					);
 				}
@@ -603,7 +618,7 @@ var ChooseActivity = function (_React$Component4) {
 					),
 					React.createElement("input", { className: "btn btn-form", onClick: this.props.onActivityClick, type: "button", name: "exercise", value: "Exercise" }),
 					React.createElement("input", { className: "btn btn-form", onClick: this.props.onActivityClick, type: "button", name: "study", value: "Study" }),
-					React.createElement("input", { className: "btn btn-form", onClick: this.props.onActivityClick, type: "button", name: "playGames", value: "Play Videogames" }),
+					React.createElement("input", { className: "btn btn-form", onClick: this.props.onActivityClick, type: "button", name: "playGames", value: "Play Video Games" }),
 					React.createElement(ClubButton, { club: this.props.club, onJoinClubClick: this.props.onJoinClubClick, onLeaveClubClick: this.props.onLeaveClubClick, time: this.props.time, startTime: this.props.startTime }),
 					React.createElement(
 						"button",
@@ -657,7 +672,7 @@ var Modal = function (_React$Component5) {
 						React.createElement(
 							"div",
 							{ className: "modal-body" },
-							React.createElement(Message, { type: this.props.messageType, onConfirmLeaveClubClick: this.props.onConfirmLeaveClubClick }),
+							React.createElement(Message, { type: this.props.messageType, onConfirmLeaveClubClick: this.props.onConfirmLeaveClubClick, clubName: this.props.clubName }),
 							React.createElement(EventBox, { displayEventBox: this.props.displayEventBox, eventType: this.props.eventType, eventText: this.props.eventText, onEventHoursChange: this.props.onEventHoursChange, onEventFormSubmit: this.props.onEventFormSubmit, maxHours: this.props.maxHours }),
 							React.createElement(ChooseClub, { displayChooseClub: this.props.displayChooseClub, onChooseClubClick: this.props.onChooseClubClick }),
 							React.createElement(HoursForm, { displayHoursForm: this.props.displayHoursForm, hoursFormActivity: this.props.hoursFormActivity, onHoursSubmit: this.props.onHoursSubmit, onHoursChange: this.props.onHoursChange, calculateMaxHours: this.props.calculateMaxHours })
@@ -757,9 +772,9 @@ var Message = function (_React$Component8) {
 		var _this10 = _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
 
 		_this10.messages = {
-			"warning": React.createElement(WarningMessage, null),
-			"danger": React.createElement(DangerMessage, { onConfirmLeaveClubClick: _this10.props.onConfirmLeaveClubClick }),
-			"success": React.createElement(SuccessMessage, null)
+			"warning": React.createElement(WarningMessage, { clubName: _this10.props.clubName }),
+			"danger": React.createElement(DangerMessage, { clubName: _this10.props.clubName, onConfirmLeaveClubClick: _this10.props.onConfirmLeaveClubClick }),
+			"success": React.createElement(SuccessMessage, { clubName: _this10.props.clubName })
 		};
 		return _this10;
 	}
@@ -783,10 +798,10 @@ var Message = function (_React$Component8) {
 var WarningMessage = function (_React$Component9) {
 	_inherits(WarningMessage, _React$Component9);
 
-	function WarningMessage() {
+	function WarningMessage(props) {
 		_classCallCheck(this, WarningMessage);
 
-		return _possibleConstructorReturn(this, (WarningMessage.__proto__ || Object.getPrototypeOf(WarningMessage)).apply(this, arguments));
+		return _possibleConstructorReturn(this, (WarningMessage.__proto__ || Object.getPrototypeOf(WarningMessage)).call(this, props));
 	}
 
 	_createClass(WarningMessage, [{
@@ -795,7 +810,7 @@ var WarningMessage = function (_React$Component9) {
 			return React.createElement(
 				"p",
 				null,
-				"If you wish to try out for this club at another time, you may do so."
+				"If you wish to try out at another time, you may do so."
 			);
 		}
 	}]);
@@ -819,18 +834,13 @@ var DangerMessage = function (_React$Component10) {
 				"div",
 				null,
 				React.createElement(
-					"h1",
+					"p",
 					null,
-					"ARE YOU SURE YOU WANT TO LEAVE THIS CLUB?"
-				),
-				React.createElement(
-					"h1",
-					null,
-					"IF YOU LEAVE THE CLUB YOU CANNOT REJOIN BECAUSE YOUR CLUB MEMBERS NEED COMMITMENT"
+					"Each club requires commitment from its members. If you leave, you cannot rejoin."
 				),
 				React.createElement(
 					"button",
-					{ className: "btn", onClick: this.props.onConfirmLeaveClubClick },
+					{ className: "btn btn-red", onClick: this.props.onConfirmLeaveClubClick },
 					"I am sure I want to leave the club"
 				)
 			);
@@ -858,7 +868,7 @@ var SuccessMessage = function (_React$Component11) {
 				React.createElement(
 					"p",
 					null,
-					"You now spend the first 2 hours after school at this club. You find that you are more focused in a group setting, and get things done more efficiently."
+					"You now spend the first 2 hours after school at the club. You find that you are more focused in a group setting, getting things done more efficiently."
 				)
 			);
 		}
@@ -978,11 +988,6 @@ var DisplayStats = function (_React$Component14) {
 					{ className: "grid-item left-bar" },
 					React.createElement(
 						"h1",
-						null,
-						"GAME STATE"
-					),
-					React.createElement(
-						"h2",
 						null,
 						"DAY ",
 						this.props.day,

@@ -112,7 +112,7 @@ class PlayerState extends React.Component {
 		this.setState({
 			displayModal: true, 
 			modalType: "close",
-			modalHeader: "How many hours do you want to spend?",
+			modalHeader: "How many hours do you want to spend to " + e.target.value.toLowerCase() + "?",
 			displayHoursForm: true, 
 			displayEventBox: false, 
 			displayChooseClub: false,
@@ -176,7 +176,7 @@ class PlayerState extends React.Component {
 		if (clubs[e.target.name].isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
 			this.setState({
 				modalType: "close",
-				modalHeader: "You have successfully joined this club!",
+				modalHeader: "You have successfully joined the " + clubs[e.target.name].name,
 				messageType: "success",
 				displayChooseClub: false,
 				club: clubs[e.target.name],
@@ -184,7 +184,7 @@ class PlayerState extends React.Component {
 		} else {
 			this.setState({
 				modalType: "close",
-				modalHeader: "You did not meet the requirements for this club",
+				modalHeader: "You did not meet the requirements for the " + clubs[e.target.name].name,
 				messageType: "warning"
 			});
 		}
@@ -192,12 +192,22 @@ class PlayerState extends React.Component {
 	}
 
 	handleLeaveClubClick() {
-		this.setState({displayChooseActivity: false, displayEventBox: false, messageType: "danger"});
+		this.setState({
+			displayModal: true,
+			modalHeader: "Are you sure you want to leave the " + this.state.club.name + "?",
+			displayEventBox: false, 
+			messageType: "danger"
+		});
 	}
 
 	handleConfirmLeaveClubClick() {
 		delete clubs[this.state.club.name];
-		this.setState({displayChooseActivity: true, messageType: "", club: clubs.none, });
+		this.setState({
+			displayModal: false,
+			messageType: "",
+			displayChooseActivity: true, 
+			messageType: "", club: clubs.none, 
+		});
 	}
 
 	handleEventHoursChange(e) {
@@ -332,11 +342,12 @@ class PlayerState extends React.Component {
 				GPA: this.calculateGPA(),
 			}));
 			if (!this.state.club.isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
+				let clubName = this.state.club.name
 				this.setState({
 					club: clubs.none,
 					displayModal: true,
 					modalType: "close",
-					modalHeader: "You did not meet the requirements for this club",
+					modalHeader: "You did not meet the requirements for the " + clubName,
 					messageType: "warning"
 				});
 			} else {
@@ -360,6 +371,7 @@ class PlayerState extends React.Component {
 			<div> 
 				<Modal displayModal={this.state.displayModal} onCloseModal={this.handleCloseModal} type={this.state.modalType} header={this.state.modalHeader}
 					messageType={this.state.messageType} onConfirmLeaveClubClick={this.handleConfirmLeaveClubClick}
+					clubName={this.state.club.name}
 					displayEventBox={this.state.displayEventBox} eventType={this.state.event.type} eventText={this.state.event.text} onEventHoursChange={this.handleEventHoursChange} onEventFormSubmit={this.handleEventFormSubmit} maxHours={this.state.event.maxHours}
 					displayChooseClub={this.state.displayChooseClub} onChooseClubClick={this.handleChooseClubClick} 
 					displayHoursForm={this.state.displayHoursForm} hoursFormActivity={this.state.hoursFormActivity} onHoursSubmit={this.handleHoursSubmit} onHoursChange={this.handleHoursChange} calculateMaxHours={this.calculateMaxHours}>
@@ -427,7 +439,7 @@ class ClubButton extends React.Component {
 				);
 			} else {
 				return (
-					<button className="btn btn-form" onClick={this.props.onLeaveClubClick}>Leave Club</button>
+					<button className="btn btn-form btn-red" onClick={this.props.onLeaveClubClick}>Leave Club</button>
 				);
 			}
 		} else {
@@ -448,7 +460,7 @@ class ChooseActivity extends React.Component {
 					<h2>What do you want to do?</h2>
 					<input className="btn btn-form" onClick={this.props.onActivityClick} type="button" name="exercise" value="Exercise"/>
 					<input className="btn btn-form" onClick={this.props.onActivityClick} type="button" name="study" value="Study"/>
-					<input className="btn btn-form" onClick={this.props.onActivityClick} type="button" name="playGames" value="Play Videogames"/>
+					<input className="btn btn-form" onClick={this.props.onActivityClick} type="button" name="playGames" value="Play Video Games"/>
 					<ClubButton club={this.props.club} onJoinClubClick={this.props.onJoinClubClick} onLeaveClubClick={this.props.onLeaveClubClick} time={this.props.time} startTime={this.props.startTime}/>
 					<button className="btn btn-form btn-dark" onClick={this.props.nextDay}>Sleep</button>
 				</div>
@@ -477,7 +489,7 @@ class Modal extends React.Component {
 							</h2>
 						</div>
 						<div className="modal-body">
-							<Message type={this.props.messageType} onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></Message>
+							<Message type={this.props.messageType} onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick} clubName={this.props.clubName}></Message>
 							<EventBox displayEventBox={this.props.displayEventBox} eventType={this.props.eventType} eventText={this.props.eventText} onEventHoursChange={this.props.onEventHoursChange} onEventFormSubmit={this.props.onEventFormSubmit} maxHours={this.props.maxHours}/>
 							<ChooseClub displayChooseClub={this.props.displayChooseClub} onChooseClubClick={this.props.onChooseClubClick}></ChooseClub>
 							<HoursForm displayHoursForm={this.props.displayHoursForm} hoursFormActivity={this.props.hoursFormActivity} onHoursSubmit={this.props.onHoursSubmit} onHoursChange={this.props.onHoursChange} calculateMaxHours={this.props.calculateMaxHours}/>
@@ -540,9 +552,9 @@ class Message extends React.Component {
 	constructor(props) {
 		super(props);
 		this.messages = {
-			"warning": <WarningMessage></WarningMessage>,
-			"danger": <DangerMessage onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></DangerMessage>,
-			"success": <SuccessMessage></SuccessMessage>
+			"warning": <WarningMessage clubName={this.props.clubName}></WarningMessage>,
+			"danger": <DangerMessage clubName={this.props.clubName} onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></DangerMessage>,
+			"success": <SuccessMessage clubName={this.props.clubName}></SuccessMessage>
 		}
 	}
 
@@ -558,9 +570,13 @@ class Message extends React.Component {
 //the names of these classes are based off of the bootstrap colors
 
 class WarningMessage extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
 	render() {
 		return (
-			<p>If you wish to try out for this club at another time, you may do so.</p>
+			<p>If you wish to try out at another time, you may do so.</p>
 		)
 
 	}
@@ -574,9 +590,8 @@ class DangerMessage extends React.Component {
 	render() {
 		return (
 			<div>
-				<h1>ARE YOU SURE YOU WANT TO LEAVE THIS CLUB?</h1>
-				<h1>IF YOU LEAVE THE CLUB YOU CANNOT REJOIN BECAUSE YOUR CLUB MEMBERS NEED COMMITMENT</h1>
-				<button className="btn" onClick={this.props.onConfirmLeaveClubClick}>I am sure I want to leave the club</button>
+				<p>Each club requires commitment from its members. If you leave, you cannot rejoin.</p>
+				<button className="btn btn-red" onClick={this.props.onConfirmLeaveClubClick}>I am sure I want to leave the club</button>
 			</div>
 		)
 	}
@@ -590,7 +605,7 @@ class SuccessMessage extends React.Component {
 	render() {
 		return (
 			<div>
-				<p>You now spend the first 2 hours after school at this club. You find that you are more focused in a group setting, and get things done more efficiently.</p>
+				<p>You now spend the first 2 hours after school at the club. You find that you are more focused in a group setting, getting things done more efficiently.</p>
 			</div>
 		)
 	}
@@ -669,8 +684,7 @@ class DisplayStats extends React.Component {
 			}
 			return (
 				<div className="grid-item left-bar">
-					<h1>GAME STATE</h1>
-					<h2>DAY {this.props.day} TIME {timeDisplay}</h2>
+					<h1>DAY {this.props.day} TIME {timeDisplay}</h1>
 					<h3>CLUB: {this.props.clubName}</h3>
 					<h3>HEALTH: {this.fogStats(this.props.health)}</h3>
 					<h3>GPA: {this.props.GPA}</h3>
