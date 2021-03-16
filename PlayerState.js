@@ -106,7 +106,7 @@ var PlayerState = function (_React$Component) {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 0.5,
+			eventProb: 0,
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
@@ -587,7 +587,37 @@ var ClubButton = function (_React$Component3) {
 					);
 				}
 			} else {
-				return null;
+				if (this.props.club == clubs.none) {
+					return React.createElement(
+						"span",
+						{ "class": "tooltip" },
+						React.createElement(
+							"button",
+							{ disabled: true, className: "btn btn-form btn-green", onClick: this.props.onJoinClubClick },
+							"Join Club"
+						),
+						React.createElement(
+							"span",
+							{ "class": "tooltip-text" },
+							"You can only join a club right after school ends, at 3PM"
+						)
+					);
+				} else {
+					return React.createElement(
+						"span",
+						{ "class": "tooltip" },
+						React.createElement(
+							"button",
+							{ disabled: true, className: "btn btn-form btn-red", onClick: this.props.onLeaveClubClick },
+							"Leave Club"
+						),
+						React.createElement(
+							"span",
+							{ "class": "tooltip-text" },
+							"You can only leave a club right after school ends, at 3PM, and not on the same day that you joined the club"
+						)
+					);
+				}
 			}
 		}
 	}]);
@@ -1038,8 +1068,54 @@ var EndScreen = function (_React$Component15) {
 	}
 
 	_createClass(EndScreen, [{
+		key: "healthMessage",
+		value: function healthMessage(health) {
+			if (health <= 20) {
+				return "Your health is abysmal. You have no physical strength whatsoever.";
+			} else if (health <= 40) {
+				return "Your health is bad. You are weak.";
+			} else if (health <= 60) {
+				return "Your health is okay.";
+			} else if (health <= 80) {
+				return "Your health is good. You are fit and healthy.";
+			} else {
+				return "Your health is excellent. You are in great physical shape.";
+			}
+		}
+	}, {
+		key: "GPAMessage",
+		value: function GPAMessage(GPA) {
+			var message = "You ended with a GPA of " + GPA + ". ";
+			if (GPA < 1.0) {
+				message += "Your GPA was too low to graduate and you failed out of high school. You will need to repeat this year.";
+			} else if (GPA >= 4.9) {
+				message += "You are the valedictorian of your class.";
+			} else if (GPA >= 4.5) {
+				message += "You graduated with high honors.";
+			} else if (GPA >= 4.0) {
+				message += "You graduated with honors.";
+			}
+			return message;
+		}
+	}, {
+		key: "funMessage",
+		value: function funMessage(fun) {
+			if (fun <= 20) {
+				return "You are not enjoying life at all and had a depressing year.";
+			} else if (fun <= 40) {
+				return "You have a few good days, but you are mostly unhappy.";
+			} else if (fun <= 60) {
+				return "You feel fine, neither happy nor unhappy.";
+			} else if (fun <= 80) {
+				return "You are a happy person.";
+			} else {
+				return "You are a very happy person, and are enjoying life to its fullest.";
+			}
+		}
+	}, {
 		key: "render",
 		value: function render() {
+
 			if (this.props.displayEndScreen) {
 				return React.createElement(
 					"div",
@@ -1052,20 +1128,17 @@ var EndScreen = function (_React$Component15) {
 					React.createElement(
 						"h2",
 						null,
-						"Your Health: ",
-						this.props.health
+						this.healthMessage(this.props.health)
 					),
 					React.createElement(
 						"h2",
 						null,
-						"Your GPA: ",
-						this.props.GPA
+						this.GPAMessage(this.props.GPA)
 					),
 					React.createElement(
 						"h2",
 						null,
-						"Your Fun: ",
-						this.props.fun
+						this.funMessage(this.props.fun)
 					)
 				);
 			} else {

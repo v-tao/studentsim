@@ -14,7 +14,7 @@ body {
     transition: background-color 0.3s;
 }
 
-.btn:hover {
+.btn:not(:disabled):hover {
     background-color:rgb(40, 166, 205)
 }
 
@@ -23,7 +23,7 @@ body {
     color: white;
 }
 
-.btn-dark:hover {
+.btn-dark:not(:disabled):hover {
     background-color: rgb(10, 10, 10);
 }
 
@@ -31,7 +31,7 @@ body {
     background-color:rgb(88, 255, 82)
 }
 
-.btn-green:hover {
+.btn-green:not(:disabled):hover {
     background-color:rgb(57, 194, 52);
 }
 
@@ -43,8 +43,8 @@ body {
     background-color:rgb(255, 74, 74);
 }
 
-.btn-red:hover {
-    background-color:rgb(218, 46, 46);
+.btn-red:not(:disabled):hover {
+    background-color:rgb(162, 32, 32);
 }
 
 .grid-container {
@@ -96,6 +96,29 @@ body {
     grid-column: 2/4;
     text-align: center;
     padding: 0.8rem;
+}
+
+.tooltip {
+    position:relative;
+}
+
+.tooltip:hover .tooltip-text{
+    display: block;
+}
+
+.tooltip-text {
+    width: 16rem;
+    top: 100%;
+    left: 50%;
+    margin-top: 1rem;
+    margin-left: -8rem;
+    display: none;
+    z-index: 50;
+    position: absolute;
+    border-radius: 5px;
+    color: white;
+    padding: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.8)
 }
 
 #close-modal {

@@ -70,7 +70,7 @@ class PlayerState extends React.Component {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 0.5,
+			eventProb: 0,
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);
@@ -443,7 +443,21 @@ class ClubButton extends React.Component {
 				);
 			}
 		} else {
-			return null;
+			if (this.props.club == clubs.none) {
+				return (
+					<span class="tooltip">
+						<button disabled className="btn btn-form btn-green" onClick={this.props.onJoinClubClick}>Join Club</button>
+						<span class="tooltip-text">You can only join a club right after school ends, at 3PM</span>
+					</span>
+				);
+			} else {
+				return (
+					<span class="tooltip">
+						<button disabled className="btn btn-form btn-red" onClick={this.props.onLeaveClubClick}>Leave Club</button>
+						<span class="tooltip-text">You can only leave a club right after school ends, at 3PM, and not on the same day that you joined the club</span>
+					</span>
+				);
+			}
 		}
 	}
 }
@@ -702,14 +716,57 @@ class EndScreen extends React.Component {
 		super(props);
 	}
 
+	healthMessage(health) {
+		if (health <= 20) {
+			return "Your health is abysmal. You have no physical strength whatsoever."
+		} else if (health <= 40) {
+			return "Your health is bad. You are weak."
+		} else if (health <= 60) {
+			return "Your health is okay."
+		} else if (health <= 80) {
+			return "Your health is good. You are fit and healthy."
+		} else {
+			return "Your health is excellent. You are in great physical shape."
+		}
+	}
+
+	GPAMessage(GPA) {
+		let message = "You ended with a GPA of " + GPA + ". ";
+		if (GPA < 1.0) {
+			message += "Your GPA was too low to graduate and you failed out of high school. You will need to repeat this year."
+		} else if (GPA >= 4.9) {
+			message += "You are the valedictorian of your class."
+		} else if (GPA >= 4.5) {
+			message += "You graduated with high honors."
+		} else if (GPA >= 4.0) {
+			message += "You graduated with honors."
+		}
+		return message;
+	}
+
+	funMessage(fun) {
+		if (fun <= 20) {
+			return "You are not enjoying life at all and had a depressing year."
+		} else if (fun <= 40) {
+			return "You have a few good days, but you are mostly unhappy."
+		} else if (fun <= 60) {
+			return "You feel fine, neither happy nor unhappy."
+		} else if (fun <= 80) {
+			return "You are a happy person."
+		} else {
+			return "You are a very happy person, and are enjoying life to its fullest."
+		}
+	}
+
 	render() {
+
 		if (this.props.displayEndScreen) {
 			return (
 				<div className="grid-item screen">
 					<h1>HIGH SCHOOL IS OVER</h1>
-					<h2>Your Health: {this.props.health}</h2>
-					<h2>Your GPA: {this.props.GPA}</h2>
-					<h2>Your Fun: {this.props.fun}</h2>
+					<h2>{this.healthMessage(this.props.health)}</h2>
+					<h2>{this.GPAMessage(this.props.GPA)}</h2>
+					<h2>{this.funMessage(this.props.fun)}</h2>
 				</div>
 			)
 		} else {
