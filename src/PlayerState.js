@@ -174,7 +174,13 @@ class PlayerState extends React.Component {
 
 	handleChooseClubClick(e) {
 		if (clubs[e.target.name].isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
-			this.setState({club: clubs[e.target.name]});
+			this.setState({
+				modalType: "close",
+				modalHeader: "You have successfully joined this club!",
+				messageType: "success",
+				displayChooseClub: false,
+				club: clubs[e.target.name],
+			});
 		} else {
 			this.setState({
 				modalType: "close",
@@ -325,13 +331,16 @@ class PlayerState extends React.Component {
 				time: state.club.name == "none" ? state.startTime : state.startTime + state.club.hours,
 				GPA: this.calculateGPA(),
 			}));
-			this.chooseEvent();
-			if (this.state.event != events.none) {
-				console.log(this.state.event);
-				test();
-			}
 			if (!this.state.club.isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
-				this.setState({ messageType: "warning", club: clubs.none, });
+				this.setState({
+					club: clubs.none,
+					displayModal: true,
+					modalType: "close",
+					modalHeader: "You did not meet the requirements for this club",
+					messageType: "warning"
+				});
+			} else {
+				this.chooseEvent();
 			}
 		}
 	}
@@ -532,7 +541,8 @@ class Message extends React.Component {
 		super(props);
 		this.messages = {
 			"warning": <WarningMessage></WarningMessage>,
-			"danger": <DangerMessage onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></DangerMessage>
+			"danger": <DangerMessage onConfirmLeaveClubClick={this.props.onConfirmLeaveClubClick}></DangerMessage>,
+			"success": <SuccessMessage></SuccessMessage>
 		}
 	}
 
@@ -567,6 +577,20 @@ class DangerMessage extends React.Component {
 				<h1>ARE YOU SURE YOU WANT TO LEAVE THIS CLUB?</h1>
 				<h1>IF YOU LEAVE THE CLUB YOU CANNOT REJOIN BECAUSE YOUR CLUB MEMBERS NEED COMMITMENT</h1>
 				<button className="btn" onClick={this.props.onConfirmLeaveClubClick}>I am sure I want to leave the club</button>
+			</div>
+		)
+	}
+}
+
+class SuccessMessage extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		return (
+			<div>
+				<p>You now spend the first 2 hours after school at this club. You find that you are more focused in a group setting, and get things done more efficiently.</p>
 			</div>
 		)
 	}

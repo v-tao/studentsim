@@ -93,3 +93,7 @@ body {
 #close-modal {
     margin-left: 99%;
 }
+
+#close-modal:hover {
+    cursor: pointer;
+}

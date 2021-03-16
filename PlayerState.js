@@ -225,7 +225,13 @@ var PlayerState = function (_React$Component) {
 		key: "handleChooseClubClick",
 		value: function handleChooseClubClick(e) {
 			if (clubs[e.target.name].isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
-				this.setState({ club: clubs[e.target.name] });
+				this.setState({
+					modalType: "close",
+					modalHeader: "You have successfully joined this club!",
+					messageType: "success",
+					displayChooseClub: false,
+					club: clubs[e.target.name]
+				});
 			} else {
 				this.setState({
 					modalType: "close",
@@ -409,13 +415,16 @@ var PlayerState = function (_React$Component) {
 						GPA: _this2.calculateGPA()
 					};
 				});
-				this.chooseEvent();
-				if (this.state.event != events.none) {
-					console.log(this.state.event);
-					test();
-				}
 				if (!this.state.club.isEligible(this.state.health.current, this.state.GPA, this.state.fun.current)) {
-					this.setState({ messageType: "warning", club: clubs.none });
+					this.setState({
+						club: clubs.none,
+						displayModal: true,
+						modalType: "close",
+						modalHeader: "You did not meet the requirements for this club",
+						messageType: "warning"
+					});
+				} else {
+					this.chooseEvent();
 				}
 			}
 		}
@@ -749,7 +758,8 @@ var Message = function (_React$Component8) {
 
 		_this10.messages = {
 			"warning": React.createElement(WarningMessage, null),
-			"danger": React.createElement(DangerMessage, { onConfirmLeaveClubClick: _this10.props.onConfirmLeaveClubClick })
+			"danger": React.createElement(DangerMessage, { onConfirmLeaveClubClick: _this10.props.onConfirmLeaveClubClick }),
+			"success": React.createElement(SuccessMessage, null)
 		};
 		return _this10;
 	}
@@ -830,8 +840,35 @@ var DangerMessage = function (_React$Component10) {
 	return DangerMessage;
 }(React.Component);
 
-var EventBox = function (_React$Component11) {
-	_inherits(EventBox, _React$Component11);
+var SuccessMessage = function (_React$Component11) {
+	_inherits(SuccessMessage, _React$Component11);
+
+	function SuccessMessage(props) {
+		_classCallCheck(this, SuccessMessage);
+
+		return _possibleConstructorReturn(this, (SuccessMessage.__proto__ || Object.getPrototypeOf(SuccessMessage)).call(this, props));
+	}
+
+	_createClass(SuccessMessage, [{
+		key: "render",
+		value: function render() {
+			return React.createElement(
+				"div",
+				null,
+				React.createElement(
+					"p",
+					null,
+					"You now spend the first 2 hours after school at this club. You find that you are more focused in a group setting, and get things done more efficiently."
+				)
+			);
+		}
+	}]);
+
+	return SuccessMessage;
+}(React.Component);
+
+var EventBox = function (_React$Component12) {
+	_inherits(EventBox, _React$Component12);
 
 	function EventBox(props) {
 		_classCallCheck(this, EventBox);
@@ -857,8 +894,8 @@ var EventBox = function (_React$Component11) {
 	return EventBox;
 }(React.Component);
 
-var InputFormEventDisplay = function (_React$Component12) {
-	_inherits(InputFormEventDisplay, _React$Component12);
+var InputFormEventDisplay = function (_React$Component13) {
+	_inherits(InputFormEventDisplay, _React$Component13);
 
 	function InputFormEventDisplay(props) {
 		_classCallCheck(this, InputFormEventDisplay);
@@ -898,8 +935,8 @@ var InputFormEventDisplay = function (_React$Component12) {
 	return InputFormEventDisplay;
 }(React.Component);
 
-var DisplayStats = function (_React$Component13) {
-	_inherits(DisplayStats, _React$Component13);
+var DisplayStats = function (_React$Component14) {
+	_inherits(DisplayStats, _React$Component14);
 
 	function DisplayStats(props) {
 		_classCallCheck(this, DisplayStats);
@@ -986,8 +1023,8 @@ var DisplayStats = function (_React$Component13) {
 	return DisplayStats;
 }(React.Component);
 
-var EndScreen = function (_React$Component14) {
-	_inherits(EndScreen, _React$Component14);
+var EndScreen = function (_React$Component15) {
+	_inherits(EndScreen, _React$Component15);
 
 	function EndScreen(props) {
 		_classCallCheck(this, EndScreen);
