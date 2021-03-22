@@ -403,7 +403,7 @@ class StartScreen extends React.Component {
 		if (this.props.displayStartScreen) {
 			return (
 				<div className="grid-item screen">
-					<h1>The Funnest Bestest Game Ever</h1>
+					<h1>Student Simulator</h1>
 					<h3>How many classes will you be taking</h3>
 					<form onSubmit={this.handleStart} onChange={this.props.onClassChange}>
 						<div>

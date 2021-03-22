@@ -508,7 +508,7 @@ var StartScreen = function (_React$Component2) {
 					React.createElement(
 						"h1",
 						null,
-						"The Funnest Bestest Game Ever"
+						"Student Simulator"
 					),
 					React.createElement(
 						"h3",
