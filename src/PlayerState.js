@@ -70,7 +70,7 @@ class PlayerState extends React.Component {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 0,
+			eventProb: 0.5,
 			necessarySleepHours: 8,
 		}
 		this.handleStart = this.handleStart.bind(this);

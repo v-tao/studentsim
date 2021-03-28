@@ -106,7 +106,7 @@ var PlayerState = function (_React$Component) {
 			club: clubs.none,
 			event: events.none,
 			eventHours: 0,
-			eventProb: 0,
+			eventProb: 0.5,
 			necessarySleepHours: 8
 		};
 		_this.handleStart = _this.handleStart.bind(_this);
